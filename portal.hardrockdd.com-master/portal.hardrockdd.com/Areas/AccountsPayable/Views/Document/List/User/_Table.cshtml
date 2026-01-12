@@ -1,0 +1,128 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = "apDocumentTable";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urldelete="@Url.Action("DocumentDelete", "Document", new { Area = "AccountsPayable" })"
+       data-urlselect="@Url.Action("DocumentPanel", "Document", new { Area = "AccountsPayable" })"
+       data-dataurl="@Url.Action("RequestedInfoData", "Document", new { Area = "AccountsPayable" })"
+       data-status="@((int)Model.Status)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().DocId)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().VendorDescription)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().APReference)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Amount)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Mth)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().InvoiceDate)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -50;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth:true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            rowsGroup: [2],
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.status =  $('#@tableId').attr('data-status');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columns: [
+                { data: "APCo", visible: false },
+                { data: "DocId", visible: false },
+                {
+                    data: "VendorDescription",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-10">' + data + '</div>';
+                        return result;
+                    },
+                },
+                {
+                    data: "APReference",
+                    sortable: false
+                },
+                {
+                    data: "Amount",
+                    render: function (data, type) {
+                        return type === 'sort' ? data : currencyFormat(data, 2);
+                    },
+                    className: "text-right",
+                    sortable: false
+                },
+                {
+                    data: "Mth",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = new Date(data);
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                    sortable: false
+                },
+                {
+                    data: "InvoiceDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = data;
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                    sortable:false
+                },
+                {
+                    //data: "InvoiceDate",
+                    render: function (data, type, row, meta) {
+                        var result = "";
+                        if (row.ContainsErrors) {
+                            result += '<i class="fas fa-exclamation-triangle text-red pull-right "></i>';
+                            result += '<div class="f-s-8 text-red"><p style="margin-bottom:0px;">' + row.ErrorMsg + '</p></div>';
+                        }
+                        if (row.LastPostedCommentUser) {
+                            result += '<i class="fa fa-comment text-blue pull-right "></i>';
+                            result += '<div class="f-s-8 text-blue"><p  style="margin-bottom:0px;">' + row.LastPostedCommentUser + '</p></div>';
+                        }
+                        return result;
+                    },
+                    sortable:false
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "APCo=" + data.APCo + "&DocId=" + data.DocId;
+                $(row).attr('data-entitykey', rowKey);
+            },
+        });
+    });
+
+</script>

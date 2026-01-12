@@ -1,0 +1,66 @@
+﻿@model portal.Areas.Attachment.Models.ExplorerViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+
+<tr data-entitykey="@entityKey"
+    class="openDoc  @(Model.ObjectType == ExplorerObjectTypeEnum.Folder ? "folderObject" : "fileObject")"
+    data-fileurl="@Url.Action("Open", "Explorer", new { Area="Attachment", attachmentId = Model.AttachmentId })">
+    <td width="50px">
+        @Html.AntiForgeryToken()
+        <input id="@Guid.NewGuid()" name="HQCo" type="hidden" value="@Model.HQCo">
+        <input id="@Guid.NewGuid()" name="ObjectType" type="hidden" value="@Model.ObjectType">
+        <input id="@Guid.NewGuid()" name="FolderId" type="hidden" value="@Model.FolderId">
+        <input id="@Guid.NewGuid()" name="AttachmentId" type="hidden" value="@Model.AttachmentId">
+        <input id="@Guid.NewGuid()" name="Mime" type="hidden" value="@Model.Mime">
+        <input id="@Guid.NewGuid()" name="UniqueAttchId" type="hidden" value="@Model.UniqueAttchId">
+        <input id="@Guid.NewGuid()" name="Title" type="hidden" value="@Model.Title">
+        <input id="@Guid.NewGuid()" name="OriginalName" type="hidden" value="@Model.OriginalName">
+        @*<i class="@Model.FontIcon fa-3x"></i>*@
+        <div class="icon">
+            <i class="@Model.FontIcon fa-2x">
+            </i>
+            @if (Model.FileCnt > 0)
+            {
+                <span class="badge badge-info">@Model.FileCnt</span>
+            }
+        </div>
+
+    </td>
+    <td>
+        @if (Model.IsNew)
+        {
+            <div class="row edit">
+                @Html.EditorFor(m => m.Title)
+            </div>
+            <div class="display" style="display:none">
+                @Model.Title
+            </div>
+        }
+        else
+        {
+            <div class="row edit" style="display:none">
+                @Html.EditorFor(m => m.Title)
+            </div>
+            <div class="display">
+                @Model.Title
+            </div>
+        }
+    </td>
+    <td>
+        <div class="dropleft overflow-visible pull-right">
+            <a id="fileMenu_@(Model.AttachmentId)" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="true"><i class="fal fa-ellipsis-h  fa-2x"></i></a>
+            <div class="dropdown-menu dropdown-primary">
+                <button type="button" class="dropdown-item rename"><i class="fas fa-pencil" style="width:20px;"></i>&nbsp;&nbsp;Rename</button>
+                <button class="dropdown-item download"><i class="fas fa-download" style="width:20px;"></i>&nbsp;&nbsp;Download</button>
+                <button class="dropdown-item delete delRow delItem"><i class="fas fa-times text-danger" style="width:20px;"></i>&nbsp;&nbsp;Delete</button>
+            </div>
+        </div>
+    </td>
+</tr>

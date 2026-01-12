@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.AP.Invoice.InvoiceFormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div class="panel panel-inverse"
+     data-sortable-id="InvoiceLineListViewModel"
+     id="InvoiceLineListViewModel"
+     data-reloadurl="@Url.Action("LineTable", "APInvoice", new { apco = Model.Invoice.APCo, mth = Model.Invoice.Mth, apTransId = Model.Invoice.APTransId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Invoice Line(s)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../AP/Invoice/Lines/Table", Model.Lines)
+    </div>
+</div>
+<div id="arInvoiceLinePanel">
+</div>

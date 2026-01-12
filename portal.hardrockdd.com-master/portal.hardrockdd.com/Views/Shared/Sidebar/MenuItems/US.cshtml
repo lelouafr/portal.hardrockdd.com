@@ -1,0 +1,46 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "us";
+}
+@if (User.HasAccess("ErrorLog") ||
+    User.HasAccess("Unifi") ||
+    User.HasAccess("Azure"))
+{
+    <li id="menu_li_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-user"></i>
+            <span>Your Stuff</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "WeeklyEmployeeSummary", routeValues: new { Area = "" })">Your Hours</a></li>
+            @if (User.HasAccess("UserSummary", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "UserSummary", routeValues: new { Area = "" })">Your Tickets</a></li>
+            }
+            <li id="menu_li_@(listItemTag)_@(listItemId++)" class=""><a href="@Url.Action("Index", "LeaveRequestUserList", routeValues: new { Area = "" })">Your Time off Request</a></li>
+            @if (User.HasAccess("HRUserEmployee", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "HRUserEmployee", routeValues: new { Area = "" })">Your Employees/Crew</a></li>
+            }
+            @if (User.HasAccess("APCreditCardEmployeeTransaction"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "APCreditCardEmployeeTransaction", routeValues: new { Area = "" })">Your Credit Card</a></li>
+            }
+            @if (User.HasAccess("Equipment", "UserIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("UserIndex", "Equipment", routeValues: new { Area = "" })">Your Equipment</a></li>
+            }
+            @if (User.HasAccess("EMAuditUser", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAuditUser", routeValues: new { Area = "" })">Your Equipment Audit</a></li>
+            }
+            @if (User.HasAccess("EMAudit", "ApprovalIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ApprovalIndex", "EMAudit", routeValues: new { Area = "" })">Your Equipment Approvals</a></li>
+            }
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="https://www.paycomonline.net/v4/ee/web.php/app/login" target="_blank">Paycom (Link)</a></li>
+        </ul>
+    </li>
+}

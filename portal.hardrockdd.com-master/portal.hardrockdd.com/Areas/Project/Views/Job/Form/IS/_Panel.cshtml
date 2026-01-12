@@ -1,0 +1,43 @@
+﻿@model portal.Areas.Project.Models.Job.Report.ISFormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+
+@if (Model.Mth == null)
+{
+    <div class="panel panel-default"
+         data-reloadurl="@Url.Action("ISTable", "Job", new { jcco = Model.JCCo, jobId = Model.JobId })">
+        <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+            <div class="panel-heading-btn">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            </div>
+            <div class="panel-title">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Job Statement
+            </div>
+        </div>
+        <div class="panel-body show" id="@panelId">
+
+            @Html.Partial("Form/IS/_Table", Model)
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="panel panel-default"
+         data-reloadurl="@Url.Action("JobISMonthTable", "Job", new { jcco = Model.JCCo, jobId = Model.JobId, mth = Model.Mth })">
+        <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+            <div class="panel-heading-btn">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            </div>
+            <div class="panel-title">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Job Statement
+            </div>
+        </div>
+        <div class="panel-body show" id="@panelId">
+
+            @Html.Partial("Form/IS/_TableMth", Model)
+        </div>
+    </div>
+}

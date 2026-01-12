@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-sortable-id="PurchaseOrderViewModel"
+     data-reloadurl="@Url.Action("Form", "PurchaseOrder", new { poco = Model.Order.POCo, po = Model.Order.PO })"
+     data-reloadpanels="PurchaseOrderItemViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Info (@Model.Order.PO)</h4>
+    </div>
+    <div>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PO/PurchaseOrder/Form/Buttons", Model.Action)
+        @Html.Partial("../PO/PurchaseOrder/Form/Header/Form", Model.Order)
+    </div>
+</div>

@@ -1,0 +1,111 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobPhaseSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td style=" min-width: 80px;">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RigId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JobId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.JobId, new { DisplayOnly = true })
+    </td>
+    <td style=" min-width: 250px;">
+        @Html.EditorFor(m => m.JobName, new { DisplayOnly = true })
+    </td>
+    <td style=" min-width: 100px;">
+        @Html.EditorFor(m => m.StatusId)
+    </td>
+    <td>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsRigUpComplete" @(Model.IsRigUpComplete ? "Checked" : "") />
+                </div>
+            </div>
+        </div>
+    </td>
+    <td style=" width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text" >
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsPilotComplete" @(Model.IsPilotComplete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="PilotPercentComplete" type="text" value="@(string.Format("{0:P0}",Model.PilotPercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsReam1Complete" @(Model.IsReam1Complete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="Ream1PercentComplete" type="text" value="@(string.Format("{0:P0}",Model.Ream1PercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsReam2Complete" @(Model.IsReam2Complete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="Ream2PercentComplete" type="text" value="@(string.Format("{0:P0}",Model.Ream2PercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsReam3Complete" @(Model.IsReam3Complete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="Ream3PercentComplete" type="text" value="@(string.Format("{0:P0}",Model.Ream3PercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsReam4Complete" @(Model.IsReam4Complete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="Ream4PercentComplete" type="text" value="@(string.Format("{0:P0}",Model.Ream4PercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsReam5Complete" @(Model.IsReam5Complete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="Ream5PercentComplete" type="text" value="@(string.Format("{0:P0}",Model.Ream5PercentComplete))" />
+        </div>
+    </td>
+    <td style="width: 120px;">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsPullPipeComplete" @(Model.IsPullPipeComplete ? "Checked" : "") />
+                </div>
+            </div>
+            <input class="form-control percent" name="PullPipePercentComplete" type="text" value="@(string.Format("{0:P0}",Model.PullPipePercentComplete))" />
+        </div>
+    </td>
+    <td>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    <input type="checkbox" class=" js-switch" data-size="small" data-theme="green" name="IsRigDownComplete" @(Model.IsRigDownComplete ? "Checked" : "") />
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>

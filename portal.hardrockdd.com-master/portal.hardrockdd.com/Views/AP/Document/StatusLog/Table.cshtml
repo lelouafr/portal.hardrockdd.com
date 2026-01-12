@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.AP.Document.DocumentStatusLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedOn)</th>
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../AP/Document/StatusLog/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

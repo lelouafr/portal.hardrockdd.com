@@ -1,0 +1,218 @@
+﻿@model portal.Models.Views.JC.Job.JobSummaryListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+
+<div id="treeGrid_@tableId"
+    class="dhtmlx_treegrid" 
+    data-urlselect="@Url.Action("Panel", "JobDetail")"
+    data-dstselect="reviewPanel"
+    data-dstselectvalidate="false"
+     >
+
+</div>
+<script>
+    $(document).ready(function () {
+        var h = $("body").height();
+        h -= $("#treeGrid_@tableId").offset().top;
+        h -= 60;
+        $("#treeGrid_@tableId").height(h);
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Action("Data", "JobSummary")",
+            dataType: "json",
+            success: function (res) {
+                var treegrid = new dhx.TreeGrid("treeGrid_@tableId", {
+                    selection: "row",
+                    rowHeight: 24,
+                    headerRowHeight: 34,
+                    columns: [
+                        {
+                            id: "JobId",
+                            adjust: "data",
+                            type: "string",
+                            header: [
+                                { height: 24, },
+                                { text: "Job Id" },
+                                { content: "inputFilter" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            }
+                        },
+                        {
+                            id: "JobName",
+                            adjust: "data",
+                            type: "string",
+                            header: [
+                                { height: 24, },
+                                { text: "Description" },
+                                { content: "inputFilter" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            }
+                        },
+                        {
+                            id: "PipeSize",
+                            type: "string",
+                            align: "right",
+                            header: [
+                                { height: 24,},
+                                { text: "Pipe Size" },
+                                { content: "inputFilter" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? numberFormat(text, 0) : "";
+                            }
+                        },
+                        {
+                            id: "Footage",
+                            type: "number",
+                            header: [
+                                { height: 24, },
+                                { text: "Footage" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? numberFormat(text, 0) : "";
+                            }
+
+                        },
+                        {
+                            id: "Invoiced",
+                            type: "string",
+                            align:"right",
+                            header: [
+                                { height: 24, css: "border-left-1 border-bottom-0", align: "left"},
+                                { text: "Invoiced", align: "right", css: "border-left-1" },
+                                { css: "border-left-1"}
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold border-left-1";
+                                }
+                                return "border-left-1";
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            },
+
+                        },
+                        {
+                            id: "ActCost",
+                            type: "number",
+                            header: [
+                                { height: 24, text: "Actual" },
+                                { text: "Cost" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            }
+
+                        },
+                        {
+                            id: "ActGross",
+                            type: "number",
+                            header: [
+                                { height: 24, },
+                                { text: "Gross" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            }
+
+                        },
+                        {
+                            id: "BgtRevenue",
+                            type: "string",
+                            align: "right",
+                            header: [
+                                { height: 24, css: "border-left-1 border-bottom-0", align: "left" },
+                                { text: "Revenue", align: "right", css: "border-left-1 border-bottom-0" },
+                                { css: "border-left-1"}
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold border-left-1";
+                                }
+                                return "border-left-1";
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            },
+                            css:" border-left-1"
+
+
+                        },
+                        {
+                            id: "BgtCost",
+                            type: "number",
+                            header: [
+                                { height: 24, text: "Budget",  align: "left", css: " border-bottom-0" },
+                                { text: "Cost" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            }
+
+                        },
+                        {
+                            id: "BgtGross",
+                            type: "number",
+                            header: [
+                                { height: 24, },
+                                { text: "Gross" }
+                            ],
+                            mark: function (cell, data, row, col) {
+                                if (row.ParentJobId == null) {
+                                    return "font-weight-bold";
+                                }
+                            },
+                            template: function (text, row, col) {
+                                return text ? currencyFormat(text, 0) : "";
+                            }
+
+                        }
+                    ],
+                });
+                treegrid.data.parse(res.data);
+                treegrid.collapseAll();
+                handleDHTMLXTableEvents(treegrid);
+            },
+            error: function (result) {
+                alert("Error");
+            }
+        });
+    });
+
+</script>

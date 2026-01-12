@@ -1,0 +1,20 @@
+﻿@model portal.Models.SampleViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse"
+     data-sortable-id="SampleViewModel"
+     data-reloadurl="@Url.Action("Form", "Sample", new { id = Model.Id })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Info</h4>
+    </div>
+    <div class="panel-body" id="SampleViewModel">
+        @Html.FormFor(m => Model)
+    </div>
+</div>
+<script>
+</script>

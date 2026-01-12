@@ -1,0 +1,35 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestSummaryListViewModel
+
+@{
+    ViewBag.Title = "PO Approvals";
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-xl-5">
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../PO/Request/Approval/List/Panel", Model)
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-7">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}

@@ -1,0 +1,48 @@
+﻿@model  portal.Models.Views.Bid.BoreLine.PassListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidBoreLinePass")"
+       data-urldelete="@Url.Action("Delete", "BidBoreLinePass")"
+       data-urlupdate="@Url.Action("Update", "BidBoreLinePass")"
+       data-urlvalidate="@Url.Action("Validate", "BidBoreLinePass")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CalcType)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreSize)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtValue)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockValue)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List.Where(f => (f.DirtValue + f.RockValue) > 0).ToList())
+        {
+            @Html.Partial("../JC/Job/Bid/Production/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+</script>

@@ -1,0 +1,290 @@
+﻿@model portal.Areas.Project.Models.Bid.WizardFormViewModel
+
+@{
+    ViewBag.Title = "Bid Wizard";
+    var wizardId = "wizard_" + Guid.NewGuid();
+    var formLayout = new TableLayoutModel(this);
+}
+<style>
+    .sw {
+        background-color: white;
+    }
+
+    .sw-theme-arrows > .nav .nav-link {
+        color: #999;
+        border-color: #f8f8f8;
+        background: #f8f8f8;
+    }
+</style>
+
+<div id="@wizardId">
+    <ul class="nav">
+        @foreach (var item in Model.WizardSteps)
+        {
+            <li>
+                <a class="nav-link" id="href_@(wizardId)_@(item.StepId)" href="#step_@(wizardId)_@(item.StepId)" data-validate="true" data-isloaded="false" data-url="@item.AjaxUrl">
+                    <span class="number">@item.StepId</span>
+                    <span class="info text-ellipsis">
+                        @item.Title
+                    </span>
+                </a>
+            </li>
+        }
+    </ul>
+    <div class="tab-content" style="padding: 0px; margin-bottom: 0px; overflow:unset;">
+        @foreach (var item in Model.WizardSteps)
+        {
+            <div id="step_@(wizardId)_@(item.StepId)" class="tab-pane" role="tabpanel" style="padding: 0px;" data-validate="true">
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    var ajaxInvoke = false;
+    $('#@wizardId').ready(function () {
+        var wizardElem = $('#@wizardId');
+        initWizard(wizardElem);
+        handleInputChange(wizardElem);
+    });
+    function handleInputChange(wizardElem) {
+        $(wizardElem)
+            .off('change', ':Input')
+            .on('change', ':Input', function () {
+                //set reset any validation test
+                var currentStep = $(wizardElem).smartWizard("getStepIndex");
+                var anchorObjectId = 'href_@(wizardId)_' + (currentStep + 1);
+                var anchorObject = $('#' + anchorObjectId);
+
+                $(wizardElem).find('[data-isloaded]').each(function () {
+                    $(this).data('isvalid', "false");
+                    if (anchorObjectId != $(this).attr('id')) {
+                        $(this).data('isloaded', "false");
+                    }
+                });
+            });
+    }
+
+    function initWizard(wizardElem) {
+        var bidStatus = parseInt("@Model.StatusInt");
+        console.log('Bid Status: ', bidStatus);
+        // Toolbar extra buttons
+        var btnFinish = $('<button></button>').text('Finish')
+            .addClass('btn btn-success  sw-btn-finish')
+            .on('click', function () {
+                    });
+        var btnActions = $('<button></button>').text('Actions')
+            .addClass('btn btn-warning  sw-btn-action')
+            .on('click', function () {
+                $(wizardElem).smartWizard("goToStep", @(Model.WizardSteps.Max(max => max.StepId)-1) );
+            });
+
+        var btnCancel = $('<button></button>').text('Cancel')
+            .addClass('btn btn-danger sw-btn-cancel')
+            .on('click', function() {
+                var data = "@Html.Raw(formLayout.TableKey)";
+                data += "&GotoStatusId=9";
+                data += "&ActionRedirect=BidTracker";
+                var url = "@Url.Action("UpdateStatus", "Bid")";
+                url += "?" + data;
+                location.href = url;
+            });
+        if (bidStatus != 0 && bidStatus != 1 && bidStatus != 2 && bidStatus != 3 ) {
+            $(btnCancel).attr('disabled', 'disabled');
+        }
+        // Step show event
+        $(wizardElem).on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
+            $(".sw-btn-finish").hide();
+            $(".sw-btn-next").show();
+            $(".sw-btn-prev").removeClass('disabled');
+            $(".sw-btn-next").removeClass('disabled');
+            if (stepPosition === 'first') {
+                $(".sw-btn-prev").addClass('disabled');
+            } else if (stepPosition === 'last') {
+                $(".sw-btn-next").hide();
+                $(".sw-btn-finish").show();
+                $(".sw-btn-next").addClass('disabled');
+            } else {
+                $(".sw-btn-prev").removeClass('disabled');
+                $(".sw-btn-next").removeClass('disabled');
+            }
+        });
+        function cancelBid() {
+            var data = $(this).data('key');
+            var gotoStatusId = $(this).data('gotostatusid');
+            var redirectAction = $(this).data('redirectaction');
+
+            data += "&GotoStatusId=" + gotoStatusId;
+            data += "&ActionRedirect=" + redirectAction;
+                var url = "@Url.Action("UpdateStatus", "Bid")";
+            url += "?" + data;
+
+            console.log('Goto: ', url);
+            location.href = url;
+        }
+        $(wizardElem).on("stepContent", function (e, anchorObject, currentStepIndex, stepDirection) {
+            var ajaxURL = anchorObject.data('url');
+            var isLoaded = anchorObject.data('isloaded') === "true";
+            //console.log('Step Loaded', currentStepIndex, stepDirection, isLoaded);
+
+            //console.log("isLoaded: ", isLoaded);
+            if ((stepDirection != "forward" && stepDirection != "" && isLoaded) || isLoaded) {
+                return;
+            }
+            //console.log($(".sw-btn-next"));
+            $(".sw-btn-next").addClass('disabled');
+            // Return a promise object
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    method: "GET",
+                    url: ajaxURL,
+                    beforeSend: function (xhr) {
+                        $(wizardElem).smartWizard("loader", "show");
+                        var isAbsoluteURI = new RegExp('^(?:[a-z]+:)?//', 'i');
+                        if (!isAbsoluteURI.test(this.url)) {
+                            var controllerToken = $(document).find('#controllerTokenId')[0];
+                            xhr.setRequestHeader('ControllerTokenId', $(controllerToken).val());
+                        }
+                    }
+                }).done(function (res, status, xhr) {
+                    resolve(res);
+                    //console.log(status, xhr, xhr.getResponseHeader("errorId"));
+
+                    var errorId = xhr.getResponseHeader("errorId");
+                    if (errorId == null) {
+                        $(anchorObject).data('isloaded', "true");
+                    }
+                    $(wizardElem).smartWizard("loader", "hide");
+                    $(".sw-btn-next").removeClass('disabled');
+                }).fail(function (err) {
+                    reject("An error loading the resource");
+                    $(wizardElem).smartWizard("loader", "hide");
+                    $(".sw-btn-next").removeClass('disabled');
+                });
+            });
+        });
+
+        $(wizardElem).on('leaveStep', function (e, anchorObject, currentStepIndex, nextStepIndex, stepDirection) {
+            //console.log('next clicked', currentStepIndex, nextStepIndex, stepDirection);
+            if (stepDirection == 'forward') {
+                var validate = $(anchorObject).data('validate');
+                var isValid = $(anchorObject).attr('data-isvalid') == 'true';
+                if (validate && !isValid) {
+                    var tabId = $(anchorObject).attr('href')
+                    var tab = $(tabId);
+                    var nextStep = nextStepIndex;//+ 1;
+                    var button = $(".sw-btn-next")[0];
+                    $(tab).PostValidate(button, function (tabIsValid) {
+                        //console.log('tab is valid:', tabIsValid);
+                        $(anchorObject).attr('data-isvalid', tabIsValid);
+                        if (tabIsValid) {
+                            var currentStep = $(wizardElem).attr('data-currentstep');
+                            if (currentStep != nextStep) {
+                                //console.log('Go Next Step');
+                                $(wizardElem).attr('data-currentstep', nextStep);
+                                $(wizardElem).smartWizard("goToStep", nextStep);
+                                $(wizardElem).smartWizard("loader", "hide");
+                               // $(anchorObject).attr('data-isvalid', 'false');
+                            }
+                        }
+                        return tabIsValid;
+                    });
+                    return isValid;
+
+                }
+                return true;
+            }
+        });
+
+        // Smart Wizard
+        $(wizardElem).smartWizard({
+            selected: 0,
+            theme: 'arrows',
+            useURLhash: false,
+            showStepURLhash: false,
+            enableURLhash: false,
+            keyNavigation: false,
+            autoAdjustHeight: false,
+            keyboardSettings: {
+                keyNavigation: false
+            },
+            anchorSettings: {
+                anchorClickable: true, // Enable/Disable anchor navigation
+                enableAllAnchors: true, // Activates all anchors clickable all times
+                markDoneStep: true, // Add done state on navigation
+                markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+                removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
+                enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+            },
+            //transition: {
+            //    animation: 'slide-vertical', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+            //},
+            toolbarSettings: {
+                toolbarPosition: 'bottom', // both bottom
+                toolbarExtraButtons: [btnCancel, btnActions]
+            },
+        });
+        /*
+        // External Button Events
+        $("#reset-btn").on("click", function () {
+            // Reset wizard
+            $('#smartwizard').smartWizard("reset");
+            return true;
+        });
+
+        $("#prev-btn").on("click", function () {
+            // Navigate previous
+            $('#smartwizard').smartWizard("prev");
+            return true;
+        });
+
+        $("#next-btn").on("click", function () {
+            // Navigate next
+            $('#smartwizard').smartWizard("next");
+            return true;
+        });
+
+
+        // Demo Button Events
+        $("#got_to_step").on("change", function () {
+            // Go to step
+            var step_index = $(this).val() - 1;
+            $('#smartwizard').smartWizard("goToStep", step_index);
+            return true;
+        });
+
+        $("#is_justified").on("click", function () {
+            // Change Justify
+            var options = {
+                justified: $(this).prop("checked")
+            };
+
+            $('#smartwizard').smartWizard("setOptions", options);
+            return true;
+        });
+
+        $("#animation").on("change", function () {
+            // Change theme
+            var options = {
+                transition: {
+                    animation: $(this).val()
+                },
+            };
+            $('#smartwizard').smartWizard("setOptions", options);
+            return true;
+        });
+
+        $("#theme_selector").on("change", function () {
+            // Change theme
+            var options = {
+                theme: $(this).val()
+            };
+            $('#smartwizard').smartWizard("setOptions", options);
+            return true;
+        });
+        */
+
+    }
+
+</script>
+

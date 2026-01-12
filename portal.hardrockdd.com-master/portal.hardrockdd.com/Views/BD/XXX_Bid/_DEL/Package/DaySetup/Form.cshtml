@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.Bid.BidPackageDaySetupViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("Update", "BidPackageDaySetup")"
+      data-urlvalidate="@Url.Action("Validate", "BidPackageDaySetup")"
+      >
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+
+    @foreach (var prp in this.ViewData.ModelMetadata.Properties.Where(p => p.TemplateHint == "HiddenInput").Select(s => s.PropertyName))
+    {
+        @Html.Hidden(prp, Model.GetType().GetProperty(prp).GetValue(Model, null), new { @id = Guid.NewGuid() })
+    }
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DayRounding)
+        @Html.EditorFor(m => m.RoundingPhaseId)
+    </div>
+</form>

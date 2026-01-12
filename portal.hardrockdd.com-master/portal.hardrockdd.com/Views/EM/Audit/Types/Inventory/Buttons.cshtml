@@ -1,0 +1,161 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var unSubmitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : false;
+    var formRefreshId = string.Format("EMAuditForm_{0}", Model.AuditId);
+}
+
+<div class="row"
+     data-emco="@Model.EMCo"
+     data-auditid="@Model.AuditId">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            @if (Model.CanSubmit)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.Submitted)"
+                        data-validate="true">
+                    @*<i class="fa fa-share"></i>*@ Submit
+                </button>
+            }
+            @if (Model.CanUnSubmit)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.Started)"
+                        data-validate="true">
+                    @*<i class="fa fa-share"></i>*@ Un Submit
+                </button>
+            }
+            @if (Model.CanReject)
+            {
+                <button class="btn btn-danger"
+                        data-toggle="modal"
+                        data-target="#reject">
+                    <i class="fa fa-thumbs-down"></i>Reject
+                </button>
+            }
+            @if (Model.CanApprove)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.Approved)"
+                        data-validate="true">
+                    <i class="far fa-thumbs-up"></i> Approve
+                </button>
+            }
+            @if (Model.CanProcess)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.Processed)"
+                        data-validate="true">
+                    <i class="far fa-share"></i> Process
+                </button>
+            }
+            @if (Model.CanCancel)
+            {
+                <button type = "button" class="btn btn-danger btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.Canceled)">
+                    <i class="far fa-ban"></i> Cancel
+                </button>
+            }
+            @if (User.HasFullAccess("EMAudit", "Index"))
+            {
+                <button type="button" class="btn btn-warning btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-emco="@Model.EMCo"
+                        data-auditid="@Model.AuditId"
+                        data-status="@((int)DB.EMAuditStatusEnum.New)">
+                    <i class="far fa-share"></i> Make Draft
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        $(document)
+            .off('click', 'button.btnAction')
+            .on('click', 'button.btnAction', function () {
+                var func = function (button) {
+                    var row = $(button).closest('.row');
+                    var url = $(button).data('url');
+                    if (url) {
+                        var token = $(row).find('[name="__RequestVerificationToken"]');
+                        var data = {
+                            __RequestVerificationToken: token.val(),
+                            emco: $(button).data('emco'),
+                            auditId: $(button).data('auditid'),
+                            status: $(button).data("status")
+                        };
+                        $.post(url, data, function (res) {
+                            if (res.success === "true") {
+                                $('#@(formRefreshId)').html('');
+                                ReloadElement($('#@(formRefreshId)'), button);
+                            }
+                            else {
+                                var panel = $(this).closest('.panel');
+                                SetValidationErrorForObject(panel, res.ModelState);
+                            }
+                            $(button).SetButtonNotBusy();
+                        });
+                    }
+                }
+                var button = this;
+                var validate = $(this).data('validate');
+                var panel = $(this).closest('.panel');
+                if (validate) {
+                    $(panel).PostValidate(button, function (valid) {
+                        if (valid) {
+                            $(button).SetButtonBusy();
+                            func(button);
+                        }
+                    });
+                }
+                else {
+                    func(button);
+                }
+
+            });
+    });
+
+
+    function ReloadElement(elem, button) {
+        var url = "@Url.Action("Form", "EMAuditForm")";
+        var dst = elem;
+        var data = {
+            emco: $(button).data("emco"),
+            auditId: $(button).data("auditid"),
+        };
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {                
+                dst.html(res);
+                initPane(dst);
+            }
+        });
+    }
+</script>

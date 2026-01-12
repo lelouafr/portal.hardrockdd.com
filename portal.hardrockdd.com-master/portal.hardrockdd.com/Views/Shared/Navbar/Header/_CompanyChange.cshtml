@@ -1,0 +1,57 @@
+﻿
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+    var model = new portal.Models.Views.Web.WebCompanyOverrideViewModel();
+}
+
+@*<form class="form-horizontal m-5"
+          style="width:100%;"
+          id="@formId"
+          data-urlupdate="@Url.Action("UserIdOverride", "Base")"
+          data-postupdate="PostUpdate@(id)">
+        @Html.AntiForgeryToken()
+        <div class="form-group has-feedback row">
+        </div>
+    </form>*@
+<style>
+    .input-group {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+</style>
+@if (model.CompanyCnt > 1)
+{
+
+    <form class="navbar-form form-inline"
+          id="@formId"
+          data-urlupdate="@Url.Action("CompanyChange", "Base", routeValues: new { Area = "" })"
+          data-postupdate="PostUpdate@(id)">
+        @Html.EditorFor(m => model.CompanyId, new { ViewOnly = false })
+        @* @Html.EditorFor(m => model.DivisionId, new { ViewOnly = false })*@
+    </form>
+
+    <script>
+        $('#@formId').ready(function () {
+            Form().init('#@formId');
+        });
+        function PostUpdate@(id)(elem) {
+            //console.log('USer Override triggered');
+            $('#overrideUser').modal('toggle');
+            $('#page-container').addClass('d-none');
+            $('#page-loader').addClass('show');
+            $('#page-loader').removeClass('d-none');
+            $('#page-loader').show();//('show');
+            //page-loader
+            location.reload(true);
+        }
+    </script>
+}
+@*<form class="navbar-form form-inline"
+          id="@formId"
+          data-urlupdate="@Url.Action("CompanyChange", "Base")"
+          data-postupdate="PostUpdate@(id)>
+        <div class="form-group">
+            @Html.EditorFor(m => model.CompanyId, new { ViewOnly = false })
+        </div>
+    </form>*@

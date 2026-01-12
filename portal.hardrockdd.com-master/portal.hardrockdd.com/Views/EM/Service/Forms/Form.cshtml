@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Equipment.Service.Forms.FormViewModel
+@{
+    
+    var formId = "form_" + Guid.NewGuid();
+}
+<div id="@formId">
+    <div class="row">
+        <div class="col-6">
+            @Html.Partial("../EM/Service/Forms/Info/Panel", Model.Info)
+            @Html.Partial("../EM/Service/Forms/Trigger/Panel", Model.Trigger)
+        </div>
+        <div class="col-6">
+            @Html.Partial("../EM/Service/Forms/Category/Panel", Model.AssignedCategories)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../EM/Service/Forms/Equipment/Panel", Model.AssignedEquipment)
+        </div>
+    </div>
+</div>

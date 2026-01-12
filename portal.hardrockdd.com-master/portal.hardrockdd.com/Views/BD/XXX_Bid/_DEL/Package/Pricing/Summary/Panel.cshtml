@@ -1,0 +1,12 @@
+﻿@model portal.Models.Views.Bid.BidCostDetailListViewModel
+
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+        </div>
+        <h4 class="panel-title">@Model.Description Bore Line Summary</h4>
+    </div>
+    <div class="panel-body" id="BoreLinesSummary">
+        @Html.Partial("../BD/Bid/Package/Pricing/Summary/Table", Model)
+    </div>
+</div>

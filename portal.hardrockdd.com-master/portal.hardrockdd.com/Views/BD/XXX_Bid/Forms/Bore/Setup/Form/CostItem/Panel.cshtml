@@ -1,0 +1,58 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.CostItemListViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = "panel_body_" + Guid.NewGuid();
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("BoreCostItemListTable", "BidForm", new { bdco = Model.BDCo, bidId = Model.BidId, boreId = Model.BoreId })"
+     data-urlapplydefault="@Url.Action("BoreCostRecalculateAll", "BidForm", new { bdco = Model.BDCo, bidId = Model.BidId, boreId = Model.BoreId })"
+     id="@(panelId)"
+     data-key="@tableKey">
+    <div class="panel-heading pointer-cursor" data-target="#@(panelBodyId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="btn-group pull-right pr-2">
+            <button type="button" class="btn btn-success btn-xs">Menu</button>
+            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="javascript:;" class="recalculateUnits">Calculate Units</a></li>
+            </ul>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Cost Items
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/CostItem/Tabs", Model)
+    </div>
+</div>
+
+<script>
+    $('#@(panelId)').ready(function () {
+        var panel = $('#@(panelId)');
+        $(panel).on('click', '.recalculateUnits', function () {
+            var panel = $('#@(panelId)');
+            var url = $(panel).data("urlapplydefault");
+            var data = $(panel).data("key");
+            var dst = $(panel).find('.panel-body');
+            console.log('applyDefaultRates', url, data);
+
+            $.ajax({
+                method: "GET",
+                url: url,
+                beforeSend: function (xhr) {
+                    var controllerToken = $(document).find('#controllerTokenId')[0];
+                    xhr.setRequestHeader('ControllerTokenId', $(controllerToken).val());
+                },
+                success: function (res) {
+                    dst.html(res);
+                }
+            });
+        });
+    });
+</script>

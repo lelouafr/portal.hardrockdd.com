@@ -1,0 +1,45 @@
+﻿@model portal.Areas.Project.Models.Job.FormViewModel
+
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("Form/Info/_Panel", Model.Info)
+    </div>
+    <div class="col-4">
+       @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("Form/ProductionVariance/_Panel", Model.JobProgress)
+    </div>
+</div>
+@if (Model.Mth != null)
+{
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("Form/IS/_Panel", Model.ISData)
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("Form/IS/_Panel", Model.ISData)
+        </div>
+    </div>
+}
+@*<div class="row">
+        <div class="col-6">
+            @Html.Partial("Form/Cost/Panel", Model.JobCostSummary)
+        </div>
+        <div class="col-6">
+            @Html.Partial("Form/AR/Panel", Model.ARTrans)
+        </div>
+        <div class="col-6">
+            @Html.Partial("Form/PO/Panel", Model.POLines)
+        </div>
+        <div class="col-6">
+            @Html.Partial("Form/AP/Panel", Model.APLines)
+        </div>
+    </div>*@

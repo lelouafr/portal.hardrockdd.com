@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.JC.Industry.IndustryListViewModel
+
+<div class="panel panel-inverse"
+     id="IndustryListViewModel"
+     data-reloadurl="@Url.Action("Table","JCIndustry")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Industry List </h4>
+    </div>
+    <div class="panel-body" id=">@ViewBag.Title">
+        @Html.Partial("../JC/Industry/List/Table", Model)
+    </div>
+</div>

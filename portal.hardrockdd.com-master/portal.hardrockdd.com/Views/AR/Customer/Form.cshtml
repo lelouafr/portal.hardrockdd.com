@@ -1,0 +1,12 @@
+﻿@model portal.Models.Views.AR.Customer.CustomerViewModel
+
+<div class="col-lg-12">
+    <fieldset>
+        <legend>Customer info</legend>
+        @Html.EditorForModel("Form/NewForm", new
+        {
+            CreateUrl = @Url.Action("Create", "Customer"),
+            ValidateUrl = @Url.Action("Validate", "Customer")
+        })
+    </fieldset>
+</div>

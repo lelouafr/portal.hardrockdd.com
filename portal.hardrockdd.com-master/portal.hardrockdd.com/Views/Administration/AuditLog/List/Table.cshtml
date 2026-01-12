@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.Web.AuditLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none" width="0%"></th>
+            <th data-datatable-filter-type="select" width="5%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RecType)</th>
+            <th data-datatable-filter-type="multiselect" width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().FieldName)</th>
+            <th data-datatable-filter-type="none" width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LogDate)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().OldValue)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().NewValue)</th>
+            <th data-datatable-filter-type="multiselect" width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().UserName)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.List)
+        {
+            @Html.Partial("../Administration/AuditLog/List/TableRow", line)
+        }
+    </tbody>
+</table>
+
+<script>
+
+    $('#@tableId').ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                { targets: [0], visible: false },
+                ]
+        });
+
+    });
+</script>

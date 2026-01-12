@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.Payroll.PayrollEmployeeReviewListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse" 
+     data-reloadurl="@Url.Action("Table", "PayrollEmployeeSummary")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Submission History for @Model.EmployeeName (@Model.EmployeeId)</h4>
+    </div>
+    <div class="panel-body" id="PayrollDailyTicketLsit">
+        @Html.Partial("../PR/Entries/Forms/Tickets/Table", Model)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12 ticketPanel" id="ticketPanel">
+    </div>
+</div>
+<script>
+
+
+</script>

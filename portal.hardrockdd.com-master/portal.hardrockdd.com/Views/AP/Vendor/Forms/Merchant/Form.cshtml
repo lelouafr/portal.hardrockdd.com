@@ -1,0 +1,153 @@
+﻿@model portal.Models.Views.AP.Vendor.Forms.VendorMerchantViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "VendorMerchant")"
+      data-urlvalidate="@Url.Action("Validate", "VendorMerchant")"
+      >
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.VendGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.MatchString, new { @id = Guid.NewGuid() })
+    <label class="col-12">Match List</label>
+    @{
+        var matchId = 1;
+    }
+    <div id="MatchList">
+        @foreach (var match in Model.MatchList)
+        {
+            <div class="form-group has-feedback row matchItem" style="margin-bottom:4px;" data-id="@matchId">
+                <div class="col-12 input-group " id="match_">
+                    @Html.TextBoxFor(m => match, new { @class = ("form-control matchItemString") })
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger btnMatchDel"
+                                data-matchstr="@match">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            matchId++;
+        }
+    </div>
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-primary pull-Left runMatchBtn"
+                        type="button"
+                        data-url="@Url.Action("RunMatch","VendorMerchant")"
+                        data-vendgroupid="@Model.VendGroupId"
+                        data-vendorid="@Model.VendorId">
+                    Run Matching
+                </button>
+                <button class="btn btn-default pull-right addMatchString"
+                        type="button">
+                    Add Item
+                </button>
+
+            </div>
+        </div>
+</form>
+<script>
+    $("#@formId").ready(function () {
+        $('.MatchString').hide();
+        $("#@formId").on('click', '.runMatchBtn', function () {
+            //console.log('I was clicked');
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var form = $(button).closest('form');
+                var url = $(button).data('url');
+                var token = $(form).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    vendgroupid: $(button).data('vendgroupid'),
+                    vendorId: $(button).data('vendorid') };
+                $.post(url, data, function (res) {
+                    $(button).SetButtonNotBusy();
+                });
+            }
+            func(button);
+        })
+
+        $("#@formId").on('click', '.addMatchString', function () {
+            //console.log('I was clicked');
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+
+                var matchList = $('#MatchList');
+                var copyItem = $(matchList).find('.matchItem').first().clone();
+                var id = 0;
+                $(matchList).find('.matchItem').each(function () {
+                    var matchId = parseInt($(this).data('id'));
+                    if (matchId > id) {
+                        id = matchId;
+                    }
+                });
+                $(matchList).append(copyItem);
+                $(copyItem).data('id', id);
+                $(copyItem).find('input').attr('value','');
+                $(button).SetButtonNotBusy();
+            }
+            func(button);
+        })
+
+        $("#@formId").on('click', '.btnMatchDel', function () {
+            //console.log('I was clicked');
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var delItem = $(button).closest('.matchItem');
+                $(delItem).remove();
+                var matchList = $('#MatchList');
+                var matchString = "";
+                $(matchList).find('input').each(function () {
+                    if (matchString != "") {
+                        matchString += ";";
+                    }
+                    matchString += $(this).val();
+                });
+                var matchElem = $("#@formId").find("[name='MatchString']");//("[name='LineTypeId']")
+                setTimeout(function () {
+                    $(matchElem).attr('value', matchString);
+                    $(matchElem).change();
+                }, 1000);
+                $(button).SetButtonNotBusy();
+            }
+            func(button);
+        })
+
+        $("#@(formId)").on('change', '.matchItemString', function () {
+            //console.log('I was changed');
+            var elem = this;
+            var func = function (elem) {
+                var matchList = $('#MatchList');
+                var matchString = "";
+                $(matchList).find('input').each(function () {
+                    if (matchString != "") {
+                        matchString += ";";
+                    }
+                    matchString += $(this).val();
+                });
+                var matchElem = $("#@formId").find("[name='MatchString']");//("[name='LineTypeId']")
+                setTimeout(function () {
+                    $(matchElem).attr('value', matchString);
+                    $(matchElem).change();
+                }, 1000);
+            }
+            func(elem);
+        })
+    });
+</script>

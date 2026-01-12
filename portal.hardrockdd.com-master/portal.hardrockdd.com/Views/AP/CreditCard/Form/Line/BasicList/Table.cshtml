@@ -1,0 +1,56 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("LinePanel", "APCreditCardTransactionCoding")"
+       data-urlcreate="@Url.Action("LineAdd", "APCreditCardTransactionCoding")"
+       data-urldelete="@Url.Action("LineDelete", "APCreditCardTransactionCoding")"
+       data-urlupdate="@Url.Action("LineUpdate", "APCreditCardTransactionCoding")"
+       data-urlvalidate="@Url.Action("LineValidate", "APCreditCardTransactionCoding")"
+       data-dstselect="codingLinePanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="5%"><label>#</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LineTypeId)</th>
+            <th width="50%"><label>Job/Equipment</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossAmt)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    @Html.AntiForgeryToken()
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary addRow">
+                            <i class="fa fa-plus"></i>
+                        </button>
+
+                    </div>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../AP/CreditCard/Form/Coding/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<div id="codingLinePanel">
+</div>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    });
+
+</script>

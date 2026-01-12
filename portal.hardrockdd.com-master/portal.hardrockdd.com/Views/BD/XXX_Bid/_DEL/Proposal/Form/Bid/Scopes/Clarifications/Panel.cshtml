@@ -1,0 +1,22 @@
+﻿@*@model portal.Models.Views.Bid.BidProposalScopeListViewModel
+@{
+    var panelId = Guid.NewGuid().ToString().Replace("-", "");
+    panelId = string.Concat(panelId.Where(char.IsLetter));
+}
+
+<div class="panel panel-inverse"
+     id="BidProposalScopeListViewModelClarifications"
+     data-reloadurl="@Url.Action("Table", "BidProposalScope", new { co = Model.Co, bidId = Model.BidId , scopeType = DB.ScopeTypeEnum.Clarification })"
+     data-reloadpanels="">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Bid Proposal Clarifications</h4>
+    </div>
+    <div class="panel-body" style="display:none" id="@panelId">
+        @Html.Partial("../BD/Bid/Proposal/Form/Bid/Scopes/Clarifications/Table", Model)
+    </div>
+</div>*@

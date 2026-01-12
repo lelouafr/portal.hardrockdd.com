@@ -1,0 +1,202 @@
+﻿@model portal.Models.Views.HQ.Attachment.FileExplorerListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}_{1}", Model.UniqueAttchId, Model.FolderId);
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+}
+<style>
+
+   
+</style>
+
+<table class="table"
+        id="@tableId"
+        style="display:none"
+        data-downloadurl="@Url.Action("Download", "FileExplorer")"
+        data-deletefileurl="@Url.Action("DeleteFile", "FileExplorer")"
+        data-deletefolderurl="@Url.Action("DeleteFolder", "FileExplorer")"
+        data-folderurl="@Url.Action("FileExplorerForm", "FileExplorer", new { viewType = Model.ViewType })"
+        data-folderid="@Model.FolderId"
+        data-uniqueattchid="@Model.UniqueAttchId"
+        data-urlcreate="@Url.Action("AddFolder", "FileExplorer")"
+        data-urldelete="@Url.Action("ItemDelete", "FileExplorer")"
+        data-urlupdate="@Url.Action("ItemUpdate", "FileExplorer")"
+        data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="45px"><label>Title</label></th>
+            <th colspan="2" class="">
+                @*<div class="btn-group pull-right">
+                        
+                    <button class="btn btn-primary uploadBtn " data-addrowlocation="top">
+                        <i class="far fa-upload fa-2x align-bottom pr-1"></i> <span class="align-Top">Import</span>
+                    </button>
+
+                    <button class="btn btn-success addRow " data-addrowlocation="top">
+                        <i class="far fa-folder-plus fa-2x align-bottom pr-1"></i> <span class="align-Top">New Folder</span>
+                    </button>
+
+                    <button class="btn btn-white downloadBtn">
+                        <i class="far fa-folder-download fa-2x align-bottom pr-1"></i> <span class="align-Top">Download Folder</span>
+                    </button>
+
+                </div>*@
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.Items)
+        {
+            @Html.Partial("../HQ/Attachment/Explorer/Views/List/TableRow", request)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        var h = 45 * @(Model.Items.Count);
+        if (h > 300) {
+            h = 300;
+            var parent = $(table).parent();
+            var contaner = $('<div></div>');
+            $(contaner).css("height", h + "px");
+            $(contaner).css("overflow-y", "scroll");
+            $(contaner).css("display", "block");
+
+            $(contaner).appendTo(parent);
+            $(table).appendTo(contaner);
+        }
+        $(table).show();
+    });
+
+
+    $('.uploadBtn').on('click', function () {
+        $('#dropzone_@tableId').click();
+    });
+
+    $('#@tableId').on('click', 'tr.openDoc', function (e) {
+        var row = $(this);
+        data = $(row).SerializeTableRow();
+        if (data.ObjectType == "1" || data.ObjectType == "File") {
+            data.url = $(row).data('fileurl');
+            AttachmentLoadDoc($('#previewPanel'), data);
+        }
+    });
+
+    $('.dropdown-item').on('click', function (e) {
+        setActive($(this), e);
+        if ($(this).hasClass('download')) {
+            download(this);
+        }
+        if ($(this).hasClass('delete')) {
+            // deleteItem(this);
+        }
+        if ($(this).hasClass('rename')) {
+            editItemRow(this);
+        }
+
+    });
+
+    $('.downloadBtn').on('click', function (e) {
+        downloadFolder($(this));
+    });
+
+    $('tr').on('dblclick', function (e) {
+        //console.log('Table row double clicked');
+        var row = $(this).closest('tr');
+        var table = $(row).closest('table');
+
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+        var data = $(row).SerializeTableRow();
+        var dst = $('#panel_' + data.UniqueAttchId);
+        if (data.ObjectType == 1 || data.ObjectType == "Folder") {
+            var url = $(table).data('folderurl');
+            var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+            $(dst).addClass('panel-loading');
+            $(dst).append(spinnerHtml);
+
+            $(panelBody).data('folderid', data.FolderId);
+            $(panelBody).attr('data-folderid', data.FolderId);
+            //console.log(url, data);
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    $(dst).empty();
+                    $(dst).append(data);
+                    handleTableAutoUpdate($(dst));
+
+                }
+            });
+        }
+        //var data = Object.fromEntries(new URLSearchParams($(row).data('key')));
+
+
+    });
+
+
+    function downloadFolder(elem) {
+        var table = $(elem).closest('table');
+        var subNodes = [];
+
+        var subData = {
+            FolderId: $(table).data("folderid"),
+            UniqueAttchId: $(table).data("uniqueattchid"),
+            ObjectType: "Folder"
+        };
+        subNodes.push(subData);
+        var url = $(table).data('downloadurl');
+        var data = { List: subNodes };
+        console.log(url, data, $(this));
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (response, status, xhr) {
+                var a = document.createElement("a");
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+            }
+        });
+    }
+
+    function download(elem) {
+        var table = $(elem).closest('table');
+        var subNodes = [];
+
+        $(table).find('.active').each(function () {
+            rowData = $(this).SerializeTableRow();
+            subNodes.push(rowData);
+        });
+
+        var url = $(table).data('downloadurl');
+        var data = { List: subNodes };
+        console.log(url, data, $(this));
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (response, status, xhr) {
+                var a = document.createElement("a");
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+            }
+        });
+    }
+
+    function editItemRow(elem) {
+        var elm = $(elem).closest('tr');
+
+        $(elm).find('.edit').show();
+        $(elm).find('.display').hide();
+    }
+</script>

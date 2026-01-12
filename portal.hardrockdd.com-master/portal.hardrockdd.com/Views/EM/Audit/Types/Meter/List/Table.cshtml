@@ -1,0 +1,7 @@
+﻿@model  portal.Models.Views.Equipment.Audit.EquipmentAuditMeterLineListViewModel
+<div class="d-xl-none">
+    @Html.Partial("../EM/Audit/Types/Meter/List/Mobile/Table", Model)
+</div>
+<div class="d-none d-xl-block">
+    @Html.Partial("../EM/Audit/Types/Meter/List/Desktop/Table", Model)
+</div>

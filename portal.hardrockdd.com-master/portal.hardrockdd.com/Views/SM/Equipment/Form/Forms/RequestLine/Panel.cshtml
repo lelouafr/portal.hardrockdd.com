@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.Line.FormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("EquipmentRequestLineForm", "ServiceRequest", new { smco = Model.SMCo, requestId = Model.RequestId, lineId = Model.LineId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Service Request (@Model.Info.RequestId - Line @Model.Info.LineId)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../SM/Equipment/Form/Forms/RequestLine/Form", Model)
+    </div>
+</div>

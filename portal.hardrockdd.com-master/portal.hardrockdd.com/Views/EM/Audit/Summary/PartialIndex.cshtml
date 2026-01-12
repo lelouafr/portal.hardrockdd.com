@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditListViewModel
+
+<div class="row">
+    <div class="col-xl-4">
+        @Html.Partial("../EM/Audit/Summary/List/Panel", Model)
+    </div>
+    <div class="col-xl-8 reviewPanel" id="reviewPanel">
+    </div>
+</div>
+<div class="modal fade" id="addModel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">               
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#addModel").on("show.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            $(this).find(".modal-body").load("@Url.Action("Create","EMAudit")");
+        });
+        $("#addModel").on("hide.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            $(this).find(".modal-body").html("");
+        });
+    });
+</script>

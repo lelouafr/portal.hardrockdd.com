@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Payroll.PayrollEmployeeReviewListViewModel
+
+<div class="panel panel-inverse" 
+     data-reloadurl="@Url.Action("Table", "PayrollPerdiem", new { Co = Model.Co, EmployeeId = Model.EmployeeId, WeekId = Model.WeekId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Perdiem Summary</h4>
+    </div>
+    <div class="panel-body" id="PayrollEmployeePerdiemReviewList">
+        @Html.Partial("../PayrollPerdiem/Table", Model)
+    </div>
+</div>
+
+<script>
+    //function initPane() {
+    //}
+</script>

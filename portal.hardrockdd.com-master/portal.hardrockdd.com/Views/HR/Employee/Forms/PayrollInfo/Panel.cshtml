@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.PR.Employee.Form.PayrollPayInfoViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<!-- begin card -->
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Payroll Info
+    </div>
+    <div id="@panelId" class="collapse">
+        <div class="card-body">
+            @Html.Partial("../HR/Employee/Forms/PayrollInfo/Form", Model)
+        </div>
+    </div>
+</div>
+<!-- end card -->
+<!-- begin card -->
+<!--<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#H_@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Payroll Salary History
+    </div>
+    <div id="H_@panelId" class="collapse">
+        <div class="card-body">
+            @Html.Partial("../HR/Employee/Forms/PayrollInfo/List/Table", Model.SalaryHistory)
+        </div>
+    </div>
+</div>-->
+<!-- end card -->

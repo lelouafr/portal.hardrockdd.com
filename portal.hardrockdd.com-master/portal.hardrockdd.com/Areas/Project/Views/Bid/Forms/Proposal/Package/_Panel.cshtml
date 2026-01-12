@@ -1,0 +1,11 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.PackageProposalViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div id="@panelId">
+    @Html.Partial("Forms/Proposal/Package/_Form", Model)
+    @Html.Partial("Forms/Proposal/Package/ScopeList/_Panel", Model.Notes)
+    @Html.Partial("Forms/Proposal/Package/ScopeList/_Panel", Model.Clarifications)
+    @*@Html.Partial("../BD/Bid/Forms/Proposal/Package/ScopeList/Panel", Model.ScopeofWork)*@
+</div>

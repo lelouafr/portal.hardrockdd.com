@@ -1,0 +1,8 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.SetupFormView
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId">
+    @Html.Partial("Forms/Package/BoreSetup/Form/ProductionRate/_Panel", Model.ProductionRates)
+    @Html.Partial("Forms/Package/BoreSetup/Form/CostItem/_Panel", Model.CostItems)
+</div>

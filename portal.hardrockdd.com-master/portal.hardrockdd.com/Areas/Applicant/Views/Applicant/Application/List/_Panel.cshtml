@@ -1,0 +1,20 @@
+﻿@model portal.Areas.Applicant.Models.ApplicationListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("ApplicationTable", "Applicant", new { applicantId = Model.ApplicantId })"
+     >
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Application History
+        </div>
+    </div>
+    <div class="panel-body collapse" id="@panelId">
+        @Html.Partial("Application/List/_Table", Model)
+    </div>
+</div>

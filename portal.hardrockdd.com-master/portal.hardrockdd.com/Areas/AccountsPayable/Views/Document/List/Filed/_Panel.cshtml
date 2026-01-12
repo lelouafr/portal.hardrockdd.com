@@ -1,0 +1,20 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentListViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("FiledTable", "Document", new { Area = "AccountsPayable" })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> AP Documents
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("List/Filed/_Table", Model)
+    </div>
+</div>

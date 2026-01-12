@@ -1,0 +1,45 @@
+﻿@model portal.Areas.HumanResource.Models.Assets.AssetViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+}
+
+<tr data-entitykey="@entityKey">
+
+    <td data-search="@Model.AssetCategory" data-sort="@Model.AssetCategory">
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.AssetCategory, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.AssetId" data-sort="@Model.AssetId">
+        @Html.EditorFor(m => m.AssetId, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.Status" data-sort="@Model.Status">
+        @Html.EditorFor(m => m.Status, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.AssetDesc" data-sort="@Model.AssetDesc">
+        @Html.EditorFor(m => m.AssetDesc, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.AssignedName" data-sort="@Model.AssignedName">
+        @Html.EditorFor(m => m.AssignedName, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.Identifier" data-sort="@Model.Identifier">
+        @Html.EditorFor(m => m.Identifier, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.Serial" data-sort="@Model.Serial">
+        @Html.EditorFor(m => m.Serial, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.Phone" data-sort="@Model.Phone">
+        @Html.EditorFor(m => m.Phone, new { ViewOnly = true })
+    </td>
+    <td>
+        <div class="btn-group pull-right ">
+            <button class="btn btn-xs btn-danger delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </div>
+    </td>
+</tr>

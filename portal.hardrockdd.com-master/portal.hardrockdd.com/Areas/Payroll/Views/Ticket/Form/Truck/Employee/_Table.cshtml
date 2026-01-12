@@ -1,0 +1,113 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.EmployeeEntryListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("TruckEmployeeAdd", "Ticket")"
+       data-urldelete="@Url.Action("TruckEmployeeDelete", "Ticket")"
+       data-urlupdate="@Url.Action("TruckEmployeeUpdate", "Ticket")"
+       data-urlvalidate="@Url.Action("TruckEmployeeValidate", "Ticket")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Perdiem)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Value)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EntryType)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            @if (!viewOnly)
+            {
+                <th width="45px">
+                    <button class="btn btn-xs btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var employees = Model.List.Where(w => w.EmployeeId != null)
+                                        .GroupBy(g => g.EmployeeId)
+                                        .Select(s => new { EmployeeId = s.Key, Lines = s.ToList() })
+                                        .ToList();
+            var newLines = Model.List.Where(w => w.EmployeeId == null)
+                                        .GroupBy(g => g.LineNum)
+                                        .Select(s => new { Lines = s.ToList() })
+                                        .ToList();
+        }
+
+        @foreach (var emp in employees)
+        {
+            @Html.Partial("Form/Truck/Employee/_EmployeeRow", emp.Lines)
+        }
+        @foreach (var emp in newLines)
+        {
+            @Html.Partial("Form/Truck/Employee/_EmployeeRow", emp.Lines)
+        }
+    </tbody>
+</table>
+<script>
+
+    $(document).ready(function () {
+        var $table = $('#@tableId');
+        Table().init($table);
+
+        function entryTypeChange($row) {
+            var entryTypeId = $row.find("[name='EntryType']").val();
+            var $jobSelect = $row.find('.selectJobId');
+            var $equipSelect = $row.find('.selectEquipmentId');
+            var $taskSelect = $row.find('.selectPhaseId');
+
+            switch (entryTypeId) {
+                case "@(((short)DB.EntryTypeEnum.Job))":
+                    $equipSelect.hide();
+                    $jobSelect.show();
+                    $taskSelect.show();
+                    break;
+                case "@(((short)DB.EntryTypeEnum.Equipment))":
+                    $equipSelect.show();
+                    $jobSelect.hide();
+                    break;
+                case "@(((short)DB.EntryTypeEnum.Admin))":
+                    $equipSelect.hide();
+                    $jobSelect.hide();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        $table.on('click', 'button.commentRowBtn', function () {
+            var lineNum = $(this).data('linenum');
+            var commentElem = $table.find('#commentRow_' + lineNum);
+            commentElem.show();
+            $(this).hide();
+        });
+
+        $table.on('change', '.EntryType', function () {
+            var elem = this;
+            var $row = $(elem).closest('tr');
+            function func() {
+                var elemName = $(elem).attr('name');
+                switch (elemName) {
+                    case "EntryType":
+                        entryTypeChange($row);
+                        break;
+                    default:
+                }
+            }
+            setTimeout(function () {
+                Table().isUpdating($table, func);
+            }, 10);
+        });
+    });
+</script>

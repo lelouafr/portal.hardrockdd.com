@@ -1,0 +1,677 @@
+﻿@*@model  portal.Models.Views.Attachment.AttachmentListViewModel
+@{
+    ViewBag.TableRow = "True";
+
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = false;// bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    var guid = tableId.ToString().Replace("-","");
+    var googleApi = System.Configuration.ConfigurationManager.AppSettings["googlemapapi"];
+    //var srcapi = "https://maps.googleapis.com/maps/api/js?key=AIzaSyACLxAZGOMS6O8Ia4K1UYPTStNt28OVpJ4";
+}
+<style>
+    .dropzone
+    {
+        max-height: 150px;
+    }
+</style>
+<div id="tree_@(guid)"
+     data-urldelete="@Url.Action("Delete", "Attachment")"
+     data-urlupdatefile="@Url.Action("UpdateFile", "Attachment")"
+     data-urlupdatefolder="@Url.Action("UpdateFolder", "Attachment")"
+     data-urldownloadfolder="@Url.Action("DownloadFolder", "Attachment")"
+     data-urlvalidate="@Url.Action("Validate", "Attachment")"
+     data-urltablerows="@Url.Action("TableRows", "Attachment")"
+     data-urladdfolder="@Url.Action("AddFolder", "Attachment")"
+     data-urldeletefolder="@Url.Action("DeleteFolder", "Attachment")"
+     data-rootfolder="root">
+    @Html.AntiForgeryToken()
+</div>
+
+<div id="attachmentDropzone_@(guid)"
+        class="dropzone needsclick"
+        method="post"
+        enctype="multipart/form-data"
+        data-hqco="@Model.HQCo"
+        data-uniqueattchid="@Model.UniqueAttchID"
+        data-keyid="@Model.KeyID"
+        data-tablename="@Model.TableName"
+        data-rootfolder="root">
+    <div class="dz-default dz-message" data-dz-message="">
+        <span>Drop files here to upload </span>
+        <br />
+        <span class="small">(Click to upload) </span>
+    </div>
+    @Html.AntiForgeryToken()
+</div>
+
+<script>
+    $("#tree_@(guid)").ready(function () {
+        $('#previewPanel').hide();
+        var treeData_@(guid) = [@Html.Raw(Model.JsonTree)];
+        setTimeout(function () {
+            //$(window).resize(function () {
+            //    var h = Math.max($(window).height() - 0, 420);
+            //    $('#data, #tree_@(guid), #data .content').height(h).filter('.default').css('lineHeight', h + 'px');
+            //}).resize();
+            var tree = $('#tree_@(guid)')
+                .jstree({
+                    'sort': function (node1, node2) {
+                        return this.get_type(node1) === this.get_type(node2) ?
+                            (this.get_text(node1) > this.get_text(node2) ? 1 : -1) :
+                            (this.get_type(node1) <= this.get_type(node2) ? 1 : -1);
+                    },
+                    'contextmenu': {
+                        'items': function (node) {
+                            var tmp = $.jstree.defaults.contextmenu.items();
+                            delete tmp.create.action;
+                            delete tmp.ccp;
+                            tmp.create.label = "New";
+                            var download_folder = {
+                                "label": "Download",
+                                "action": function (data) {
+                                    var subNodes = getAllChildrenNodes(node);
+                                    var url = $(tree).data('urldownloadfolder');
+                                    var data = { List: subNodes };
+                                    //console.log(url, data);
+                                    $.ajax({
+                                        type: "POST",
+                                        url: url,
+                                        data: data,
+                                        success: function (response, status, xhr) {
+                                            var a = document.createElement("a");
+                                            a.href = url;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                        }
+                                    });
+                                }
+                            };
+                            tmp.download = download_folder;
+                            tmp.create.submenu = {
+                                "create_folder": {
+                                    "separator_after": true,
+                                    "label": "Folder",
+                                    "action": function (data) {
+                                        var inst = $.jstree.reference(data.reference),
+                                            obj = inst.get_node(data.reference);
+                                        inst.create_node(obj, { type: "default" }, "last", function (new_node) {
+                                            setTimeout(function () { inst.edit(new_node); }, 0);
+                                        });
+                                    }
+                                },
+                            };
+                            if (this.get_type(node) === "file") {
+                                delete tmp.create;
+                                if ("") {
+
+                                }
+                            }
+                            //console.log(tmp);
+
+                            return tmp;
+                        }
+                    },
+                    'types': {
+                        'default': { 'icon': 'fa fa-folder text-warning fa-lg' },
+                        'folder': { 'icon': 'fa fa-folder text-warning fa-lg' },
+                        'file': { 'icon': 'fa fa-file fa-lg' }
+                    },
+                    'core': {
+                        'data': treeData_@(guid),
+                        'check_callback':
+                            function (operation, node, node_parent, node_position, more) {
+                                if (more && more.dnd && more.pos !== 'i') { return false; }
+                                if (operation === "move_node" || operation === "copy_node") {
+                                    if (this.get_node(node).parent === this.get_node(node_parent).id) { return false; }
+                                }
+                                return true;
+                            },
+                        'themes': {
+                            'responsive': false,
+                            //'variant': 'small',
+                            'stripes': false
+                        }
+                    },
+                    'unique': {
+                        'duplicate': function (name, counter) {
+                            return name + ' ' + counter;
+                        }
+                    },
+                    'plugins': ['state', 'dnd', 'sort', 'types', 'contextmenu', 'unique']
+                })
+                .on('delete_node.jstree', function (e, d) {
+                    var elem = $(this).closest('.jstree');
+                    var data = "";
+                    if (d.node.type == "file") {
+                        data += 'hQCo=' + d.node.data.HQCo;
+                        data += '&attachmentId=' + d.node.data.AttachmentId;
+                        var url = $(elem).data('urldelete');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+                    else if (d.node.type == "folder" && d.node.parent != "#") {
+                        data += 'hqco=' + d.node.data.HQCo;
+                        data += '&folderId=' + d.node.data.FolderId;
+                        data += '&uniqueAttchID=' + d.node.data.UniqueAttchID;
+                        var url = $(elem).data('urldeletefolder');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+                    else {
+                        d.instance.refresh();
+                    }
+                })
+                .on('create_node.jstree', function (e, dataNode) {
+                    dataNode.node.type = "folder";
+                    var elem = $(this).closest('.jstree');
+                    $.get('?operation=create_node', { 'type': dataNode.node.type, 'id': dataNode.node.parent, 'text': dataNode.node.text })
+                        .done(function (d) {
+                            //console.log(d);
+
+                            //dataNode.instance.set_id(dataNode.node, dataNode.node.parent);
+                            if (dataNode.node.type == "folder") {
+                                var folderNode = dataNode.instance.get_node(dataNode.node.parent);
+                                //console.log(folderNode);
+                                var data = "";
+                                var url = $(elem).data('urladdfolder');
+
+                                //console.log(folderNode, elem, url, dataNode);
+                                data += 'hqco=' + folderNode.data.HQCo;
+                                data += '&uniqueAttchID=' + folderNode.data.UniqueAttchID;
+                                data += '&parentId=' + folderNode.data.FolderId;
+                                data += '&description=' + dataNode.node.text;
+
+                                //console.log(elem, url, data);
+                                $.ajax({
+                                    type: "post",
+                                    url: url,
+                                    data: data,
+                                    success: function (res) {
+                                        //console.log(res);
+                                        if (res.success === "true") {
+                                        }
+                                    },
+                                    error: function (res) {
+                                        //console.log(res);
+                                        data.instance.refresh();
+                                    }
+                                });
+                            }
+                        })
+                        .fail(function () {
+                            dataNode.instance.refresh();
+                        });
+                })
+                .on('rename_node.jstree', function (e, d) {
+                    var elem = $(this).closest('.jstree');
+                    var folderNode = d.instance.get_node(d.node.parent);
+                    var data = "";
+                    if (d.node.type == "file") {
+                        data += 'hqco=' + d.node.data.HQCo;
+                        data += '&attachmentId=' + d.node.data.AttachmentId;
+                        data += '&description=' + d.node.text;
+                        data += '&folderId=' + d.node.data.FolderId;
+                        data += '&parentId=' + folderNode.data.FolderId;
+                        var url = $(elem).data('urlupdatefile');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+                    else if (d.node.type == "folder") {
+                        data += 'hqco=' + d.node.data.HQCo;
+                        data += '&uniqueAttchID=' + d.node.data.UniqueAttchID;
+                        data += '&description=' + d.node.text;
+                        data += '&folderId=' + d.node.data.FolderId;
+                        data += '&parentId=' + folderNode.data.FolderId;
+                        var url = $(elem).data('urlupdatefolder');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+
+                    //$.get('?operation=rename_node', { 'id': data.node.id, 'text': data.text })
+                    //    .done(function (d) {
+                    //        data.instance.set_id(data.node, data.node.id);
+                    //    })
+                    //    .fail(function () {
+                    //        data.instance.refresh();
+                    //    });
+                })
+                .on('move_node.jstree', function (e, d) {
+                    var elem = $(this).closest('.jstree');
+                    var folderNode = d.instance.get_node(d.node.parent);
+                    var data = "";
+                    if (d.node.type == "file") {
+                        data += 'hqco=' + d.node.data.HQCo;
+                        data += '&attachmentId=' + d.node.data.AttachmentId;
+                        data += '&description=' + d.node.text;
+                        data += '&folderId=' + d.node.data.FolderId;
+                        data += '&parentId=' + folderNode.data.FolderId;
+                        var url = $(elem).data('urlupdatefile');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+                    else if (d.node.type == "folder") {
+                        data += 'hqco=' + d.node.data.HQCo;
+                        data += '&uniqueAttchID=' + d.node.data.UniqueAttchID;
+                        data += '&description=' + d.node.text;
+                        data += '&folderId=' + d.node.data.FolderId;
+                        data += '&parentId=' + folderNode.data.FolderId;
+                        var url = $(elem).data('urlupdatefolder');
+                        //console.log(elem, url, data);
+                        $.ajax({
+                            type: "post",
+                            url: url,
+                            data: data,
+                            success: function (res) {
+                                //console.log(res);
+                                if (res.success === "true") {
+                                }
+                            },
+                            error: function (res) {
+                                //console.log(res);
+                                data.instance.refresh();
+                            }
+                        });
+                    }
+                    //$.get('?operation=move_node', { 'id': data.node.id, 'parent': data.parent })
+                    //    .done(function (d) {
+                    //        //console.log('move_node', d)
+                    //        //data.instance.load_node(data.parent);
+                    //        //data.instance.refresh();
+                    //    })
+                    //    .fail(function () {
+                    //        data.instance.refresh();
+                    //    });
+                })
+                .on('changed.jstree', function (e, data) {
+                    if (data && data.selected && data.selected.length) {
+                        $('#previewPanel').hide();
+                        $('#data').hide();
+                        $('#data .image').hide();
+                        $('#data .file').hide();
+                        $('#data .google-map').hide();
+                        $('#data .default').hide();
+                        //console.log(data, e);
+                        var folderNode = data.node;
+                        if (data.node.type == "file") {
+                            var folderNode = data.instance.get_node(data.node.parent);
+                        }
+                        if (data.node.type == "file") {
+                            $('#previewPanel').show();
+                            switch (data.node.data.Mime) {
+                                case 'application/pdf':
+                                    $('#data').show();
+                                    $('#data .file').show();
+                                    $('#preview').attr('src', data.node.a_attr.href);
+                                    break;
+                                case 'application/octet-stream':
+                                    var fileName = data.node.text;
+                                    if (fileName.indexOf('.kmz') > -1 || fileName.indexOf('.kml') > -1) {
+                                        $('#data').show();
+                                        $('#data .google-map').show();
+                                        initialize(data.node.a_attr.href);
+                                        var aTag = $('#data .google-map a');
+                                        $(aTag).attr('href', data.node.a_attr.href);
+                                        $(aTag).html("Open " + data.node.text);
+                                    }
+                                    else {
+                                        $('#data').show();
+                                        $('#data .default').show();
+                                        var aTag = $('#data .default a');
+                                        $(aTag).attr('href', data.node.a_attr.href);
+                                        $(aTag).html("Open " + data.node.text);
+                                        //console.log(data.node.data.Mime);
+                                    }
+                                    break;
+                                case 'application/txt':
+                                case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                                case 'htaccess':
+                                case 'log':
+                                case 'sql':
+                                case 'php':
+                                case 'js':
+                                case 'json':
+                                case 'css':
+                                case 'html':
+                                    $('#data').show();
+                                    $('#data .default').show();
+                                    var aTag = $('#data .default a');
+                                    //console.log(aTag);
+                                    $(aTag).attr('href', data.node.a_attr.href);
+                                    $(aTag).html("Open " + data.node.text);
+                                    //$('#code').val(d.content);
+                                    //console.log(data.node.data.Mime);
+                                    break;
+                                case 'image/jpeg':
+                                case 'image/jpg':
+                                case 'image/bmp':
+                                case 'image/gif':
+                                case 'image/png':
+                                case 'image/pjpeg':
+                                    $('#data').show();
+                                    $('#data .image img').attr('src', data.node.a_attr.href)
+                                        .one('load', function () {
+                                            resizeImage(this);
+                                        });
+                                    $('#data .image img').attr("data-src", data.node.a_attr.href);
+                                    $('#data .image').show();
+                                    break;
+                                default:
+                                    $('#data').show();
+                                    $('#data .default').show();
+                                    var aTag = $('#data .default a');
+                                    //console.log(aTag);
+                                    $(aTag).attr('href', data.node.a_attr.href);
+                                    $(aTag).html("Open " + data.node.text);
+                                    console.log(data.node.data.Mime);
+                                    break;
+                            }
+                        }
+                        //console.log('rootfolder: ', folderNode);
+                        $("#attachmentDropzone_@(guid)").attr('data-rootfolder', folderNode.text);
+                    }
+                    else {
+                        $('#data').hide();
+                    }
+                })
+                .on('after_open.jstree after_close.jstree', function () {
+                    var h = $('#tree_@(guid)').height();
+                    var w = $('#tree_@(guid)').width();
+                    if (h <= 300) {
+                        h = 300;
+                    }
+                    $('#tree_@(guid)').slimScroll({
+                        height: h + 'px',
+                       // width: w + 'px',
+                       // axis: 'both'
+                    });
+                })
+                .on('state_ready.jstree', function () {
+                    //console.log('loaded');
+                    var h = $('#tree_@(guid)').height();
+                    var w = $('#tree_@(guid)').width();
+
+                    if (h > 300) {
+                        h = 300;
+                    }
+                    else if (h <= 70) {
+                        h = 70;
+                        $('#tree_@(guid)').height("70px");
+                    }
+                    $('#tree_@(guid)').slimScroll({
+                        height: h + 'px',
+                        //width: w + 'px',
+                       // axis: 'both'
+                    });
+                });
+
+            var w = $('#tree_@(guid)').width();
+            var pageWidth = $(document).width();
+            var percent = w / pageWidth;
+            //console.log('elem width: ', w, 'Window Width: ', $(document).width(), "Percent of Page: ", percent);
+            if (w >= 550 && percent >= .4) {
+                var tree = $('#treePanel');
+                var preview = $('#previewPanel');
+                //console.log(tree, preview);
+                $(tree).removeClass('col-xl-12').addClass('col-xl-5');
+                $(preview).removeClass('col-xl-12').addClass('col-xl-7');
+            }
+        }, 200);
+    });
+
+    function getAllChildrenNodes(parentNode, children = []) {
+        var node = $('#tree_@(guid)').jstree("get_node", parentNode);
+        //console.log(node, node.data);
+        //var data = {
+        //    id: node.id,
+        //    type: node.type,
+        //    hqco: node.data.HQCo,
+        //    AttachmentId: node.data.AttachmentId,
+        //    UniqueAttchID: node.data.UniqueAttchID,
+        //}
+        children.push(node.data);
+        if (node.children) {
+            for (var i = 0; i < node.children.length; i++) {
+                getAllChildrenNodes(node.children[i], children);
+            }
+        }
+        return children;
+    }
+    function initialize(url) {
+        url1 = new URL(url, 'http://portal.hardrockdd.com/'); //localized url
+        //console.log(url1.href);
+        var latlng = new google.maps.LatLng(-34.397, 150.644);
+        var mapOptions = {
+            center: new google.maps.LatLng(-34.397, 150.644), //Set your latitude, longitude
+            scaleControl: true,
+            tiltControl: true,
+            //mapTypeControl: false,
+            tilt: 45,
+            zoom: 5,
+            mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+            mapTypeId: google.maps.MapTypeId.HYBRID,
+            navigationControl: false,
+            //scrollwheel: false
+        }
+        var mapDst = document.getElementById("googlemap");
+
+        var map = new google.maps.Map(mapDst, mapOptions); // get the div by id
+        //console.log(map);
+        //var ctaLayer = new google.maps.KmlLayer({
+        //    url: url1.href // Set the KML file
+        //});
+        var src = url1.href;//'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
+        var kmlLayer = new google.maps.KmlLayer(src, {
+            suppressInfoWindows: true,
+            preserveViewport: false,
+            map: map
+        });
+        if (kmlLayer.status === "FETCH_ERROR") {
+            $(mapDst).hide();
+        }
+        else {
+            $(mapDst).show();
+        }
+        //console.log(kmlLayer.status);
+        //kmlLayer.addListener('click', function (event) {
+        //    var content = event.featureData.infoWindowHtml;
+        //    var testimonial = document.getElementById('capture');
+        //    testimonial.innerHTML = content;
+        //});
+        google.maps.event.addListener(kmlLayer, "status_changed", function () {
+            if (kmlLayer.getStatus() === "FETCH_ERROR") {
+                $(mapDst).hide();
+            }
+        });
+    }
+
+    // load the map
+</script>
+
+
+@if (!viewOnly)
+{
+<script>
+    $("#attachmentDropzone_@(guid)").ready(function () {
+         $("#attachmentDropzone_@(guid)").dropzone({
+            url: "@Url.Action("Add", "Attachment")",
+            uploadMultiple: true,
+            //autoQueue: false,
+            parallelUploads: 1,
+            resizeWidth: 1200,
+            timeout: 180000,
+            maxFilesize: 300, // MB
+            accept: function (file, done) {
+                 if (file.name.indexOf(".heic") > 0) {
+                     done("transforming HEIC");
+                 }
+                 else {
+                     done();
+                 }
+            },
+            init: function () {
+                dpzMultipleFiles = this;
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+                this.on('success', function (file, json) {
+                    var jsonStr = "[" + json.model.JsonTree + "]";
+                    //console.log(treeData);
+                    treeData = JSON.parse(jsonStr);
+                    //console.log(treeData);
+                    $("#attachmentDropzone_@(guid)").data('uniqueattchid', json.uniqueAttchID)
+                    //console.log('success',$("#attachmentDropzone_@(guid)").data('uniqueattchid'));
+                });
+                this.on('resetFiles', function() {
+                    //console.log('resetFiles');
+                    dpzMultipleFiles.removeAllFiles();
+                });
+                this.on("sending", function(file, xhr, data) {
+                    data.append("HQCo", $("#attachmentDropzone_@(guid)").data('hqco'));
+                    data.append("UniqueAttchID", $("#attachmentDropzone_@(guid)").data('uniqueattchid'));
+                    data.append("KeyID", $("#attachmentDropzone_@(guid)").data('keyid'));
+                    data.append("TableName", $("#attachmentDropzone_@(guid)").data('tablename'));
+                    data.append("FullPath", file.fullPath);
+                    data.append("rootFolder", $("#attachmentDropzone_@(guid)").data('rootfolder'));
+                    xhr.ontimeout = (() => {
+                        alert("File upload timed out!");
+                    });
+                });
+                this.on('queuecomplete', function (data) {
+                    //dpzMultipleFiles.emit("resetFiles");
+                    var table = $('#tree_@(guid)');
+                    //console.log(table);
+                    if (treeData) {
+                        $(table).jstree(true).settings.core.data = treeData;
+                        dpzMultipleFiles.emit("resetFiles");
+                    }
+                    $(table).jstree(true).refresh();
+                })
+                this.on("addedfile", function (file) {
+                    //file.name = CreateGuid() + file.name;
+                    if (file.type === 'image/heic' || file.name.indexOf(".heic") > 0) {
+                        //console.log('Convert Image Heic');
+                        // need timeout to show accept error message
+                        setTimeout(function () {
+                            heic2any({
+                                blob: file,
+                                toType: "image/gif"
+                            }).then(resultBlob => {
+                                var name = file.name.replace(".heic", ".gif");
+                                resultBlob.lastModifiedDate = file.lastModifiedDate;
+                                resultBlob.name = name;
+                                // add converted file to upload
+
+                                //console.log('File Converted', resultBlob.name);
+                                dpzMultipleFiles.handleFiles([resultBlob]);
+                                // remove origin heic file for upload
+                                dpzMultipleFiles.removeFile(file);
+                            }).catch((e) => {
+                                // remove origin heic file for upload
+                                dpzMultipleFiles.removeFile(file);
+                                alert('Error on HEIC transformation: "' + e + '"');
+                            });
+                        }, 10);
+                    }
+                }).on('error', function (file, responseText) {
+                    if (file.type !== undefined && file.type === "image/heic") {
+                        var message = document.createElement('div');
+                        message.className = 'extra-message';
+                        message.appendChild(document.createTextNode(responseText));
+                        file.previewTemplate.appendChild(message);
+                    }
+                });
+                this.on('drop', function (file) {
+                    //console.log('drop');
+                });
+                this.on("maxfilesexceeded", function (file) {
+                    //console.log('maxfilesexceeded');
+                });
+            }
+        });
+    });
+
+    function saveFile(blob, filename) {
+        if (window.navigator.msSaveOrOpenBlob) {
+            window.navigator.msSaveOrOpenBlob(blob, filename);
+        } else {
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename;
+            a.click();
+            setTimeout(function () {
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 0);
+        }
+    }
+</script>
+}*@

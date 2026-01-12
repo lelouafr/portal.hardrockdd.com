@@ -1,0 +1,50 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequstFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Form", "PORequest", new { poco = Model.Request.POCo, requestId = Model.Request.RequestId })"
+     data-reloadpanels="PORequestLineViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Info (@Model.Request.RequestId)</h4>
+    </div>
+    <div>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PO/Request/Form/Buttons", Model.Action)
+        @Html.Partial("../PO/Request/Form/Header/Form", Model.Request)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        console.log('initPane', initPane);
+        setTimeout(function () {
+            $('#@panelId').find('form').each(function () {
+                handleVendView(this);
+            });
+        }, 500);
+    }
+
+    function handleVendView(form) {
+        var elem = $(form).find("[name='VendorId']");
+        var val = $(elem).val();
+
+        $(form).find('.vendGroup').hide();
+        //console.log(val);
+        if (val === "999999") {
+            $(form).find('.vendGroup').show();
+        }
+
+    }
+
+</script>

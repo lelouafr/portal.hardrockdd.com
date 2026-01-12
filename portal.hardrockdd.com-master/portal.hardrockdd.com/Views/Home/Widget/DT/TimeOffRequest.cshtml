@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.LeaveOpenCount > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-orange">
+            <div class="stats-info">
+                <h4>Open Time Off Requests</h4>
+                <p>@Model.LeaveOpenCount <span class="pull-right">Open Request(s)</span></p>
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("Index", "LeaveRequestUserList")">Goto Review <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,95 @@
+﻿@model string
+
+@{
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_")+1);
+    }
+    
+    var name = id;
+    //id = string.Concat(id, idGuid);
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var modelId = Html.IdFor(m => m) + "_" + Guid.NewGuid();
+    var canvasid = Html.IdFor(m => m) + "_Canvas_" + Guid.NewGuid();
+    var clearId = Html.IdFor(m => m) + "_Clear_" + Guid.NewGuid();
+    var imgSrc = Model;
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+
+@if (!viewOnly)
+{
+    <h6>Please draw your signature in the box below.</h6>
+    @*<div class="wrapper">
+            <canvas id="@canvasid" class="form-control" width=400 height=200></canvas>
+        </div>*@
+    <canvas id="@canvasid" class="form-control" width=400 height=200></canvas>
+    @Html.ValidationMessageFor(m => m, "", new { @class = "text-danger" })
+    @Html.HiddenFor(m => m, new { @id = modelId })
+    <br />
+    <button type="button" class="btn btn-group btn-danger" id="@clearId">Reset Signature box</button>
+
+    @*<div class="pull-right">
+            <b>
+                <u>@DateTime.Now.ToShortDateString()</u>
+            </b>
+            <br />
+            <b>
+                Date
+            </b>
+        </div>*@
+    <script>
+        $(function () {
+            var canvas = document.getElementById('@canvasid');
+
+            var signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)'
+            });
+
+            //https://github.com/szimek/signature_pad
+            function resizeCanvas() {
+                var ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+            }
+            function drawCanavas() {
+                var dataUri = $('#@modelId').val()
+                signaturePad.fromDataURL(dataUri);
+            }
+            window.onresize = resizeCanvas;
+            resizeCanvas();
+            drawCanavas();
+
+            document.getElementById('@clearId').addEventListener('click', function () {
+                signaturePad.clear();
+                var hiddenElm = $('#@modelId');
+                hiddenElm.val("");
+                hiddenElm.change();
+            });
+
+            $('#@canvasid').bind("mouseup touchend", function (e) {
+                var hiddenElm = $('#@modelId');
+                if (signaturePad.isEmpty()) {
+                    hiddenElm.val("");
+                }
+                else {
+                    hiddenElm.val(signaturePad.toDataURL());
+                }
+                hiddenElm.change();
+            });
+        });
+    </script>
+
+}
+else
+{
+    <div class="image-box style-2 mb-20 bordered light-gray-bg text-center">
+        <div class="overlay-container">
+            <img src="@imgSrc" alt="">
+        </div>
+    </div>
+}

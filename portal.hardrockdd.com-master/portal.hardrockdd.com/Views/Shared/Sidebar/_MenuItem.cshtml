@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.Web.WebMenuViewModel
+
+
+@if (Model.SubMenus.Count > 0)
+{
+    <li id="menu_li_@Model.MenuId" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            @if (Model.IconClass != null)
+            {
+                <i class="@Model.IconClass"></i>
+            }
+            <span>@Model.Description @(Model.HasAccess ? "" : " (Disabled)") @*(@Model.MenuCount)*@</span>
+        </a>
+        <ul class="sub-menu">
+            @foreach (var item in Model.SubMenus)
+            {
+                @Html.Partial("../Shared/SideBar/_MenuItem", item)
+            }
+        </ul>
+    </li>
+}
+else
+{
+<li id="menu_li_@Model.MenuId">
+    @if (Model.ActionName != null)
+    {
+    <a href="@Url.Action(Model.ActionName, Model.ControllerName)@(Model.Parameters != null ? string.Format(AppCultureInfo.CInfo(), "?{0}",Model.Parameters) : "")">@Model.Description @(Model.HasAccess ? "" : " (Disabled)")</a>
+    }
+    else if (Model.HRef != null)
+    {
+<a href="@Model.HRef" target="_blank">@Model.Description @(Model.HasAccess ? "" : " (Disabled)")</a>
+    }
+    else
+    {
+<a href="javascript:;">@Model.Description @(Model.HasAccess ? "" : " (Disabled)")</a>
+    }
+</li>
+}

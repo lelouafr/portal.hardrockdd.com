@@ -1,0 +1,21 @@
+﻿@model portal.Areas.Project.Models.Locate.RequestFormViewModel
+
+<div class="row">
+    <div class="col-6">
+        @Html.Partial("Request/Form/Info/_Panel", Model.Info)
+    </div>
+    <div class="col-6">
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("Request/Form/Locate/_Panel", Model.Locates)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="reviewPanel" id="reviewLocatePanel">
+        </div>
+    </div>
+</div>

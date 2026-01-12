@@ -1,0 +1,23 @@
+﻿@model  portal.Models.Views.JC.Industry.Form.IndustryAssignedMarketViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+    
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.IndustryId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.MarketId)
+    </td>
+    <td>
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

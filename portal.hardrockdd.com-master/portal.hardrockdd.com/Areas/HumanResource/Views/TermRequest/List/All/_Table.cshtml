@@ -1,0 +1,56 @@
+﻿@model portal.Areas.HumanResource.Models.TermRequest.TermRequestListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+    //ViewBag.
+}
+
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("TermPanel", "TermRequest")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().HRCo)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestedOn)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestedBy)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("List/All/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            columnDefs: [
+                { targets: [0,1], visible: false },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+    })
+</script>

@@ -1,0 +1,106 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AP.CreditCard.Audit.AuditListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataset = new List<dynamic>();
+    var results = Model.List.Select(s => new
+    {
+        s.CCCo,
+        s.TransId,
+        s.AuditId,
+        AuditTypeId = string.Format("{0}", s.AuditTypeId),
+        s.LogBy,
+        LogDate = s.LogDate,
+        s.Description,
+
+    }).OrderByDescending(o => o.LogDate).ToList();
+    var jsonData = JsonConvert.SerializeObject(results, Formatting.Indented);
+
+}
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-urlselect="@Url.Action("Panel", "APCreditCardTransaction")"
+           data-dstselect="reviewPanel"
+           data-dstselectvalidate="false">
+        <thead>
+            <tr>
+                <th data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().LogDate)</th>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().AuditTypeId)</th>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().LogBy)</th>
+                <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        rowH = 25.6;
+        h = tableHeight($('#@tableId'), @(Model.List.Count), rowH) - 10;
+        var columns = [
+            {
+                title: 'Date',
+                target: 0,
+                width: 80,
+                data: function (item) {
+                    return item.LogDate;
+                },
+                render: function (data, type) {
+                    if (data === null) {
+                        return null;
+                    }
+                    var date = data;
+                    return type === 'sort' ? moment(date).format("YYYY-MM-DD HH:mm ") : moment(date).format('MM/D/YY h:mm a');
+                },
+            },
+            {
+                title: 'User',
+                target: 1,
+                data: function (item) {
+                    return item.LogBy;
+                }
+            },
+            {
+                title: 'Type',
+                target: 2,
+                data: function (item) {
+                    return item.AuditTypeId;
+                }
+            },
+            {
+                title: 'Description',
+                target: 2,
+                data: function (item) {
+                    return item.Description;
+                }
+            },
+        ];
+
+        $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: true,
+            autoWidth: true,
+            scrollY: 250,
+            data: data,
+            columns: columns,
+            order: [[0, "desc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "CCCo=" + data.CCCo + "&TransId=" + data.TransId;
+                $(row).attr('data-entitykey', rowKey);
+            },
+            fnDrawCallback: function (settings) {
+                var table = $('#@tableId');
+                Table().setTableHeight($(table).closest('.dataTables_wrapper'));
+            }
+        });
+    });
+</script>

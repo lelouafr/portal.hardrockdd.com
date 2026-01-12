@@ -1,0 +1,28 @@
+﻿@model  portal.Models.Views.HR.Resource.Form.ResourceSalaryHistoryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EffectiveDate)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Type)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().OldSalary)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().NewSalary)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().NewPositionCode)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../HR/Employee/Forms/PayrollInfo/List/TableRow", item)
+        }
+    </tbody>
+</table>

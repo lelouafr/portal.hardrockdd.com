@@ -1,0 +1,90 @@
+﻿@model portal.Areas.Admin.Models.Office.OfficeListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table  order-column"
+       id="@tableId"
+       data-reloadurl="@Url.Action("OfficeTable", "Office")"
+       data-dataurl="@Url.Action( "OfficeData", "Office")"
+       data-urlcreate="@Url.Action( "OfficeAdd", "Office")"
+       data-urldelete="@Url.Action( "OfficeDelete", "Office")"
+       data-urlselect="@Url.Action("OfficePanel", "Office")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="35" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().OfficeId)</th>
+            <th data-datatable-filter-type="input" width="250px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().City)</th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().State)</th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Zip)</th>
+            <th>
+                <button class="btn btn-xs btn-success addRow pull-right">
+                    <i class='fas fa-plus'></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "OfficeId" },
+                { data: "Description" },
+                { data: "City" },
+                { data: "State" },
+                { data: "Zip" },
+                { data: "Zip" },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init('#@tableId');
+            },
+            columnDefs: [
+                { targets: [0], visible: true },
+                //{ targets: [4], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+                {
+                    targets: [5],
+                    sortable: false,
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        var entityKey = "OfficeId=" + rowData.OfficeId;
+                        $(cell).html('<button class="btn btn-xs btn-danger pull-right delRow" data-entitykey="' + entityKey + '"><i class="fa fa-trash"></i></button>');
+                    }
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "OfficeId=" + data.OfficeId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        //$('.dataTables_filter').hide();
+
+    })
+</script>

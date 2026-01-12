@@ -1,0 +1,62 @@
+﻿@model portal.Models.Views.Bid.BidPackageRentalItemListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Table", "BidPackageRental", new { co = Model.Co, bidId = Model.BidId , packageId = Model.PackageId })"
+     data-importurl="@Url.Action("ImportStandard", "BidPackageRental")"
+     data-applydefaultprodrateurl="@Url.Action("ImportStandard", "BidPackageRental")"
+     data-reloadpanels="BidBoreLineCostItemListViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        @if (!viewOnly)
+        {
+            <div class="btn-group pull-right pr-2">
+                <button type="button" class="btn btn-success btn-xs">Menu</button>
+                <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:;" onclick="ImportStandard(this, @Model.Co, @Model.BidId, @Model.PackageId )">Import Default Cost Items</a></li>
+                </ul>
+            </div>
+        }
+        <h4 class="panel-title">Rental Cost Lines</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../BD/Bid/Package/Rental/List/Table", Model)
+    </div>
+</div>
+<script>
+
+    function ImportStandard(elem, Co, BidId, PackageId) {
+        var panel = $(elem).closest('.panel');
+        var url = $(panel).data('importurl');
+
+        data = 'Co=' + Co;
+        data = data + '&BidId=' + BidId;
+        data = data + '&PackageId=' + PackageId;
+        //console.log($(panel), url, data);
+
+        dst = $(panel).find('.panel-body');
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+                initPane($(panel).find('.panel-body'));
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+            }
+        });
+
+    }
+
+</script>

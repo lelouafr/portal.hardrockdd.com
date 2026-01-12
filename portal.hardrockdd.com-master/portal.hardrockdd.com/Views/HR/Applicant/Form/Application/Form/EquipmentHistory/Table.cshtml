@@ -1,0 +1,62 @@
+﻿@model portal.Models.Views.WA.Application.EquipmentHistoryListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+
+}
+<table class="table "
+       id="@tableId"
+       data-urlvalidate="@Url.Action("ApplicationEquipmentHistoryValidate", "WebApplication")"
+       data-urlupdate="@Url.Action("ApplicationEquipmentHistoryUpdate", "WebApplication")"
+       data-urldelete="@Url.Action("ApplicationEquipmentHistoryDelete", "WebApplication")"
+       data-urlcreate="@Url.Action("ApplicationEquipmentHistoryAdd", "WebApplication")"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicantId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicationId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().TypeOfEquipment)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().FromDate)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ToDate)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Miliage)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../HR/Applicant/Form/Application/Form/EquipmentHistory/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: h,
+            bInfo: false,
+            columnDefs: [
+                { targets: [0, 1], visible: false },
+            ],
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+        });
+        $('.dataTables_filter').hide();
+    })
+</script>

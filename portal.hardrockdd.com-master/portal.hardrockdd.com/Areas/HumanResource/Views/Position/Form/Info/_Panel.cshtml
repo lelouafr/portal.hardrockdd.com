@@ -1,0 +1,16 @@
+﻿@model portal.Areas.HumanResource.Models.Position.PositionViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Position Code: (@Model.PositionCodeId)
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("Form/Info/_Form", Model)
+    </div>
+</div>

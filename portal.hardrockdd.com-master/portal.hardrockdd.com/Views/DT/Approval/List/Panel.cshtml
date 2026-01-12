@@ -1,0 +1,102 @@
+﻿@model List<portal.Models.Views.DailyTicket.DailyTicketApprovalViewModel>
+
+<div class="panel panel-inverse" 
+     data-reloadurl="@Url.Action("Table", "DailyTicketApproval")"
+     @*data-approvalurl="@Url.Action("ApproveAll", "DailyTicket")"*@
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+
+        @*<div class="btn-group pull-right pr-2">
+            <button type="button" class="btn btn-success btn-xs">Menu</button>
+            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+            <ul class="dropdown-menu" role="menu">
+                @if (Model.Count != 0)
+                {
+                    <li><a href="javascript:;" onclick="ApproveAll(this, @Model.FirstOrDefault().DTCo )">Approval All</a></li>
+                }
+            </ul>
+        </div>*@
+        <h4 class="panel-title">Tickets Pending Approval</h4>
+    </div>
+    <div class="panel-body" id="employeeInfo">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../DT/Approval/List/Table", Model)
+
+    </div>
+</div>
+
+<div class="modal fade" 
+     id="rejectTicket"
+     data-url="@Url.Action("RejectIndex", "DailyTicketForm")">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script>
+
+    $('#rejectTicket').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url =  $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+        $.ajax({
+            type:"Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+    $('#rejectTicket').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    })
+    
+    function ApproveAll(elem, DTCo) {
+        var panel = $(elem).closest('.panel');
+        var table = $(panel).find('.table');
+        
+            //console.log(panel, table);
+
+        $(table).find('tr').each(function () {
+            var button = $(this).find('.approveRow');
+            if ($(button).length != 0) {
+                var url =  $(button).data("approvalurl");
+                var row = $(this);
+                var data = $(row).data("entitykey");
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                if (token.length != 0) {
+                    data += '&__RequestVerificationToken=' + token.val();
+                }
+
+                //console.log(url, data);
+                //var rowElem = $(this).closest('tr');
+                $.ajax({
+                    type: "Post",
+                    url: url,
+                    async: false,
+                    data: data,
+                    success: function (res) {
+                        if (res.success === "true") {
+                            var btnGroup = $(row).find('.button-group');
+                            $(btnGroup).remove();
+                        }
+                        else {
+                            row.click();
+                        }
+                   }
+                });
+                
+            }
+        });
+
+
+    }
+</script>

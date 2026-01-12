@@ -1,0 +1,96 @@
+﻿@model  portal.Models.Views.SM.Request.Forms.FormViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Request Submitted";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>@ViewBag.Title</h4>
+                                    <p class="m-b-5">Equipment Service Request</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <p>@Model.Info.Comments</p>
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("ServiceRequestIndex","ServiceRequest", new { Area = "",smco = Model.SMCo, requestId = Model.RequestId })">
+                                        https://@(Request.Url.Authority)@Url.Action("ServiceRequestIndex", "ServiceRequest", new { Area = "", smco = Model.SMCo, requestId = Model.RequestId })
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    <h4>Equipment Request submitted by @StaticFunctions.GetCurrentEmployee().FullName</h4>
+                                    <table class="row">
+                                        <tr>
+                                            <th class="small-1 large-1 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>#</b></p>
+                                            </th>
+                                            <th class="small-3 large-3 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Equipment</b></p>
+                                            </th>
+                                            <th class="small-8 large-8 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Notes</b></p>
+                                            </th>
+                                        </tr>
+                                        @foreach (var line in Model.EquipmentLines.List)
+                                        {
+
+                                            <tr>
+                                                <td class="text-center" style="border-top: .5px solid;">
+                                                    <b>@line.EquipmentId</b>
+                                                </td>
+                                                <td style="border-top: .5px solid;">
+                                                    @line.EquipmentName
+                                                </td>
+                                                <td style="border-top: .5px solid;">
+                                                    @line.RequestComments
+                                                </td>
+                                            </tr>
+                                            
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

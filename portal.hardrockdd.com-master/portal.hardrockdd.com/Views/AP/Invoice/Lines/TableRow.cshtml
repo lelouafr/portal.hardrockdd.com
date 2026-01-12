@@ -1,0 +1,41 @@
+﻿@model  portal.Models.Views.AP.Invoice.InvoiceLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.APTransId, new { @id = Guid.NewGuid() })
+
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+
+        @Html.EditorFor(m => m.LineId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LineTypeId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.JobId, new { DisplayOnly = true })
+        @Html.EditorFor(m => m.EquipmentId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossAmt, new { DisplayOnly = true })
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>

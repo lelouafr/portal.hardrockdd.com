@@ -1,0 +1,18 @@
+﻿@model portal.Models.SampleListViewModel
+
+<div class="panel panel-inverse"
+     id="SampleListViewModel"
+     data-reloadurl="@Url.Action("Table","Sample")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+        </div>
+        <h4 class="panel-title">Some Random Table... </h4>
+    </div>
+    <div class="panel-body" id=">@ViewBag.Title">
+        @Html.Partial("../Sample/Table", Model)
+    </div>
+</div>

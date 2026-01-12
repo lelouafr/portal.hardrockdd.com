@@ -1,0 +1,22 @@
+﻿@model List<portal.Models.Views.Bid.BidTrackerViewModel>
+
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Table", "BidTracker")"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Bid Tracker</h4>
+    </div>
+    <div class="panel-body" id="bidTrackerList">
+        @Html.Partial("../BD/Bid/List/Summary/Table", Model)
+
+    </div>
+</div>
+
+<script>
+    function initPane() {
+        //handleTableAutoUpdate();
+    }
+</script>

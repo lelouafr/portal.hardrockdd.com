@@ -1,0 +1,31 @@
+﻿@model portal.Areas.HumanResource.Models.PositionRequest.RequestStatusLogViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var classStr = "";
+}
+<tr data-entitykey="@entityKey">
+    <td class="@classStr">
+        @Html.EditorFor(m => m.StatusDate, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.CreatedUser, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+</tr>
+@if (!string.IsNullOrEmpty(Model.Comments))
+{
+    <tr data-entitykey="@entityKey">
+
+        <td style="border-top-width: 0px; padding-top: 0px;">
+        </td>
+        <td colspan="2" style="border-top-width: 0px; padding-top: 0px;">
+            <p style="margin-bottom: 0px;" class="@classStr">
+                @Model.Comments
+            </p>
+        </td>
+    </tr>
+}

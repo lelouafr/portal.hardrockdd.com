@@ -1,0 +1,43 @@
+﻿@model portal.Areas.Job.Models.Job.Report.ProductionVarianceViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(model => model.PhaseId, new { DisplayOnly = true })
+    </td>
+    @{
+        var ActBoreSizeClass = (double)(Model.BgtBoreSize ?? 0) != (double)(Model.ActBoreSize ?? 0) && Model.ActBoreSize != null ? "text-aqua font-weight-bold" : "";
+    }
+    <td>@Html.EditorFor(model => model.BgtBoreSize, new { DisplayOnly = true })</td>
+    <td class="@ActBoreSizeClass">@Html.EditorFor(model => model.ActBoreSize, new { DisplayOnly = true })</td>
+    <td>@Html.EditorFor(model => model.StartDate, new { DisplayOnly = true })</td>
+    <td class="border-left-2 text-center">@Html.EditorFor(model => model.BudgetDays, new { DisplayOnly = true })</td>
+    <td class="text-center">@Html.EditorFor(model => model.ActualDays, new { DisplayOnly = true })</td>
+    @{
+        var difClass = Model.Dif < 0 ? "text-red" : "text-green";
+    }
+    <td class="border-right-2 text-center font-weight-bold @difClass">@Html.EditorFor(model => model.Dif, new { DisplayOnly = true })</td>
+
+    <td style="border-bottom: 0px !important; border-top: 0px !important"></td>
+    @{
+        var ActualProdutionRateClass = (double)(Model.BudgetProductionRate ?? 0) > (double)(Model.ActualProdutionRate ?? 0) ? "text-red" : "text-green";
+        var RemainingFootageClass = (double)(Model.RemainingFootage ?? 0) < 0 ? "text-red" : "";
+    }
+    <td class="border-left-2 text-center">@Html.EditorFor(model => model.BudgetProductionRate, new { DisplayOnly = true })</td>
+    <td class="text-center">@Html.EditorFor(model => model.BudgetFootage, new { DisplayOnly = true })</td>
+    <td class="text-center">@Html.EditorFor(model => model.ActualFootage, new { DisplayOnly = true })</td>
+    <td class="text-center font-weight-bold @RemainingFootageClass">@Html.EditorFor(model => model.RemainingFootage, new { DisplayOnly = true })</td>
+    <td class="border-right-2 text-center font-weight-bold @ActualProdutionRateClass">@Html.EditorFor(model => model.ActualProdutionRate, new { DisplayOnly = true })</td>
+
+    <td style="border-bottom: 0px !important; border-top: 0px !important"></td>
+    @{
+        var truckDifClass = Model.TruckDif < 0 ? "text-red" : "text-green";
+    }
+    <td class="border-left-2 text-center">@Html.EditorFor(model => model.BudgetTrucks, new { DisplayOnly = true })</td>
+    <td class="text-center">@Html.EditorFor(model => model.ActualTrucks, new { DisplayOnly = true })</td>
+    <td class="border-right-2 text-center font-weight-bold @truckDifClass">@Html.EditorFor(model => model.TruckDif, new { DisplayOnly = true })</td>
+</tr>

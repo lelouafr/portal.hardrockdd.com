@@ -1,0 +1,30 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentFormViewModel
+
+@{
+    var formId = string.Format("form_{0}", Model.DocId);
+    var tableId = string.Format("table_{0}_{1}", Model.UniqueAttchId, 0);
+}
+<div class="row" id="@formId">
+    <div class="col-xl-9">
+        @if (Model.Info.Status == APDocumentStatusEnum.New)
+        {
+            @Html.Partial("Forms/Info/_Form", Model.Info)
+        }
+        else
+        {
+            @Html.Partial("Forms/Wizard/_Wizard", Model.Wizard)
+        }
+        @Html.Partial("../Forum/Panel", Model.Forum)
+    </div>
+    <div class="col-xl-3">
+        @Html.Partial("Forms/StatusLog/_Panel", Model.StatusLogs)
+        @Html.Action("PanelNoPreview", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+    </div>
+</div>
+@Html.Action("Preview", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+<script>
+    $(document).ready(function () {
+        $attachment = $('#@tableId');
+        Table().selectFirstRow($attachment);
+    });
+</script>

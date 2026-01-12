@@ -1,0 +1,46 @@
+﻿@model  portal.Models.Views.Bid.Wizard.ContractApproval.PackageBoreLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("Update", "BidBoreLineContractApprovalWizard")"
+       data-urlvalidate="@Url.Action("Validate", "BidBoreLineContractApprovalWizard")"       
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Footage)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Wizard/ContractApproval/Line/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+
+</script>

@@ -1,0 +1,43 @@
+﻿
+@model portal.Areas.Project.Models.Locate.CreateRequestViewModel
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("Request/Create/_Panel", Model)
+    </div>
+</div>
+<hr />
+<div class="pull-right p-r-10">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <button type="button" class="btn btn-primary btnCreate">Create New Request</button>
+</div>
+<script>
+    $('.btnCreate')
+        .off('click')
+        .on('click', function () {
+            var func = function (button, form) {
+                $(button).SetButtonBusy();
+                data = $(form).SerializeForm();
+                url = $(form).data('url');
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        $('#newLocateRequest').modal('hide');
+                    }
+                    else {
+                        SetValidationErrorForObject($(form), res.errorModel);
+                    }
+                    $(button).SetButtonNotBusy();
+                });
+            }
+            var button = this;
+            var modal = $(button).closest('.modal-body');
+            var form = $(modal).find('form');
+
+            $(form).PostValidate(button, function (valid) {
+                console.log("IsValid:", valid);
+                if (valid) {
+                    func(button, form);
+                }
+            });
+        });
+</script>

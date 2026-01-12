@@ -1,0 +1,112 @@
+﻿@model portal.Models.Views.Payroll.PayrollEmployeeReviewListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       @*data-urlupdate="@Url.Action("Update", "PayrollEmployeeReview")"
+       data-urlvalidate="@Url.Action("Validate", "PayrollEmployeeReview")"*@
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="15%"><label>Created User</label></th>
+            @foreach (var DayofWeek in Model.CalendarList)
+            {
+                <th width="@(85/7)%">
+                    <label>@DayofWeek.WeekDayName</label>
+                    <span>
+                        <label>@DayofWeek.Date.ToShortDateString()</label>
+                    </span>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model.TicketList.Where(f => f.Status != DB.DailyTicketStatusEnum.Canceled).GroupBy(g => new { g.CreatedUser.FullName })
+                                                
+                                                  .Select(s => new
+                                                  {
+                                                      CreatedUser = s.Key.FullName,
+                                                      List = s
+                                                  })
+                                                  .ToList())
+        {
+            <tr>
+                <td>@ticket.CreatedUser</td>
+                @foreach (var caledar in Model.CalendarList)
+                {
+                    var sublist = ticket.List.Where(f => f.WorkDate == caledar.Date).ToList();
+                    <td class="text-center">
+                        @foreach (var item in sublist)
+                        {
+                            var btnClass = item.StatusClass.Replace("label", "btn");
+                            <button type="button" 
+                                    class="btn btn-xs @btnClass ticketBtn"
+                                    data-ticketco="@item.Co"
+                                    data-ticketid="@item.TicketId"
+                                    >
+                                @item.Status
+                            </button>
+                            <br />
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: true,
+            "order": [],
+            "searching": false,
+            "paging": false,
+            "ordering": false
+        });
+    });
+
+    $('#@tableId').on('click', 'button.ticketBtn', function () {
+        //console.log($(this));
+        var url = "@Url.Action("PartialIndex", "DailyTicket")";
+        var dstId = "ticketPanel";
+        var data = {
+            Co: $(this).data("ticketco"),
+            TicketId:  $(this).data("ticketid"),
+        };
+        var dst = $('#' + dstId);
+        //console.log(url, data, dst);
+        var index = 0;
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {
+                //console.log(url, data, dst);
+                var divId = dstId + '_' + index ;
+                var html = '<div id="' + divId + '">\r\n';
+                html += res;
+                html += '\r\n</div>';
+
+                if (index === 0)
+                    dst.html(html);
+                else
+                    dst.append(html);
+
+                var panel = $('#' + divId).find('.panel-body');
+                handleTableAutoUpdate(panel.get(0));
+                $(dst).removeClass('panel-loading');
+                $(dst).find('.panel-loader').remove();
+                $('html, body').animate({
+                    scrollTop: $(dst).offset().top - 150
+                }, 500)
+            }
+        });
+    });
+</script>

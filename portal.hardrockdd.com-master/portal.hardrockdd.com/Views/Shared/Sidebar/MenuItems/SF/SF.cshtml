@@ -1,0 +1,20 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "sf";
+}
+
+
+@if (User.HasAccess("Safety"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub ">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-user-shield"></i>
+            <span>Safety</span>
+        </a>
+        <ul class="sub-menu">
+            @Html.Partial("../Shared/Sidebar/MenuItems/SF/SF_Employee")
+        </ul>
+    </li>
+}

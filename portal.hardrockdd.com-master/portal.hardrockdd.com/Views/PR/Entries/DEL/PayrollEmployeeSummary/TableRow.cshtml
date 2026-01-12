@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Payroll.PayrollReviewSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.EditorFor(l => l.EmployeeName, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.PREndDate, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.WorkDate, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Hour, new { DisplayOnly = true })
+        <br />
+        @Html.EditorFor(l => l.PerdiemId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Comments, new { DisplayOnly = true })
+    </td>
+</tr>

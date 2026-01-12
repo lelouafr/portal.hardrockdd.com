@@ -1,0 +1,45 @@
+﻿@model portal.Models.Views.HQ.Batch.BatchListViewModel
+
+@{
+    ViewBag.Title = string.Format("{0}, Batch Listing", Model.Source);
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-xl-5">
+        @Html.Partial("../HQ/Batch/SourceList/Panel", Model)
+    </div>
+    <div class="col-xl-7">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="batchModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body" style="margin: 0px; padding: 0px;">
+            </div>
+            <div class="modal-footer" style="margin: 0px; padding: 0px;">
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+                    <a href="javascript:;" class="btn btn-primary btnProcess">Process</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}

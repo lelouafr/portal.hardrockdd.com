@@ -1,0 +1,333 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.JC.Job.Report.JobGrossMarginListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+
+    var DivisionList = Model.List.GroupBy(g => g.Division)
+                                 .Select(div => new
+                                 {
+                                     id = string.Format(AppCultureInfo.CInfo(), "e.{0}", div.Key),
+                                     name = string.Format(AppCultureInfo.CInfo(), "{0}", div.Key),
+
+                                     revenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.Revenue)),
+                                     cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.Cost)),
+                                     gm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.Revenue) - div.Sum(sum => sum.Cost)),
+                                     gmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", div.Sum(sum => sum.Revenue) == 0 ? (div.Sum(sum => sum.Cost) < 0 ? 1 : -1) : (div.Sum(sum => sum.Revenue) - div.Sum(sum => sum.Cost)) / div.Sum(sum => sum.Revenue)),
+                                     gmper = div.Sum(sum => sum.Revenue) == 0 ? (div.Sum(sum => sum.Cost) < 0 ? 1 : -1) : (div.Sum(sum => sum.Revenue) - div.Sum(sum => sum.Cost)) / div.Sum(sum => sum.Revenue),
+                                     revenueamt = div.Sum(sum => sum.Revenue),
+                                     costamt = div.Sum(sum => sum.Cost),
+
+                                     crevenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.RevenueCurrent)),
+                                     ccost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.CostCurrent)),
+                                     cgm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", div.Sum(sum => sum.RevenueCurrent) - div.Sum(sum => sum.CostCurrent)),
+                                     cgmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", div.Sum(sum => sum.RevenueCurrent) == 0 ? (div.Sum(sum => sum.CostCurrent) < 0 ? 1 : -1) : (div.Sum(sum => sum.RevenueCurrent) - div.Sum(sum => sum.CostCurrent)) / div.Sum(sum => sum.RevenueCurrent)),
+                                     cgmper = div.Sum(sum => sum.RevenueCurrent) == 0 ? (div.Sum(sum => sum.CostCurrent) < 0 ? 1 : -1) : (div.Sum(sum => sum.RevenueCurrent) - div.Sum(sum => sum.CostCurrent)) / div.Sum(sum => sum.RevenueCurrent),
+                                     crevenueamt = div.Sum(sum => sum.RevenueCurrent),
+                                     ccostamt = div.Sum(sum => sum.CostCurrent),
+
+                                     children = div.GroupBy(crew => crew.CrewName).Select(crew => new {
+                                         id = string.Format(AppCultureInfo.CInfo(), "c.{0}", crew.Key),
+                                         parent = string.Format(AppCultureInfo.CInfo(), "p.{0}", div.Key),
+                                         name = string.Format(AppCultureInfo.CInfo(), "{0}", crew.Key),
+
+                                         revenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.Revenue)),
+                                         cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.Cost)),
+                                         gm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.Revenue) - crew.Sum(sum => sum.Cost)),
+                                         gmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", crew.Sum(sum => sum.Revenue) == 0 ? (crew.Sum(sum => sum.Cost) < 0 ? 1 : -1) : (crew.Sum(sum => sum.Revenue) - crew.Sum(sum => sum.Cost)) / crew.Sum(sum => sum.Revenue)),
+                                         gmper = crew.Sum(sum => sum.Revenue) == 0 ? (crew.Sum(sum => sum.Cost) < 0 ? 1 : -1) : (crew.Sum(sum => sum.Revenue) - crew.Sum(sum => sum.Cost)) / crew.Sum(sum => sum.Revenue),
+                                         revenueamt = crew.Sum(sum => sum.Revenue),
+                                         costamt = crew.Sum(sum => sum.Cost),
+
+
+                                         crevenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.RevenueCurrent)),
+                                         ccost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.CostCurrent)),
+                                         cgm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", crew.Sum(sum => sum.RevenueCurrent) - crew.Sum(sum => sum.CostCurrent)),
+                                         cgmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", crew.Sum(sum => sum.RevenueCurrent) == 0 ? (crew.Sum(sum => sum.CostCurrent) < 0 ? 1 : -1) : (crew.Sum(sum => sum.RevenueCurrent) - crew.Sum(sum => sum.CostCurrent)) / crew.Sum(sum => sum.RevenueCurrent)),
+                                         cgmper = crew.Sum(sum => sum.RevenueCurrent) == 0 ? (crew.Sum(sum => sum.CostCurrent) < 0 ? 1 : -1) : (crew.Sum(sum => sum.RevenueCurrent) - crew.Sum(sum => sum.CostCurrent)) / crew.Sum(sum => sum.RevenueCurrent),
+                                         crevenueamt = crew.Sum(sum => sum.RevenueCurrent),
+                                         ccostamt = crew.Sum(sum => sum.CostCurrent),
+
+                                         children = crew.Select(job => new //.Where(f => f.Revenue + f.Cost > 0 && f.Cost > 0)
+                                         {
+                                             id = string.Format(AppCultureInfo.CInfo(), "j.{0}", job.JobId),
+                                             parent = string.Format(AppCultureInfo.CInfo(), "c.{0}", crew.Key),
+                                             jcco = job.JCCo,
+                                             jobid = job.JobId,
+                                             mth = Model.Mth,
+                                             name = string.Format(AppCultureInfo.CInfo(), "{0}", job.JobName),
+                                             revenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.Revenue),
+                                             cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.Cost),
+                                             gm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.Revenue - job.Cost),
+                                             gmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", job.Revenue == 0 ? (job.Cost < 0 ? 1 : -1) : (job.Revenue - job.Cost) / job.Revenue),
+                                             gmper = job.Revenue == 0 ? (job.Cost < 0 ? 1 : -1) : (job.Revenue - job.Cost) / job.Revenue,
+                                             revenueamt = job.Revenue,
+                                             costamt = job.Cost,
+
+                                             crevenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.RevenueCurrent),
+                                             ccost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.CostCurrent),
+                                             cgm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", job.RevenueCurrent - job.CostCurrent),
+                                             cgmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", job.RevenueCurrent == 0 ? (job.CostCurrent < 0 ? 1 : -1) : (job.RevenueCurrent - job.CostCurrent) / job.RevenueCurrent),
+                                             cgmper = job.RevenueCurrent == 0 ? (job.CostCurrent < 0 ? 1 : -1) : (job.RevenueCurrent - job.CostCurrent) / job.RevenueCurrent,
+                                             crevenueamt = job.RevenueCurrent,
+                                             ccostamt = job.CostCurrent,
+                                         }).ToList(),
+                                     }).ToList(),
+                                 });
+
+    var TotalList = Model.List.GroupBy(g => new { g.Mth })
+                                 .Select(s => new
+                                 {
+                                     id = string.Format(AppCultureInfo.CInfo(), "t.T"),
+                                     name = string.Format(AppCultureInfo.CInfo(), "{0}", "Total"),
+                                     revenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Revenue)),
+                                     cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Cost)),
+                                     gm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Revenue) - s.Sum(sum => sum.Cost)),
+                                     gmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.Sum(sum => sum.Revenue) == 0 ? -1 : (s.Sum(sum => sum.Revenue) - s.Sum(sum => sum.Cost)) / s.Sum(sum => sum.Revenue)),
+                                     gmper = s.Sum(sum => sum.Revenue) == 0 ? (s.Sum(sum => sum.Cost) < 0 ? 1 : -1) : (s.Sum(sum => sum.Revenue) - s.Sum(sum => sum.Cost)) / s.Sum(sum => sum.Revenue),
+
+                                     crevenue = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.RevenueCurrent)),
+                                     ccost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.CostCurrent)),
+                                     cgm = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.RevenueCurrent) - s.Sum(sum => sum.CostCurrent)),
+                                     cgmperstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.Sum(sum => sum.RevenueCurrent) == 0 ? -1 : (s.Sum(sum => sum.RevenueCurrent) - s.Sum(sum => sum.CostCurrent)) / s.Sum(sum => sum.RevenueCurrent)),
+                                     cgmper = s.Sum(sum => sum.RevenueCurrent) == 0 ? (s.Sum(sum => sum.CostCurrent) < 0 ? 1 : -1) : (s.Sum(sum => sum.RevenueCurrent) - s.Sum(sum => sum.CostCurrent)) / s.Sum(sum => sum.RevenueCurrent),
+                                 });
+    
+    dataSet.AddRange(TotalList);
+    dataSet.AddRange(DivisionList);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-urlselect="@Url.Action("PanelMth", "Job", new { Area = "Job" })"
+           data-dstselect="reviewPanel"
+           data-dstselectvalidate="false">
+        <thead>
+            <tr class="b-b-0">
+                <th style="border-bottom: 0px !important;"></th>
+                <th style="border-bottom: 0px !important;" class="border-right-2"></th>
+                <th style="border-bottom: 0px !important;" colspan="4" class="text-center f-s-12 border-right-2"><label>Current Period</label></th>
+                <th style="border-bottom: 0px !important;" colspan="4" class="text-center f-s-12"><label>Total</label></th>
+            </tr>
+            <tr>
+                <th style="border-top: 0px !important;"></th>
+                <th style="border-top: 0px !important;" class="border-right-2" ><label>Name</label></th>
+                <th style="border-top: 0px !important;"><label>Revenue</label></th>
+                <th style="border-top: 0px !important;"><label>Cost</label></th>
+                <th style="border-top: 0px !important;"><label>GM</label></th>
+                <th style="border-top: 0px !important; min-width: 40px; " class="border-right-2"><label>%</label></th>
+                <th style="border-top: 0px !important;"><label>Revenue</label></th>
+                <th style="border-top: 0px !important;"><label>Cost</label></th>
+                <th style="border-top: 0px !important;"><label>GM</label></th>
+                <th style="border-top: 0px !important; min-width: 40px;"><label>%</label></th>
+            </tr>
+
+        </thead>
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $(window).height();
+        h -= $(tableElem).offset().top;
+        //h -= $(panel).find('.dataTables_scrollHead').height();
+        h -= 150;
+
+
+        var columns = [
+            {
+                target: 0,
+                className: 'treegrid-control',
+                data: function (item) {
+                    if (item.children) {
+                        return '<span><i class="fas fa-caret-right"></i></span>';
+                    }
+                    return '';
+                }
+            },
+            {
+                target: 1,
+                width: 200,
+                class: 'border-right-2',
+                render: {
+                    _: function (value, type, data) {
+                        return value;
+                    },
+                    sort: function (value, type, data) {
+                        if (data.children) {
+                            return data.id
+                        }
+                        return data.parent + data.name;
+                    },
+                },
+                data: function (item) {
+                    if (item.children || item.name === "Total") {
+                        return "<b>" + item.name + "</b>";
+                    }
+                    else {
+                        return '<span class="f-s-9">' + item.name + '</span>';
+                    }
+                    return item.name;
+                }
+            },
+            {
+                class: 'text-right',
+                target: 2,
+                data: function (item) {
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right"><b>' + item.crevenue + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.crevenue + '</div>';
+                }
+            },
+            {
+                class: 'text-right',
+                target: 3,
+                data: function (item) {
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right"><b>' + item.ccost + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.ccost + '</div>';
+                }
+            },
+            {
+                class: 'text-right',
+                target: 4,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.cgmper < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.cgmper < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.cgm + '</b></div>';
+                    }
+                    return '<div class="text-right ' + textClassColor + '">' + item.cgm + '</div>';
+                }
+            },
+            {
+                class: 'text-right border-right-2',
+                target: 5,
+                width: 35,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.cgmper < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.cgmper < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.cgmperstr + '</b></div>';
+                    }
+                    return '<div class="text-right ' + textClassColor + '">' + item.cgmperstr + '</div>';
+                }
+            },
+
+
+            {
+                class: 'text-right',
+                target: 6,
+                data: function (item) {
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right"><b>' + item.revenue + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.revenue + '</div>';
+                }
+            },
+            {
+                class: 'text-right',
+                target: 7,
+                data: function (item) {
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right"><b>' + item.cost + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.cost + '</div>';
+                }
+            },
+            {
+                class: 'text-right',
+                target: 8,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.gmper < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.gmper < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.gm + '</b></div>';
+                    }
+                    return '<div class="text-right ' + textClassColor + '">' + item.gm + '</div>';
+                }
+            },
+            {
+                class: 'text-right',
+                target: 9,
+                width: 35,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.gmper < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.gmper < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children || item.name === "Total") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.gmperstr + '</b></div>';
+                    }
+                    return '<div class="text-right ' + textClassColor + '">' + item.gmperstr + '</div>';
+                }
+            },
+        ];
+        //$("#treeGrid").height(h);
+        $('#@tableId').DataTable({
+            dom: 'Bfrtip',
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: false,
+            scrollY: h,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            //keys: true,
+            columns: columns,
+            data: data,
+            treeGrid: {
+                left: 5,
+                expandIcon: '<span><i class="fas fa-caret-right"></i></span>',
+                collapseIcon: '<span><i class="fas fa-caret-down"></i></span>'
+            },
+            createdRow: function (row, data, dataIndex) {
+                if (!data.children) {
+                    if (data.name == "Total") {
+
+                    }
+                    else {
+                        var rowKey = "JCCo=" + data.jcco + "&JobId=" + data.jobid + "&Mth=" + data.mth;
+                        $(row).attr('data-rowKey', rowKey);
+                    }
+                }
+            }
+        });
+        $('.dataTables_filter').hide();
+
+
+        var dtButtons = $(panel).find('.dt-buttons');
+        var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+        $(dtButtons).hide();
+
+        $(panel).find('[data-click="panel-excel"]').on('click', function () {
+            var panel = $("#@tableId").closest('.panel').first();
+            var dtButtons = $(panel).find('.dt-buttons');
+            var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+            console.log('clicked', dtExcelBtn);
+            $(dtExcelBtn).click();
+        });
+    });
+</script>

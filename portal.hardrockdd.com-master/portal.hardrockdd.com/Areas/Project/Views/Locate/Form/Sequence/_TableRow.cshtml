@@ -1,0 +1,35 @@
+﻿@model  portal.Areas.Project.Models.Locate.LocateSequenceViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey"
+                data-fileurl="@Url.Action("Open", "Explorer", new { Area="Attachment", attachmentId = Model.AttachmentId })"
+                data-filedataurl="@Url.Action("FileData", "Explorer", new { Area="Attachment", attachmentId = Model.AttachmentId })">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.LocateId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.SeqId, new { DisplayOnly = true })
+    </td>
+    <td> @Html.EditorFor(m => m.Status, new { DisplayOnly = true }) </td>
+    <td> @Html.EditorFor(m => m.LocateRefId, new { DisplayOnly = true }) </td>
+    <td> @Html.EditorFor(m => m.StartDate, new { DisplayOnly = true }) </td>
+    <td> @Html.EditorFor(m => m.ExpDate, new { DisplayOnly = true }) </td>
+    <td>
+        @if (Model.StatusId == PMLocateStatusEnum.New || Model.StatusId == PMLocateStatusEnum.Active)
+        {
+            <button class="btn btn-xs btn-danger pull-right delRow"
+                    data-delentitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        }
+        @if (Model.AttachmentId != null)
+        {
+            <button class="btn btn-xs btn-primary  pull-right btnOpenFile">
+                <i class="far fa-file-pdf"></i>
+            </button>
+        }
+    </td>
+</tr>

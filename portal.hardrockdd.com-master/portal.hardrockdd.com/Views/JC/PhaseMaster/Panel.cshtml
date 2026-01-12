@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.PhaseMaster.PhaseMasterViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse"
+     data-sortable-id="CustomerViewModel"
+     data-reloadurl="@Url.Action("Form", "Customer", new { co = Model.PhaseGroupId, phaseId = Model.PhaseId })"
+     data-initpane="initPane@(id)">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Info (@Model.Description)</h4>
+    </div>
+    <div class="panel-body" id="phaseinfo">
+        @Html.Partial("../JC/PhaseMaster/Form", Model)
+    </div>
+</div>

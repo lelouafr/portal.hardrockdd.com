@@ -1,0 +1,57 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketsUserSummary
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey"
+     data-urldelete="@Url.Action("Cancel", "DailyTicket")">
+    <thead>
+        <tr>
+            <th width="75px">@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().Status)</th>
+            <th width="90px">@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().WorkDate)</th>
+            <th width="120px">@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().FormName)</th>
+            <th class="hidden-xs hidden-sm" width="20%">@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().Description)</th>
+            <th class="hidden-xs hidden-sm" >@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().Comments)</th>
+            <th class="hidden-xs hidden-sm" width="160px">@Html.LabelForRequired(model => model.Tickets.FirstOrDefault().CreatedUser)</th>
+            <th width="120px">
+                <button class="btn btn-success addTicket pull-right" data-toggle="modal" data-target="#addTicket">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tickets)
+        {
+            @Html.Partial("../Dashboard/UserTicket/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: true,
+            order: [
+                [1, "desc"]
+            ],
+            columnDefs: [
+                {
+                    targets: 6,
+                    orderable: false
+                },
+                {
+                    targets: [4,5],
+                    visible: false
+                }
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+</script>

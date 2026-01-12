@@ -1,0 +1,37 @@
+﻿@model portal.Models.Views.JC.Job.JobListViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout_TEST.cshtml";
+    ViewBag.Title = "Job Listing";
+}
+
+
+@section styles {
+    <link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/scroller/2.0.3/css/scroller.bootstrap4.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/fixedcolumns/3.3.2/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-xl-5">
+        @Html.Partial("../JC/Job/Summary/Test/Panel", Model)
+    </div>
+    <div class="col-xl-7">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.datatables.net/scroller/2.0.3/js/dataTables.scroller.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $(document).ready(function () {
+            initPanels();
+        });
+    </script>
+}

@@ -1,0 +1,58 @@
+﻿@model  portal.Models.Views.Bid.BidPackageProductionRateListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+    var ratePerc = 40;
+    var dataColCnt = 1;
+    dataColCnt += ViewBag.ShowSoft ? 1 : 0;
+    dataColCnt += ViewBag.ShowMedium ? 1 : 0;
+    dataColCnt += ViewBag.ShowHard ? 1 : 0;
+    dataColCnt += ViewBag.ShowVeryHard ? 1 : 0;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidPackageProductionRate")"
+       data-urldelete="@Url.Action("Delete", "BidPackageProductionRate")"
+       data-urlupdate="@Url.Action("Update", "BidPackageProductionRate")"
+       data-urlvalidate="@Url.Action("Validate", "BidPackageProductionRate")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            @*<th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PassId)</th>*@
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreSize)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CalcType)</th>
+            <th width="@(ratePerc/dataColCnt)%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtProductionValue)</th>
+            <th width="@(ratePerc/dataColCnt)%" style="@(ViewBag.ShowSoft ? "" : "display:none")">@Html.LabelForRequired(model => model.List.FirstOrDefault().SoftRockProductionValue)</th>
+            <th width="@(ratePerc/dataColCnt)%" style="@(ViewBag.ShowMedium ? "" : "display:none")">@Html.LabelForRequired(model => model.List.FirstOrDefault().MediumRockProductionValue)</th>
+            <th width="@(ratePerc/dataColCnt)%" style="@(ViewBag.ShowHard ? "" : "display:none")">@Html.LabelForRequired(model => model.List.FirstOrDefault().HardRockProductionValue)</th>
+            <th width="@(ratePerc/dataColCnt)%" style="@(ViewBag.ShowVeryHard ? "" : "display:none")">@Html.LabelForRequired(model => model.List.FirstOrDefault().VeryHardRockProductionValue)</th>
+            @*<th></th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Package/Production/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+</script>

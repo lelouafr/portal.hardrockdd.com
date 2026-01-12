@@ -1,0 +1,289 @@
+﻿@model portal.Models.Views.Bid.BidCustomerProposalViewModel
+@{
+    ViewBag.Title = "Proposal: " + Model.Bid.Description + " for " + Model.Bid.Firm.FirmName;
+    Layout = "~/Views/Shared/_LayoutPDF.cshtml";
+}
+<link href="https://fonts.googleapis.com/css?family=Herr+Von+Muellerhoff&display=swap" rel="stylesheet">
+<style type="text/css">       
+        @@page {
+            @@bottom-left {
+                content: "Bid Id: @Model.BidId.ToString().PadLeft(6,'0')";
+            }
+        }
+</style>
+<table class="body">
+    <tr>
+        <td class="" align="center" valign="top">
+            <div class="text-center">
+                <p>
+                    16500 San Pedro Ave, Suite 410 <br />
+                    San Antonio, TX 78232<br />
+                    Phone: (210)403-2086 Fax: (210)403-3284<br />
+                </p>
+            </div>
+            <h1 class="text-center">Bid Proposal/Purchase Order </h1>
+            <h3 class="text-center">@DateTime.Now.ToLongDateString().Replace(DateTime.Now.DayOfWeek.ToString() + ", ", "") </h3>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>TO: </b> @Model.Customer.Customer.Name
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @if (@Model.Customer.Contact != null)
+            {
+                <b>Attn: </b> @Model.Customer.Contact.FirstName @Model.Customer.Contact.LastName
+            }
+            else
+            {
+                <b>Attn: </b> 
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Job Name: </b>@Model.Bid.Description
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Owner: </b>@Model.Bid.Firm.FirmName
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Job Location: </b>@Model.Bid.Location
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Anticipated Start Date: </b>@(Model.Bid.StartDate == null ? "TBD" : Model.Bid.StartDate.Value.ToShortDateString())
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                We hereby propose to furnish labor and equipment as specified below to perform the work specified below:
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br />
+        </td>
+    </tr>
+    @foreach (var package in Model.Packages.List.Where(f => f.IncludeOnProposal).ToList())
+    {
+        foreach (var clarification in package.Scopes.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.Title).ToList())
+        {
+            <tr>
+                <td>
+                    <b>@clarification.Title</b>
+                </td>
+            </tr>
+        }
+        var PerformString = "";
+        <tr>
+            <td>
+                @if (package.BoreTypeId == 1)
+                {
+                    PerformString = "Perform Horizontal Directional Drills and Pull";
+                }
+                @if (package.BoreTypeId != 1)
+                {
+                    PerformString = "Perform Road Bores by Horizontal Directional Drill Methods and Pull";
+                }
+                <div>
+                    @PerformString @package.Description
+                    @if (package.Pricing.RockLFPrice != package.Pricing.DirtLFPrice)
+                    {
+                    <div>
+                        Approximately @(string.Format(AppCultureInfo.CInfo(), "{0:N0}", package.LineDetails.List.Where(f => f.IntersectBoreId == null).Sum(s => s.Footage))) LF (@(package.LineDetails.List.Where(f => f.IntersectBoreId == null).Count()) Drills) Dirt Price @string.Format(AppCultureInfo.CInfo(), "{0:C2}", package.Pricing.DirtLFPrice) Per LF
+                        <br />
+                        Rock / Mud motor Adder @string.Format(AppCultureInfo.CInfo(), "{0:C2}", package.Pricing.RockLFPrice - package.Pricing.DirtLFPrice) Per LF
+                    </div>
+                    }
+                    else
+                    {
+                        <div>
+                            Approximately @(string.Format(AppCultureInfo.CInfo(), "{0:N0}", package.LineDetails.List.Where(f => f.IntersectBoreId == null).Sum(s => s.Footage))) LF(@(package.LineDetails.List.Where(f => f.IntersectBoreId == null).Count()) Drills) Price @string.Format(AppCultureInfo.CInfo(), "{0:C2}", package.Pricing.DirtLFPrice) Per LF                            
+                        </div>
+                    }
+                </div>
+            </td>
+        </tr>
+        foreach (var clarification in package.Scopes.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.Note && !string.IsNullOrEmpty(f.Notes)).ToList())
+        {
+            <tr>
+                <td>
+                    <div>
+                        <span><b>@clarification.Title:</b>@Html.Raw(clarification.Notes)</span>
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                <br />
+            </td>
+        </tr>
+    }
+    @foreach (var clarification in Model.Scopes.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.Clarification && !string.IsNullOrEmpty(f.Notes)).ToList())
+    {
+        <tr>
+            <td>
+                <div>
+                    <span><b>@clarification.Title:</b>@Html.Raw(clarification.Notes)</span>
+                </div>
+            </td>
+        </tr>
+    }
+   
+</table>
+<div style="page-break-before: always"></div>
+<table class="body">
+    <tr>
+        <td class="" align="center" valign="top">
+            <h3 class="text-center" style="margin-bottom: 0px;"><u>Scope of Work Inclusions</u></h3>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <ol style="padding-left: 15px;">
+                @foreach (var item in Model.Scopes.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.Scope).ToList())
+                {
+                    <li>@Html.Raw(item.Notes)</li>
+                }
+            </ol>
+        </td>
+    </tr>
+</table>
+<div style="page-break-before: always"></div>
+<table class="body">
+    <tr>
+        <td class="" align="center" valign="top">
+            <h3 class="text-center" style="margin-bottom: 0px;"><u>Exclusions from Scope of Work or Work furnished by others:</u></h3>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <ol style="padding-left: 15px;">
+                @foreach (var item in Model.Scopes.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.OutofScope).ToList())
+                {
+                    <li>@Html.Raw(item.Notes)</li>
+                }
+            </ol>
+        </td>
+    </tr>
+</table>
+<div style="page-break-before: always"></div>
+<table class="body">
+    <tr>
+        <td>
+            <p>
+                In the event that boring work is halted by Owner, Contractor or others after mobilization of a project that not the fault of HardRock, standby rates may apply after one day of 	delay.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <ul>
+                <li>Standby Rate for D36 drilling crew and equipment:     $4,700.00 per day</li>
+                <li>Standby Rate for D60 drilling crew and equipment:     $8,500.00 per day</li>
+                <li>Standby Rate for D100 drilling crew and equipment:   $10,000.00 per day</li>
+                <li>Standby Rate for D250 drilling crew and equipment:  $20,500.00 per day</li>
+                <li>Standby Rate for D330 drilling crew and equipment:   $25,000.00 per day</li>
+                <li>Standby Rate for AA440 drilling crew and equipment:  $25,000.00 per day</li>
+                <li>Standby Rate for D500 drilling crew and equipment:  $25,000.00 per day</li>
+                <li>Standby Rate for D1000 drilling crew and equipment:  $30,000.00 per day</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @*<ul>
+                <li>De-Mobe costs in the event of unresolved delay—@(string.Format("{0:C2}", Model.Bid.DelayDeMobePrice))</li>
+            </ul>*@
+            <p>
+                In the event HardRock is instructed to Demobilze. All work already performed will be billed as a daily rate, and daily rate be supplied when requested.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                Terms Net 30 days—or as specified by contract.  All past due invoices may incur a 1½ percent per month past finance charge until paid in full.
+            </p>
+        </td>
+    </tr>
+</table>
+<table class="body">
+    <tr>
+        <td>
+            <p>
+                This proposal is valid for a period of 30 days following the date of this proposal and <u>is to be included as an attachment to any contract agreement or purchase order</u> between the owner/contractor and Hardrock Infrastructure for the specified work.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                Any changes or modifications to this Proposal must be agreed to in writing by both parties.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                Commencing work on this project without written acceptance of this Proposal/Purchase Order assumes acceptance of this Proposal/Purchase Order with the terms and conditions as stipulated above.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>
+                <h3>Hardrock Infrastructure Services, LLC.</h3>
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        By:
+                    </td>
+                    <td style="">
+                        <u>/S/&nbsp;</u>
+                        <u style="font-family: 'Herr Von Muellerhoff', cursive;font-size:175%;">Robert Myers</u>
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;Date @DateTime.Now.ToLongDateString().Replace(DateTime.Now.DayOfWeek.ToString() + ", ", "")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Accepted By:
+                    </td>
+                    <td style="border-bottom: 1px solid black; padding-left: 100px;">
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;Date
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

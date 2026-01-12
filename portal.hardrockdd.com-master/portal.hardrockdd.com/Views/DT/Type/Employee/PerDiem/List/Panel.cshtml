@@ -1,0 +1,88 @@
+﻿@model portal.Models.Views.DailyTicket.DailyWeeklyEntryListViewModel
+
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+
+<div class="panel panel-inverse"
+        data-reloadurl="@Url.Action("Table", "DailyWeeklyPerdiem", new { dtco = Model.DTCo, ticketId = Model.TicketId, forEdit = !ViewBag.ViewOnly })"
+        data-initpane="initPane@(id)"
+       data-sortable-id="DailyShopeEmployeeListViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Per Diem @ViewBag.PanelTitle</h4>
+    </div>
+    <div class="panel-body" id="DailyPerdiemListViewModel">
+        @Html.Partial("../DT/Type/Employee/PerDiem/List/Table", Model)
+    </div>
+</div>
+@*<div class="row" style="display:none">
+    @{
+        var group = Model.EmployeeEntries.GroupBy(f => f.EmployeeId).Select(s => new { s.Key, Lines = s.Select(l => l).ToList() }).ToList();
+    }
+    @foreach (var emp in Model.EmployeeForms)
+    {
+        @Html.Partial("../DailyShopEmployee/EmployeePanel", emp)
+    }
+
+</div>*@
+<script>
+
+    $(document).ready(function () {
+        initPane@(id)();
+
+
+
+    });
+
+    function initPane@(id)() {
+        //console.log('DailyShopeEmployeeListViewModel');
+        handleEntryTypeChange();
+
+        var table = $('#DailyShopeEmployeeListViewModel').find('table');
+        $(table).find('tr').each(function () {
+            handleEntryTypeView(this);
+        });
+    }
+
+    function handleEntryTypeView(rowElem) {
+        var entryType = $(rowElem).find('select.EntryTypeId').val();
+        var jobSelect = $(rowElem).find('.selectJobId');
+        var equipSelect = $(rowElem).find('.selectEquipmentId');
+        var taskSelect = $(rowElem).find('.selectPhaseId');
+        jobSelect.hide();
+        equipSelect.hide();
+        taskSelect.hide();
+        //console.log(rowElem, entryType, jobSelect, equipSelect);
+
+        switch (entryType) {
+            case "@(((short)DB.EntryTypeEnum.Job))":
+                equipSelect.hide();
+                jobSelect.show();
+                taskSelect.show();
+                break;
+            case "@(((short)DB.EntryTypeEnum.Equipment))":
+                equipSelect.show();
+                jobSelect.hide();
+                break;
+            case "@(((short)DB.EntryTypeEnum.Admin))":
+                equipSelect.hide();
+                jobSelect.hide();
+                break;
+            default:
+                break;
+        }
+    }
+    function handleEntryTypeChange() {
+        $('#DailyShopeEmployeeListViewModel').on('change', '.EntryTypeId', function () {
+            //console.log('EntryTypeId');
+            var row = $(this).closest('tr');
+            handleEntryTypeView(row);
+        });
+    }
+</script>

@@ -1,0 +1,27 @@
+﻿@model  portal.Models.Views.Web.AuditLogViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = "True";
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.TableName, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.KeyString, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.AuditId, new { @id = Guid.NewGuid() })
+        </td>
+        <td>@Model.RecType</td>
+        <td>@Model.FieldName</td>
+        <td>
+            @Html.EditorFor(m => m.LogDate, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.OldValue, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.NewValue, new { DisplayOnly = true })
+        </td>
+        <td>@Model.UserName</td>
+    </tr>

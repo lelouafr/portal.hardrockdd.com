@@ -1,0 +1,62 @@
+﻿@model portal.Models.Views.WF.WorkFlowUserListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+
+}
+@if (!viewOnly)
+{
+    <div class="row">
+        <div class=" col-12">
+            @Html.Partial("../WF/AssignedUsers/AddUser", Model.AddUser)
+        </div>
+    </div>
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("AddUser", "WorkFlow")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignedUser)</th>
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignedOn)</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../WF/AssignedUsers/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+
+    $('#workFlowUsers').off("click", ".addUser")
+        .on("click", ".addUser", function () {
+            var form = $(this).closest('form');
+            var table = $('#workFlowUsers').find('table');
+            var data = form.serialize();
+            var url = $(table).data('urlcreate');
+            var tbody = $('#workFlowUsers tbody');
+
+            console.log(form, table, url, data, tbody);
+            if (data) {
+
+            }
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    tbody.append(data);
+                }
+            });
+        });
+</script>

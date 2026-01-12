@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.DailyTicket.DailyCrewSubmissionListViewModel
+
+<div class="panel panel-inverse" 
+     
+     data-reloadurl="@Url.Action("Table", "CrewSubmission", new { weekId = Model.WeekId })" 
+     data-tablereloadurl="@Url.Action("Table", "CrewSubmission")"  
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Crew Submissions</h4>
+    </div>
+    <div class="panel-body" id="DailyCrewSubmissionListViewModel">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../DT/CrewSubmission/List/Table", Model)
+    </div>
+</div>

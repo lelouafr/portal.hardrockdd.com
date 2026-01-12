@@ -1,0 +1,110 @@
+﻿@model Enum
+@{
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var required = this.ViewData.ModelMetadata.IsRequired ? "required" : "";//attr.ContainsKey("required") ? attr["required"] : "";
+    var idGuid = "group_" + Guid.NewGuid();
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow?.ToString(), out bool tableRowOut) ? tableRowOut : false;
+    var tableSearch = bool.TryParse(ViewBag.TableSearch?.ToString(), out bool tableSearchOut) ? tableSearchOut : false;
+
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ? (FieldAttribute)fldAttribute : new FieldAttribute();
+
+    /**Define Html Attributes**/
+    var dic = new Dictionary<string, object>();
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    dic.Add("id", id);
+    dic.Add("Name", name);
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+    }
+    if (viewOnly)
+    {
+        dic.Add("disabled", "");
+    }
+
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+
+@if (attributes.LabelSize != 0 && !tableRow && !tableSearch)
+{
+    @Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+}
+
+@if (displayOnly)
+{
+    <span Name="@name">
+        @Html.EnumDisplayNameFor(m => m)
+    </span>
+}
+else if (tableSearch)
+{
+    @Html.EnumDropDownListFor(f => f, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control input-xs " + prop) }, dic))
+}
+else
+{
+    @*<div class="@textSize input-group" id="@idGuid">
+            @Html.EnumDropDownListFor(f => f, @attributes.Placeholder, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+            @Html.ValidationMessageFor(m => m, "", new { @class = "text-danger" })
+        </div>*@
+
+
+<div class="@textSize input-group " id="@idGuid">
+    @if (string.IsNullOrEmpty(@attributes.Placeholder))
+    {
+        @Html.EnumDropDownListFor(f => f, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+    }
+    else
+    {
+        @Html.EnumDropDownListFor(f => f, @attributes.Placeholder, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+    }
+    @if (!string.IsNullOrEmpty(attributes.InfoUrl))
+    {
+        <div class="input-group-append">
+            <button type="button" class="btn btn-xs btn-success btnInfo" data-urlinfo="@ViewBag.InfoUrl" data-infodata="@ViewBag.InfoData">
+                <i class="fas fa-xs fa-info"></i>
+            </button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(attributes.EditUrl))
+    {
+        <div class="input-group-append">
+            <button type="button" class="btn btn-xs btn-success btnComboEdit" data-url="@attributes.EditUrl" data-fkeys="@attributes.EditForeignKeys">
+                <i class="fas fa-xs fa-pencil"></i>
+            </button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(attributes.AddUrl))
+    {
+        <div class="input-group-append">
+            <button type="button" class="btn btn-xs btn-primary btnComboAdd" data-url="@attributes.AddUrl" data-fkeys="@attributes.AddForeignKeys">
+                <i class="fas fa-xs fa-plus"></i>
+            </button>
+        </div>
+    }
+    @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+</div>
+}
+<script>
+    @*$('#@idGuid').ready(function () {
+        if ($('#@idGuid').parent().is('span')) {
+            var classList = $('#@idGuid').parent().attr('class');
+            $('#@idGuid').attr('class', classList);
+            $('#@idGuid').parent().attr('class', '');
+        }
+    });*@
+</script>

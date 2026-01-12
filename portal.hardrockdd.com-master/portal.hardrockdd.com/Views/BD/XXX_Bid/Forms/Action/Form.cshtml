@@ -1,0 +1,36 @@
+﻿@model portal.Models.Views.Bid.Wizard.Base.BidWizardFormViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+}
+
+<div id="@formId" class="jumbotron m-b-0 text-center" >
+    <p>
+        <div>
+            @foreach (var action in Model.WizardActions)
+            {
+                <button type="button" class="btn btn-lg @action.ButtonClass btnBidAction" data-gotostatusid="@((int)action.GotoStatusId)" data-redirectaction="@action.ActionRedirect" data-key="@formLayout.TableKey">@action.Title</button>
+            }
+        </div>
+    </p>
+</div>
+
+<script>
+    $('#@formId').ready(function () {
+        $('#@(formId)').on('click', 'button.btnBidAction', function () {
+            var data = $(this).data('key');
+            var gotoStatusId = $(this).data('gotostatusid');
+            var redirectAction = $(this).data('redirectaction');
+
+            data += "&GotoStatusId=" + gotoStatusId;
+            data += "&ActionRedirect=" + redirectAction;
+            var url = "@Url.Action("UpdateBidStatus", "BidForm")";
+            url += "?" + data;
+
+            console.log('Goto: ', url);
+            location.href = url;
+        });
+
+    });
+</script>

@@ -1,0 +1,64 @@
+﻿@model portal.Models.VP.HR.ResourceViewModel
+
+<!-- begin #profile-about tab -->
+<div class="tab-pane fade" id="profile-info">
+    <!-- begin table -->
+    <div class="table-responsive">
+        <table class="table table-profile">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <h4>@Model.FirstName @Model.LastName</h4>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>                
+                <tr>
+                    <td class="field">Mobile</td>
+                    <td> @Model.WorkPhone </td>
+                </tr>
+                <tr>
+                    <td class="field">Home</td>
+                    <td>@Model.Phone</td>
+                </tr>
+                <tr>
+                    <td class="field">Office</td>
+                    <td>@Model.CellPhone</td>
+                </tr>
+                <tr class="divider">
+                    <td colspan="2"></td>
+                </tr>
+                <tr class="highlight">
+                    <td class="field">Job Description</td>
+                    <td>@Model.Position.JobTitle</td>
+                </tr>
+                <tr class="divider">
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td class="field">Country/Region</td>
+                    <td>
+                        @Model.Country.CountryName
+                    </td>
+                </tr>
+                <tr>
+                    <td class="field">City</td>
+                    <td>@Model.City</td>
+                </tr>
+                <tr>
+                    <td class="field">State</td>
+                    <td>@Model.State.Name</td>
+                </tr>
+                <tr>
+                    <td class="field">Birthdate</td>
+                    <td>
+                        @Model.BirthDate.Value.ToShortDateString()
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- end table -->
+</div>
+<!-- end #profile-about tab -->

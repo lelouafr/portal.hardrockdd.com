@@ -1,0 +1,101 @@
+﻿@model List<DB.Infrastructure.ViewPointDB.Data.vDailyTicket>
+@{
+    var guid = string.Format("guid_{0}", Guid.NewGuid());
+}
+
+<!-- begin panel -->
+    <div class="panel panel-inverse panel-with-tabs"  id="@guid" data-sortable-id="@guid">
+        <!-- begin panel-heading -->
+        <div class="panel-heading p-0">
+            <div class="panel-heading-btn m-r-10 m-t-10">
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-expand"><i class="fa fa-expand"></i></a>
+            </div>
+            <!-- begin nav-tabs -->
+            <div class="tab-overflow">
+                <ul class="nav nav-tabs nav-tabs-inverse">
+                    <li class="nav-item prev-button"><a href="javascript:;" data-click="prev-tab" class="nav-link text-success"><i class="fa fa-arrow-left"></i></a></li>
+                    @{ 
+                        var listIdx = 0;
+                    }
+                    @foreach (var ticket in Model)
+                    {
+                        <li class="nav-item @(listIdx == 0 ? " " : "")"><a href="#H_@ticket.TicketId" id="N_@ticket.TicketId" data-dtco="@ticket.DTCo" data-ticketid="@ticket.TicketId" data-toggle="tab" class="nav-link ticket-tab">@ticket.WorkDate.Value.DayOfWeek.ToString() <br /> @(ticket.JobId ?? ticket.FormDescription)</a></li>
+                        listIdx++;
+                    }
+                    <li class="nav-item next-button"><a href="javascript:;" data-click="next-tab" class="nav-link text-success"><i class="fa fa-arrow-right"></i></a></li>
+                </ul>
+            </div>
+            <!-- end nav-tabs -->
+        </div>
+        <!-- end panel-heading -->
+        <!-- begin tab-content -->
+        <!-- end tab-content -->
+        <div class="tab-content p-1" style=" overflow: unset;">
+            <!-- begin tab-pane -->
+            @foreach (var ticket in Model)
+            {
+                <div class="tab-pane" data-loaded="False" id="H_@ticket.TicketId">
+
+                </div>
+            }
+            <!-- end tab-pane -->
+        </div>
+    </div>
+
+<!-- end panel -->
+ <script>
+
+    $('#@guid').ready(function () {
+        handleUnlimitedTabsRender();
+        $('#@guid .nav-link').on('click', function () {
+            if ($(this).data("click")) {
+                console.log("Next/Prev Button");
+            }
+            else {
+                LoadTicket(this);
+            }
+        });
+
+        @*setTimeout(function () {
+            $('#@guid .ticket-tab').each(function () {
+                //LoadTicket(this);
+            });
+        }, 5000);*@
+
+        $('#@guid .ticket-tab').first().click();
+    });
+
+    function LoadTicket(elem) {
+        var dstId = $(elem).attr('href');
+        var dst = $(dstId);
+        if ($(dst).length === 0) {
+            return;
+        }
+        if (dst.data('loaded')==="False") {
+            var dtco = $(elem).data('dtco');
+            var ticketId = $(elem).data('ticketid');
+
+            var spinnerHtml = '<div style="height:100px;"><span class="spinner spinner-small"></span></div>';
+            //$(dst).addClass('panel-loading');
+            $(dst).html(spinnerHtml);
+            var url = "@Url.Action("PartialIndex", "DailyTicket")";
+            data = {
+                dtco: dtco,
+                ticketId: ticketId
+            };
+
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                //async: true,
+                success: function (res) {
+                    var html = '<div class="ticketPanel">' + res + '</div>';
+                    dst.html(html);
+                    dst.data('loaded', 'True');
+                }
+            });
+        }
+    }
+ </script>

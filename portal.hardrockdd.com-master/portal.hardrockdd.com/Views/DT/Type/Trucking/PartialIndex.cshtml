@@ -1,0 +1,36 @@
+﻿@model portal.Models.Views.DailyTicket.Form.TruckTicketFormViewModel
+
+<div class="row">
+    <div class="col-xl-12" id="infoPanel">
+    </div>
+</div>
+<div class="row validationContaner">
+    <div class="col-xl-8">
+        @Html.Partial("../DT/Type/Trucking/Form/Panel", Model.Ticket)
+    </div>
+    <div class="col-xl-4">
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../DT/StatusLog/List/Panel", Model.StatusLogs)
+            </div>
+            <div class="col-xl-12">
+                @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchID })
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row validationContaner">
+    <div class="col-xl-12">
+        @Html.Partial("../DT/Type/Trucking/Employee/List/Panel", Model.Employees)
+    </div>
+</div>
+
+@if (Model.Audit.Audit != null)
+{
+    <div class="row validationContaner">
+        <div class="col-xl-12">
+            @Html.Partial("../EM/Audit/Types/Meter/List/Panel", Model.Audit)
+        </div>
+    </div>
+
+}

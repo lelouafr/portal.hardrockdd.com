@@ -1,0 +1,57 @@
+﻿@model List<portal.Models.Views.Notification.NotificationViewModel>
+<table class="table" id="notificationTable">
+    <thead>
+        <tr>
+            <th width="8%"></th>
+            <th width="20%">@Html.LabelForRequired(model => model.FirstOrDefault().Title)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.FirstOrDefault().Notes)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.FirstOrDefault().CreatedBy)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.FirstOrDefault().CreatedOn)</th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            @Html.Partial("~/Views/Notification/TableRow.cshtml", Model[i]);
+        }
+    </tbody>
+</table>
+<script>
+
+        $(document).on('click', '#notificationTable button.rowDelete', function () {
+
+            var elem = $(this).closest('[data-index]');
+            //console.log('button.rowDelete', $(this).prev());
+            var id = $(this).data('id');
+            var urlAction = "@Url.Action("Delete", "Notification")";
+            var elemOrigHtml = elem.html();
+
+            var data = {
+                id: id
+            }
+            $(this).closest('td').html("<div><span class='spinner-small'></div>");
+            $.post(urlAction, data, function (res) {
+                if (res.success === "true") {
+                     setTimeout(function () {
+                            elem.remove();
+                        }, 500);
+                }
+                else {
+
+                    elem.html(elemOrigHtml);
+                    //console.log(res);
+                    alert('Delete Error');
+                }
+            });
+        });
+</script>
+@*<script>
+        $('#notificationTable').on('click', 'button.rowDelete', function () {
+
+            //console.log('delete');
+
+
+    </script>*@

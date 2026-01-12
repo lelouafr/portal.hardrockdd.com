@@ -1,0 +1,80 @@
+﻿@model portal.Models.Views.Payroll.PayrollReviewSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PREndDate)</th>
+            @foreach (var DayofWeek in Model.List.GroupBy(g => g.WorkDate.DayOfWeek).Select(s => new { DayOfWeek = s.Key }).ToList())
+            {
+                <th><label>@DayofWeek.DayOfWeek</label></th>
+            }
+            <th><label>Total</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List.GroupBy(g => new { g.Co, g.EmployeeId, g.EmployeeName, g.PREndDate })
+                                        .Select(s => new
+                                        {
+                                            Co = s.Key.Co,
+                                            EmployeeId = s.Key.EmployeeId,
+                                            EmployeeName = s.Key.EmployeeName,
+                                            PREndDate = s.Key.PREndDate,
+                                            TotalHours = s.Sum(sum => sum.Hour),
+                                            TotalDays = s.Sum(sum => ((int)sum.PerdiemId >= 1 ? 1 : 0)),
+                                            SubList = s
+                                        })
+                                        .OrderBy(o => o.PREndDate)
+                                        .ThenBy(o => o.EmployeeName)
+                                        .ToList())
+        {
+            var firstItem = item.SubList.FirstOrDefault();            
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "Co={0}&EmployeeId{1}=&PREndDate{2}", item.Co, item.EmployeeId, item.PREndDate);
+            <tr data-entitykey="@entityKey">
+                <td>
+                    @Html.EditorFor(l => firstItem.EmployeeName, new { DisplayOnly = true })
+                </td>
+                <td class="text-right">
+                    @Html.EditorFor(l => firstItem.PREndDate, new { DisplayOnly = true })
+                </td>
+                @foreach (var DayofWeek in Model.List.GroupBy(g => g.WorkDate.DayOfWeek).Select(s => new { DayOfWeek = s.Key }).ToList())
+                {
+                    var subItem = item.SubList.Where(f => f.WorkDate.DayOfWeek == DayofWeek.DayOfWeek).FirstOrDefault();
+                    <td class="text-center">
+                        @if (subItem?.Hour != null)
+                        {
+                            <div><b>@Html.EditorFor(l => subItem.Hour, new { DisplayOnly = true })</b></div>
+                        }
+                        else
+                        {
+                            <div class="text-red-lighter">Empty Hours</div>
+                        }
+                        @if (subItem != null)
+                        {
+                            @Html.EditorFor(l => subItem.PerdiemId, new { DisplayOnly = true })
+                        }
+                    </td>
+                }
+                <td>
+                    <div class=""><b>@item.TotalHours</b></div>
+                    <div class=""><b>@item.TotalDays Days</b></div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: true,
+            "order": [] 
+        });
+    });
+</script>

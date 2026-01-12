@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.AP.CreditCard.Batch.Lines.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../AP/CreditCard/Batch/Lines/Action/Buttons", Model.Action)
+        @Html.Partial("../AP/CreditCard/Batch/Lines/Info/Panel", Model.BatchInfo)
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../AP/CreditCard/Batch/lines/List/Panel", Model)
+    </div>
+</div>

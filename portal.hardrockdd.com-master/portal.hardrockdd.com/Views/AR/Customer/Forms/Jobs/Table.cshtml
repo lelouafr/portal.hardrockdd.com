@@ -1,0 +1,292 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AR.Customer.Forms.CustomerJobListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+
+
+    var totalList = Model.List.GroupBy(g => new { g.JCCo }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "t.{0}", s.Key.JCCo),
+        parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "Total"),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Revenue)),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Paid)),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Balance)),
+        cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Cost)),
+        gp = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.GrossProfit)),
+        gm = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.Sum(sum => sum.Revenue) == 0 ? 0 : (s.Sum(sum => sum.GrossProfit)) / s.Sum(sum => sum.Revenue)),
+    });
+
+    var projectList = Model.List.Where(f => f.ProjectId != null)
+                            .GroupBy(g => new { g.ProjectId, g.ProjectName })
+                            .OrderByDescending(o => o.Key.ProjectId)
+                            .Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "m.{0}", s.Key.ProjectId),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.ProjectId),
+        description = s.Key.ProjectName,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Revenue)),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Paid)),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Balance)),
+        cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Cost)),
+        gp = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.GrossProfit)),
+        gm = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.Sum(sum => sum.Revenue) == 0 ? 0 : (s.Sum(sum => sum.GrossProfit)) / s.Sum(sum => sum.Revenue)),
+    });
+
+    var jobListWithNoParent = Model.List.Where(f => f.ProjectId == null && f.Revenue != 0).GroupBy(g => new { g.JCCo, g.JobId, g.JobName }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "m.{0}", s.Key.JobId ?? "unknown"),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.JobId ?? "unknown"),
+        description = s.Key.JobId,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Revenue)),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Paid)),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Balance)),
+        cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.Cost)),
+        gp = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Sum(sum => sum.GrossProfit)),
+        gm = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.Sum(sum => sum.Revenue) ==0 ? 0 :  (s.Sum(sum => sum.GrossProfit)) / s.Sum(sum => sum.Revenue)),
+        jcco = s.Key.JCCo,
+        jobid = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.JobId),
+    });
+
+    var jobList = Model.List.OrderBy(o => o.JobId).Where(f => f.JobType != "7" ).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "h.{0}.{1}", s.ProjectId ?? "unknown", s.JobId),
+        parent = string.Format(AppCultureInfo.CInfo(), "m.{0}", s.ProjectId ?? "unknown"),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.JobId),
+        description = s.JobName,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Revenue),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Paid),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Balance),
+        cost = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.Cost),
+        gp = string.Format(AppCultureInfo.CInfo(), "{0:C0}", s.GrossProfit),
+        gm = string.Format(AppCultureInfo.CInfo(), "{0:P0}", s.GrossMargin),
+        jcco = s.JCCo,
+        jobid = string.Format(AppCultureInfo.CInfo(), "{0}", s.JobId),
+        parentjobid = string.Format(AppCultureInfo.CInfo(), "{0}", s.ProjectId ?? "unknown"),
+    });
+    dataSet.AddRange(totalList);
+    dataSet.AddRange(projectList);
+    dataSet.AddRange(jobList);
+    dataSet.AddRange(jobListWithNoParent);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+@*<button class="btn btn-xs btn-primary apview" type="button" data-co="1" data-mth="1" data-aptransid="1"><i class="fas fa-eye"></i></button>*@
+<div id="treeGrid_@tableId"
+     style="width:100%"
+     data-invoiceurl="@Url.Action("PopupForm", "ARInvoice")"
+     class="dhtmlx_treegrid f-w-500">
+</div>
+<script>
+    $("#treeGrid_@tableId").ready(function () {
+        var data = @Html.Raw(jsonData);
+        //$(document).ready(function () {
+        h = @((projectList.Count()  * 23) + (20 *2));
+        if (h >= (10 * 25 + (40))) {
+            h = (10 * 25) + (40);
+        }
+        else if (h < 300) {
+            h = 300;
+        }
+
+        $("#treeGrid_@tableId").height(h);
+        //console.log(data);
+        var treeGrid = new dhx.TreeGrid("treeGrid_@tableId", {
+                selection: "row",
+                rowHeight: 24,
+                headerRowHeight: 30,
+                data: data,
+                sortable: false,
+                autoWidth: true,
+                columns: [
+                    {
+                        id: "name",
+                        adjust: "data",
+                        type: "string",
+                        minWidth: 120,
+                        header: [
+                            { text: "Project/Job", align: "center" },
+                            { content: "inputFilter" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = "";
+                            if (row.$level == 0 || row.$level == 1) {
+                                result = "f-w-700";
+                            }
+                            if (row.name === "Total") {
+                                result = "f-w-700 f-s-14";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "description",
+                        adjust: "data",
+                        type: "string",
+                        minWidth: 250,
+                        header: [
+                            { text: "Description" },
+                            { content: "inputFilter" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            if (row.$level == 0 || row.$level == 1) {
+                                return "f-w-700";
+                            }
+                        },
+                    },
+                    {
+                        id: "amount",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Invoiced" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "paid",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Paid" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "balance",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Balance" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "cost",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Cost" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "gm",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 50,
+                        header: [
+                            { text: "GM" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "btn",
+                        adjust: "data",
+                        type: "number",
+                        width: 50,
+                        minWidth: 50,
+                        htmlEnable: true,
+                        template: function (tet, row, col) {
+                            var btn = '';
+                            if ((row.$level == 1 || row.$items == false) && row.name !== "Total") {
+                                btn += '<button class="btn btn-xs btn-primary btnPopup" data-url="@Url.Action("PopupForm", "JobForm")" type="button" data-jcco="' + row.jcco + '" data-jobid="' + row.jobid + '"><i class="fas fa-eye"></i></button>';
+                            }
+                            return btn;
+                        },
+                        header: [
+                            { text: "" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    }]
+
+        });
+        //collapseAll();
+            //setTimeout(function () {
+            //    treegrid.expandAll();
+            //    //treegrid.collapseAll();
+            //}, 500);
+
+
+        //});
+        //treeGrid.events.on("AfterCollapse", function (rowId) {
+
+        //    // your logic here
+        //});
+        //treeGrid.events.on("AfterExpand", function (rowId) {
+        //    // your logic here
+        //});
+        treeGrid.collapseAll();
+        //function expandAll() {
+        //    treeGrid.expandAll();
+        //}
+
+        //function collapseAll() {
+        //    treeGrid.data.forEach(function (d) {
+        //        if (d.$level != 0) {
+        //            treeGrid.collapse(d.id);
+        //        }
+        //    });
+        //    treeGrid.collapseAll();
+        //}
+    });
+</script>

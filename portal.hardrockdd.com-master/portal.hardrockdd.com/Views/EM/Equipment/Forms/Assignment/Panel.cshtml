@@ -1,0 +1,31 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentAssignmentViewModel
+@{
+    var panelId = "panelId_" + Guid.NewGuid();
+}
+
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-fw @(Model.AssignedStatus == DB.EMAssignedStatusEnum.UnAssigned ? "fas fa-exclamation-triangle text-red mr-2 f-s-14 " : " fa-circle text-blue  mr-2 f-s-8")"></i> Assignment
+    </div>
+    <div id="@panelId" class="collapse">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-3">
+                    @Html.Partial("../EM/Equipment/Forms/Assignment/Form", Model)
+                </div>
+                <div class="col-lg-9">
+                    @Html.Partial("../EM/Equipment/Forms/Assignment/List/Panel", Model.Logs)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#@panelId').on('shown.bs.collapse', function () {
+            $('#@panelId').find('.table.dataTable').each(function () {
+                $(this).DataTable().draw();
+            });
+        })
+    });
+</script>

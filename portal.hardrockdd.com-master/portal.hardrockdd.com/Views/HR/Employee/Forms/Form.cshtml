@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.HR.Resource.Form.ResourceFormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../HR/Employee/Forms/Info/Form", Model.Info)
+    </div>
+    <div class="col-12">
+        @Html.Partial("../HR/Employee/Forms/DrivingInfo/Panel", Model.DivingInfo)
+    </div>
+    @if (User.HasAccess("PayrollReview", "Index"))
+    {
+        <div class="col-12">
+            @Html.Partial("../HR/Employee/Forms/ADInfo/Panel", Model.ADInfo)
+        </div>
+
+    }
+    <div class="col-12">
+        @Html.Partial("../HR/Employee/Forms/Assignment/Panel", Model.PayrollAssignment)
+    </div>
+    @if (User.HasAccess("PayrollReview", "Index"))
+    {
+        <div class="col-12">
+            @Html.Partial("../HR/Employee/Forms/History/Panel", Model.PayrollHistory)
+        </div>
+        <div class="col-12">
+            @Html.Partial("../HR/Employee/Forms/PayrollInfo/Panel", Model.PayrollPayInfo)
+        </div>
+    }
+    <div class="col-12">
+        @Html.Partial("../HR/Employee/Forms/Assets/Panel", Model.AssignedAssets)
+    </div>
+</div>

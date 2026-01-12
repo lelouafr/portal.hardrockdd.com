@@ -1,0 +1,60 @@
+﻿@model  portal.Models.Views.Purchase.Request.PORequestLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("FormPanel", "PORequestLine")"
+       data-urlcreate="@Url.Action("Add", "PORequestLine")"
+       data-urldelete="@Url.Action("Delete", "PORequestLine")"
+       data-dstselect="poLinePanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="5%"><label>#</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ItemTypeId)</th>
+            <th width="50%"><label>Job/Equipment</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            @if (!viewOnly)
+            {
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../PO/Request/Form/Lines/List/TableRow", request)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    });
+</script>

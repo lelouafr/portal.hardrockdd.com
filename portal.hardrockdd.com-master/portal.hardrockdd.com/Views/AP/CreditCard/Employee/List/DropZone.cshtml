@@ -1,0 +1,121 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.TransactionListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var guid = tableId.ToString().Replace("-", "");
+}
+<div id="attachmentDropzone_@(guid)"
+     class="dropzone needsclick"
+     method="post"
+     enctype="multipart/form-data"
+     data-imageaddurl="@Url.Action("add", "APCreditCardEmployeeImageBank")"
+     data-prco="@Model.PRCo"
+     data-mth="@Model.Mth"
+     data-employeeid="@Model.EmployeeId">
+    <div class="dz-default dz-message" data-dz-message="">
+        <span>Drop files here to upload </span>
+        <br />
+        <span class="small">(Click to upload) </span>
+    </div>
+    @Html.AntiForgeryToken()
+</div>
+<script>
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+    $(document).ready(function () {
+        //convertStaticPdfToThumbnail();
+    });
+    $("#attachmentDropzone_@(guid)").ready(function () {
+        $("#attachmentDropzone_@(guid)").dropzone({
+            url: $("#attachmentDropzone_@(guid)").data('imageaddurl'),
+            uploadMultiple: true,
+            parallelUploads: 1,
+            createImageThumbnails: true,
+            maxFilesize: 80, // MB
+            accept: function (file, done) {
+                if (file.name.indexOf(".heic") > 0) {
+                    done("transforming HEIC");
+                }
+                else {
+                    done();
+                }
+            },
+            init: function () {
+                dpzMultipleFiles = this;
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+                this.on('success', function (file, json) {
+                    //console.log(file,json);
+                    //var table = $('#TableCreditImportListViewModel');
+                    //table.ReloadPanel();
+                });
+                this.on('resetFiles', function() {
+                    //dpzMultipleFiles.removeAllFiles();
+                });
+                this.on("sending", function(file, xhr, data) {
+                    data.append("ccco", $("#attachmentDropzone_@(guid)").data('ccco'));
+                    data.append("PRCo", $("#attachmentDropzone_@(guid)").data('prco'));
+                    data.append("Mth", $("#attachmentDropzone_@(guid)").data('mth'));
+                    data.append("employeeId", $("#attachmentDropzone_@(guid)").data('employeeid'));
+                    data.append("transId", 0);
+                });
+                this.on('queuecomplete', function (data) {
+                    //console.log(data);
+                    //dpzMultipleFiles.emit("resetFiles");
+
+                })
+                this.on("addedfile", function (file) {
+                    //file.name = CreateGuid() + file.name;
+                    if (file.type === 'image/heic' || file.name.indexOf(".heic") > 0) {
+                        //console.log('Convert Image Heic');
+                        var fileGif = ConvertHEICFileToGif(file);
+                        if (fileGif !== null) {
+                            dpzMultipleFiles.handleFiles(fileGif);
+                        }
+                        dpzMultipleFiles.removeFile(file);
+                        // need timeout to show accept error message'=
+                        //setTimeout(function () {
+                        //    heic2any({
+                        //        blob: file,
+                        //        toType: "image/gif"
+                        //    }).then(resultBlob => {
+                        //        var name = file.name.replace(".heic", ".gif");
+                        //        resultBlob.lastModifiedDate = file.lastModifiedDate;
+                        //        resultBlob.name = name;
+                        //        // add converted file to upload
+
+                        //        //console.log('File Converted', resultBlob.name);
+                        //        dpzMultipleFiles.handleFiles([resultBlob]);
+                        //        // remove origin heic file for upload
+                        //        dpzMultipleFiles.removeFile(file);
+                        //    }).catch((e) => {
+                        //        // remove origin heic file for upload
+                        //        dpzMultipleFiles.removeFile(file);
+                        //        alert('Error on HEIC transformation: "' + e + '"');
+                        //    });
+                        //}, 10);
+                    }
+                    else if (file.name.indexOf('.pdf') > 0) {
+                        //var pdfThumbNailFile = ConvertPDfToThumbNail(file);
+                        //if (pdfThumbNailFile !== null) {
+                        //    dpzMultipleFiles.handleFiles(pdfThumbNailFile);
+                        //}
+
+                        getArrayBuffer(file).then(function (buffer) {
+                            convertPdfToThumbnailForDropZone(buffer, file);
+                        });
+                    }
+                }).on('error', function (file, responseText) {
+                    if (file.type !== undefined && file.type === "image/heic") {
+                        var message = document.createElement('div');
+                        message.className = 'extra-message';
+                        message.appendChild(document.createTextNode(responseText));
+                        file.previewTemplate.appendChild(message);
+                    }
+                });
+                this.on('drop', function (file) { });
+                this.on("maxfilesexceeded", function (file) { });
+            }
+        });
+    });
+</script>

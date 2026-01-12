@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveRequstFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-sortable-id="LeaveRequestViewModel"
+     data-reloadurl="@Url.Action("Form", "LeaveRequest", new { prco = Model.Request.PRCo, requestId = Model.Request.RequestId })"
+     data-reloadpanels="LeaveRequestLineViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            @*<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>*@
+            
+        </div>
+        <h4 class="panel-title">Request (@Model.Request.RequestId)</h4>
+    </div>
+    <div>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../LeaveRequest/Form/Buttons", Model.Action)
+        @Html.Partial("../LeaveRequest/Header/Form", Model.Request)
+    </div>
+</div>

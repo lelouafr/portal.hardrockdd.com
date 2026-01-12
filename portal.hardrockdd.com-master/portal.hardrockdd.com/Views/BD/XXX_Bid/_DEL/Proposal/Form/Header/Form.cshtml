@@ -1,0 +1,84 @@
+﻿@model portal.Models.Views.Bid.BidViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-urlcreate="@Url.Action("Add", "Bid")"
+      data-urldelete="@Url.Action("Delete", "Bid")"
+      data-urlupdate="@Url.Action("Update", "Bid")"
+      data-urlvalidate="@Url.Action("Validate", "Bid")">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <img src="~/Content/assets/img/logo/logo_big.bmp" />
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <p>
+                    11015 Perrin Beitel <br />
+                    San Antonio, TX 78217<br />
+                    Phone: (210)403-2086 Fax: (210)403-3284<br />
+                </p>
+            </div>
+            <h1 class="text-center">Bid Proposal/Purchase Order </h1>
+            <h3 class="text-center">@DateTime.Now.ToLongDateString().Replace(DateTime.Now.DayOfWeek.ToString() + ", ", "") </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">TO:</label>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">Attn:</label>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">Job Name:</label>
+                <div class="col-md-11">
+                    @Html.EditorFor(m => m.Description, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">Owner:</label>
+                <div class="col-md-11">
+                    @Html.EditorFor(m => m.FirmNumber, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">Job Location:</label>
+                <div class="col-md-11">
+                    @Html.EditorFor(m => m.Location, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-1 col-form-label">Anticipated Start Date:</label>
+                <div class="col-md-11">
+                    @Html.EditorFor(m => m.StartDate, new { tableRow = true })
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-12">
+        <h5>
+            We hereby propose to furnish labor and equipment as specified below to perform the work specified below:
+        </h5>
+    </div>
+</div>

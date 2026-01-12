@@ -1,0 +1,14 @@
+﻿@model portal.Areas.Admin.Models.Office.OfficeListViewModel
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("OfficeTable","Office")"
+     style="margin-bottom: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Offices</h4>
+    </div>
+    <div class="panel-body" id="OfficeListViewModel">
+        @Html.Partial("List/_Table", Model)
+    </div>
+</div>

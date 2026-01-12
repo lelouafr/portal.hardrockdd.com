@@ -1,0 +1,113 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantInfoViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+
+<div id="@tableId"
+     data-reloadurl="@Url.Action("Table", "MerchantTransaction")"
+     data-dataurl="@(Url.Action("XData", "MerchantTransaction", new { Area = "",ccco = Model.VendGroupId, merchantId = Model.MerchantId }))"
+     data-tablekey="@tableKey"
+     class="">
+</div>
+<script>
+    $("#@tableId").ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 24);
+        h += 75;
+        h = 250;
+        $("#@tableId").css("height", h);
+
+        var columnsOpt = [
+            {
+                width: 120,
+                autoWidth: false,
+                id: "TransDate",
+                type: "date",
+                header: [
+                    { text: "Date", },
+                ],
+                mark: function (cell, data, row, col) {
+                    var result = " "
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        result += "f-w-700 ";
+                    }
+                    return result;
+                }
+            },
+            {
+                id: "Name",
+                type: "string",
+                header: [
+                    { text: "Description", },
+                ],
+                mark: function (cell, data, row, col) {
+                    var result = " "
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        result += "f-w-700 ";
+                    }
+                    return result;
+                }
+            },
+            {
+                width: 100,
+                autoWidth: false,
+                id: "Amount",
+                type: "number",
+                header: [
+                    { text: "Amount", align: "right", css: "border-left-1" },
+                ],
+                mark: function (cell, data, row, col) {
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        return "font-weight-bold border-left-1";
+                    }
+                    return "border-left-1";
+                },
+
+
+            },
+            {
+                maxWidth: 100,
+                autoWidth: false,
+                id: "Count",
+                type: "string",
+                align: "right",
+                header: [
+                    { text: "Trans Count", align: "right", css: "border-left-1" },
+                ],
+                mark: function (cell, data, row, col) {
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        return "font-weight-bold border-left-1";
+                    }
+                    return "border-left-1";
+                },
+            },
+        ]
+        var treegrid = new dhx.TreeGrid("@tableId", {
+            selection: "row",
+            rowHeight: 24,
+            autoWidth: true,
+            columns: columnsOpt,
+        });
+        var url = $("#@tableId").data('dataurl');
+        treegrid.data.load(url).then(function () {
+            collapseTree(treegrid);
+            handleDHTMLXTableEvents(treegrid);
+            treegrid.paint();
+        });
+
+        function collapseTree(treeGrid, parentId) {
+            if (parentId == undefined) {
+                parentId = treeGrid.data.getRoot();
+            }
+            treeGrid.data.eachChild(parentId, function (_a) {
+                if (_a.parent == parentId && treeGrid.data.haveItems(_a.id)) {
+                    collapseTree(treeGrid, _a.id);
+                    treeGrid.collapse(_a.id);
+                }
+            });
+        }
+    });
+</script>

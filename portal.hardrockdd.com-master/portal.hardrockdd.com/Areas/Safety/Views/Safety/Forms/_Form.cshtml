@@ -1,0 +1,11 @@
+﻿@model portal.Areas.Safety.Models.Safety.FormViewModel
+
+
+<div class="row">
+    <div class="col-9">
+        @Html.Partial("Forms/Info/_Panel", Model.EmployeeInfo)
+    </div>
+    @*<div class="col-xl-4">
+            @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+        </div>*@
+</div>

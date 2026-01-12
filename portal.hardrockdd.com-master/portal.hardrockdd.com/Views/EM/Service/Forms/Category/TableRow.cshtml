@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Equipment.Service.Forms.CategoryLinkViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LinkId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ServiceItemId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.CategoryId)
+    </td>
+    <td>
+        <button class="btn btn-sm btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

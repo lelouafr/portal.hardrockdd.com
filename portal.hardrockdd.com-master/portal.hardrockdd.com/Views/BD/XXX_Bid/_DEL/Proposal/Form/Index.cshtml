@@ -1,0 +1,9 @@
+﻿@*@model portal.Models.Views.Bid.Wizard.FinalReview.BidWizardFormViewModel
+<div class="row">
+    <div class="col-8">
+        @Html.Action("Panel", "BidProposal", new { Area = "",Co = Model.Co, BidId = Model.BidId })
+    </div>
+    <div class="col-4">
+        @Html.Partial("../BD/Bid/Customer/ProposalList/Panel", Model.Customers)
+    </div>
+</div>*@

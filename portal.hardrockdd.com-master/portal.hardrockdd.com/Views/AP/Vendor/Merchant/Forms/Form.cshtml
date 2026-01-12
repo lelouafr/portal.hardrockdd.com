@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantFormViewModel
+
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+
+<div id="accordion" class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse1">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Merchant Info
+        </div>
+        <div id="collapse1" class="show">
+            <div class="card-body">
+                @Html.Partial("../AP/Vendor/Merchant/Forms/Info/Form", Model.Info)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+    <!-- begin card -->
+    <div class="card">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse4">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Default Coding
+        </div>
+        <div id="collapse4" class="show">
+            <div class="card-body">
+                @Html.Partial("../AP/Vendor/Merchant/Forms/Coding/Form", Model.Coding)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+    <!-- begin card -->
+    <div class="card">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse5">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Transactions
+        </div>
+        <div id="collapse5" class="collapse">
+            <div class="card-body">
+                @Html.Partial("../AP/Vendor/Merchant/Forms/Transaction/Form", Model.Info)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

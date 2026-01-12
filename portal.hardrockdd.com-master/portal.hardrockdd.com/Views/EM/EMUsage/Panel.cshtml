@@ -1,0 +1,102 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageListViewModel
+
+<div class="panel panel-inverse" 
+     data-reloadurl="@Url.Action("Table", "DailyEquipmentUsage", new { WeekId = Model.WeekId })"
+     data-tablereloadurl="@Url.Action("Table", "DailyEquipmentUsage")"
+     data-addtobatchurl="@Url.Action("AddtoBatchList", "DailyEquipmentUsage")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <div class="btn-group pull-right pr-2">
+            <button type="button" class="btn btn-success btn-xs">Menu</button>
+            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a class="processItems" href="javascript:;" onclick="ProcessChecked(this, @Model.WeekId)">Add To Batch</a></li>
+            </ul>
+        </div>
+        <h4 class="panel-title">Rig Usage Summary</h4>
+    </div>
+    <div class="panel-body" id="PayrollReviewList">
+        @Html.Partial("../EM/EMUsage/Table", Model)
+    </div>
+</div>
+
+<script>
+
+    function ProcessChecked(elem) {
+        var panel = $(elem).closest('.panel');
+        var table = $(panel).find('.table');
+
+		if (!$(panel).hasClass('panel-loading')) {
+			var targetBody = $(panel).find('.panel-body');
+            var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+			$(panel).addClass('panel-loading');
+            $(targetBody).prepend(spinnerHtml);
+        }
+
+        var listData = new Array();
+        $(table).find('tr').each(function () {
+            var row = $(this);
+            var data = $(row).data("entitykey");
+            if (data != undefined ) {
+                if ($(row).data('status') == '0') {
+                    //console.log(data);
+                    data = {
+                        DTCo: $(row).data("dtco"),
+                        EquipmentId: $(row).data("equipmentid"),
+                        WeekId: $(row).data("weekid")
+                    };
+                    listData.push(data);
+                    $(row).find("[name='Status']").html("Posted");
+                    $(row).data('status', 1);
+                }
+            }
+        });
+
+        var url = $(panel).data("addtobatchurl");
+        //console.log(url, JSON.stringify(listData));
+        $.ajax({
+            type: "Post",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: url,
+            async: true,
+            data: JSON.stringify(listData),
+            success: function (res) {
+                if (res.success === "true") {
+                    $(panel).removeClass('panel-loading');
+                    $(panel).find('.panel-loader').remove();
+                }
+                else {
+                    $(panel).removeClass('panel-loading');
+                    $(panel).find('.panel-loader').remove();
+                }
+            }
+        });
+        //$(panel).removeClass('panel-loading');
+        //$(panel).find('.panel-loader').remove();
+        //var tableId = $(table).attr('id');
+        //if ($.fn.dataTable.isDataTable('#' + tableId)) {
+        //    //console.log('New Destroy Table');
+        //    $('#' + tableId).DataTable().destroy();
+        //    $('#' + tableId).DataTable().fnDestroy();
+        //}
+        //setTimeout(function () {
+        //    //console.log('New Create Table');
+        //    $('#' + tableId).DataTable({
+        //        'order': [
+        //            [0, "asc"],
+        //            [1, "asc"],
+        //            [2, "asc"],
+        //            [3, "desc"]],
+        //        'rowsGroup': [0, 1],
+        //        'pageLength': 25
+        //    });
+        //}, 500);
+        
+    }
+</script>

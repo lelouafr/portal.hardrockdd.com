@@ -1,0 +1,68 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    //var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("JobAdd", "JobForm")"
+       data-urldelete="@Url.Action("JobDelete", "JobForm")"
+       data-urlupdate="@Url.Action("JobUpdate", "JobForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="input" width="120px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobName)</th>
+            <th data-datatable-filter-type="none" width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="none" width="150px">@Html.LabelForRequired(model => model.List.FirstOrDefault().CrewId)</th>
+            <th data-datatable-filter-type="none" width="150px">@Html.LabelForRequired(model => model.List.FirstOrDefault().RigId)</th>
+            <th data-datatable-filter-type="none" width="90px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Footage)</th>
+            <th data-datatable-filter-type="none" width="90px">@Html.LabelForRequired(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th>
+                <div class="btn-group pull-right">
+                    <button class="btn btn-primary addRow">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../PM/Project/Forms/Job/TableRow", request)
+        }
+    </tbody>
+</table>
+
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        console.log('table ready:', itemCnt);
+        h = itemCnt* 42.4;
+        console.log('table before height:', h);
+        if (h > 400) {
+            h = 400;
+        }
+        else {
+            h = null;
+        }
+        console.log('table after height:', h);
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: false,
+            ordering: false,
+            scrollY: 250,
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            }
+        });
+
+    })
+</script>

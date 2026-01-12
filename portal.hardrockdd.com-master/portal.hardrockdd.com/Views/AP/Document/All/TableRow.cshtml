@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.AP.Document.vDocumentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+<tr data-entitykey="@entityKey">
+    <td class="f-s-10">
+        @Html.EditorFor(m => m.Vendor, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.APReference, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Amount, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.AllMth, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.InvoiceDate, new { DisplayOnly = true })
+    </td>
+
+</tr>

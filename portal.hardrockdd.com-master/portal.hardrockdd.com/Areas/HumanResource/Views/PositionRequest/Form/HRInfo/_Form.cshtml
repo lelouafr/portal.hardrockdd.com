@@ -1,0 +1,66 @@
+﻿@model  portal.Areas.HumanResource.Models.PositionRequest.PayroleViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal hrInfoForm"
+      id="@formId"
+      data-urlupdate="@Url.Action("PRInfoUpdate", "PositionRequest")"
+      data-postupdate="PostUpdate@(id)">
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PositionCodeId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WAApplicantId)
+    </div>
+    <div class="prInfo">
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.PRReportsToId)
+            @Html.EditorFor(m => m.WPDivisionId)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.PRInsCodeId)
+            @Html.EditorFor(m => m.PREarnCodeId)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.PRDeptId)
+        </div>
+        <div class="form-group has-feedback row salaryAmtGrp">
+            @Html.EditorFor(m => m.PRSalaryAmt)
+        </div>
+        <div class="form-group has-feedback row hourlyAmtGrp">
+            @Html.EditorFor(m => m.PRHrlyRate)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.PRPerDeimRate)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.HRDotStatus)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.HRDrugTestDate)
+            @Html.EditorFor(m => m.HRDrugTestType)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.HRDrugTestStatus)
+        </div>
+    </div>
+</form>
+
+<script>
+    function PostUpdate@(id)(elem) {
+        if ($(elem).attr('name') == "WAApplicantId") {
+            handlePRView($('#@formId'));
+        }
+        if ($(elem).attr('name') == "PREarnCodeId") {
+            handlePRView($('#@formId'));
+        }
+    }
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

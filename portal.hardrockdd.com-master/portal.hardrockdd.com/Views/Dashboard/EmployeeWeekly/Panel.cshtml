@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Employee.EmployeeViewModel
+
+<div class="panel panel-inverse" 
+     data-reloadurl="@Url.Action("Table", "DailyJobEmployee" , new { co=Model.PRCo, employeeId=Model.EmployeeId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            
+        </div>
+        <h4 class="panel-title">Employee Info for @Model.FirstName  @Model.LastName (@Model.EmployeeId)</h4>
+    </div>
+    <div class="panel-body" id="employeeInfo">s
+        @Html.Partial("../Dashboard/EmployeeWeekly/Table", Model)
+
+    </div>
+</div>

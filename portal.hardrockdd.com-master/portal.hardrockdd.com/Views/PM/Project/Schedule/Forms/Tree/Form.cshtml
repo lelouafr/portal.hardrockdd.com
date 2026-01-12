@@ -1,0 +1,49 @@
+﻿@model portal.Models.Views.PM.Project.Schedule.TreeListViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var tree = "tree_" + formId.ToString().Replace("-", "");
+    var panel = "panel_" + formId.ToString().Replace("-", "");
+}
+<style>
+    .custom-class .dhx_tree-list-item__text {
+        font-size: 12px;
+    }
+
+    .custom-class .dhx_tree-folder .dhx_tree-list-item__text {
+        font-size: 12px;
+    }
+</style>
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panel">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Job Crew Assignment Tree
+    </div>
+    <div id="@panel" class="collapse show">
+        <div class="card-body">
+            <div id="@tree"
+                 data-dataurl="@Url.Action("TreeData", "PMProjectScheduleForm", new { Area = "",bdco = Model.BDCo, projectId = Model.JobId, jcco = Model.JCCo, packageId = Model.PackageId, bidId = Model.BidId })">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#@tree").ready(function () {
+        //console.log("Load Tree");
+        var data = new dhx.TreeCollection();
+        var url = $('#@tree').data("dataurl");
+        data.load(url);
+        var treeEx = new dhx.Tree("@tree", {
+            data: data,
+            css: "custom-class",
+            dragMode: "both"
+        });
+        setTimeout(function () { treeEx.expandAll(); }, 500);
+
+        treeEx.events.on("Afterdrop", function (data, events) {
+            console.log(data);
+        });
+        treeEx.events.on("itemClick", function (data, events) {
+            console.log(data);
+        });
+    });
+</script>

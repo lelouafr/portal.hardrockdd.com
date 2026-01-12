@@ -1,0 +1,34 @@
+﻿@model portal.Models.Views.Web.UserAccessAddViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal m-5"
+        id="@formId"
+        data-urlcreate="@Url.Action("AddUser", "WebFormUsers", new { Area = "" })">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ControllerActionId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.UserId)
+    </div>
+    <div class="row btn-group  pull-right">
+        <button class="btn btn-sm btn-primary btnCreate" type="button"  data-dismiss="modal">Add</button>
+        <button class="btn btn-sm btn-danger" type="button"  data-dismiss="modal">Cancel</button>
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function () {
+        Form().init($('#@formId'));
+    });
+    $('.btnCreate').on('click', function () {
+        data = $('#@formId').serialize();
+        url = $('#@formId').data('urlcreate');
+
+        //console.log(data, url);
+        $.post(url, data, function (res) {});
+    });
+</script>

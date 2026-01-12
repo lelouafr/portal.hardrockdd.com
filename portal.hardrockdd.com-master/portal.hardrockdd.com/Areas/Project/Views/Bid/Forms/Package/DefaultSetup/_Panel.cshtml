@@ -1,0 +1,17 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.DefaultFormView
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-lg-4 p-r-3">
+        @Html.Partial("Forms/Package/DefaultSetup/DayRounding/_Panel", Model.RoundingDaySetup)
+        @Html.Partial("Forms/Package/DefaultSetup/ProductionRate/_Panel", Model.ProductionRates)
+        @Html.Partial("Forms/Package/DefaultSetup/AllocatedCost/_Panel", Model.AdditionalCostItems)
+    </div>
+    <div class="col-lg-4 p-r-3 p-l-3">
+        @Html.Partial("Forms/Package/DefaultSetup/CostItem/_Panel", Model.CostItems)
+    </div>
+    <div class="col-lg-4 p-l-3">
+        @Html.Partial("Forms/Package/DefaultSetup/CostItem/_Panel", Model.RentalItems)
+    </div>
+</div>

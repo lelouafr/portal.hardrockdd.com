@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.DailyTicket.Job.DailyJobPhaseCostViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var colSpan = viewOnly ? "3" : "4";
+}
+<tr class="commentRow"
+    id="@("commentRow_" + Model.TaskId.ToString())"
+    style="@(!String.IsNullOrEmpty(Model.Comments) ? "display: normal;" : "display: none;")"
+    data-entitykey="@entityKey">
+
+    <td colspan="@colSpan" style="border-top-width: 0px; padding-top: 0px;">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TaskId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.CostTypeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Radius, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Value, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseDescription, new { @id = Guid.NewGuid() })
+        <div class="form-group has-feedback row" style="margin-bottom: 0px;">
+            @Html.EditorFor(m => m.Comments, new { tableRow = "False" })
+        </div>
+    </td>
+</tr>

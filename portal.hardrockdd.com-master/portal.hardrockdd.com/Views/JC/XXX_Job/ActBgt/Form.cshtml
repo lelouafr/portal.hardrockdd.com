@@ -1,0 +1,60 @@
+﻿@model portal.Models.Views.JC.Job.JobSummaryViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th width="25%"><label></label></th>
+            <th width="25%"><label>Actual</label></th>
+            <th width="25%"><label>Budget</label></th>
+            <th width="25%"><label>Variance</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <label>Revenue</label>
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Invoiced, new { DisplayOnly = true, tableRow = true })
+            </td>
+            <td>
+                @Html.EditorFor(m => m.BgtRevenue, new { DisplayOnly = true, tableRow = true })
+            </td>
+            <td>
+                @Html.EditorFor(m => m.VarRevenue, new { DisplayOnly = true, tableRow = true })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Cost</label>
+            </td>
+            <td>
+                @Html.EditorFor(m => m.ActCost, new { DisplayOnly = true, tableRow = true })
+            </td>
+            <td>
+                @Html.EditorFor(m => m.BgtCost, new { DisplayOnly = true, tableRow = true })
+            </td>
+            <td>
+                @Html.EditorFor(m => m.VarCost, new { DisplayOnly = true, tableRow = true })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Gross</label>
+            </td>
+            <td>
+                @Html.EditorFor(m => m.ActGross, new { DisplayOnly = true, tableRow = true }) <span class="p-l-15">(@Html.EditorFor(m => m.ActGM, new { DisplayOnly = true, tableRow = true }))</span>
+            </td>
+            <td>
+                @Html.EditorFor(m => m.BgtGross, new { DisplayOnly = true, tableRow = true }) <span class="p-l-15">(@Html.EditorFor(m => m.BgtGM, new { DisplayOnly = true, tableRow = true }))</span>
+            </td>
+            <td>
+                @Html.EditorFor(m => m.VarGross, new { DisplayOnly = true, tableRow = true })
+            </td>
+        </tr>
+    </tbody>
+</table>

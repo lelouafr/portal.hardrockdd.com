@@ -1,0 +1,52 @@
+﻿
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <meta http-Equiv="Cache-Control" Content="no-cache" />
+    <meta http-Equiv="Pragma" Content="no-cache" />
+    <meta http-Equiv="Expires" Content="0" />
+
+    <link href="~/Content/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <style type="text/css">
+        .ul
+        {
+            padding-left: 24px;
+        }
+        @@page {
+            size: 8.5in 11in portrait;
+            margin-top: 2.8cm;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+            margin-bottom: 2cm;
+            @@top-center{
+                margin-top: .8cm;
+                content:url('https://@(Request.Url.Authority)/Content/assets/img/logo/hardrock-logo-pdf.jpg');
+                max-height: 77px;
+            }
+            @@bottom-left {
+                content: "";
+            }
+            @@bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+            }
+            @@bottom-right {
+                content: "@DateTime.Now.ToShortDateString()"
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- begin page body -->
+
+    @RenderBody()
+    <!-- end page body -->
+</body>
+</html>

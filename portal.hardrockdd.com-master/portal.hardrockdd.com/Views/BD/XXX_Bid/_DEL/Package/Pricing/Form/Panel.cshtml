@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.Bid.BidPackagePricingViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-sortable-id="DailyJobTicketViewModel"
+     data-reloadurl="@Url.Action("Form", "BidPackagePricing", new { co = Model.Co, bidId = Model.BidId, packageId = Model.PackageId })"
+     @*data-initpane="initPane@(id)"*@
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">@Model.Description (Cost and Revenue)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../BD/Bid/Package/Pricing/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+    });
+
+
+</script>

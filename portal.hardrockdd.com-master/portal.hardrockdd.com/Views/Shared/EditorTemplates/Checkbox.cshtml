@@ -1,0 +1,73 @@
+﻿@model bool
+@{
+    //Model ??= false;
+
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var idGuid = "group_" + Guid.NewGuid();
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var required = this.ViewData.ModelMetadata.IsRequired ? "required" : "";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow?.ToString(), out bool tableRowOut) ? tableRowOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ? (FieldAttribute)fldAttribute : new FieldAttribute();
+
+
+    var dic = new Dictionary<string, object>();
+    dic.Add("id", id);
+    dic.Add("Name", name);
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+    }
+    if (viewOnly)
+    {
+        dic.Add("data-disabled", "true");
+    }
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+
+}
+
+@if (displayOnly)
+{
+    <span Name="@name">
+            @Html.CheckBoxFor(m => m, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+    </span>
+}
+else
+{
+    <div class="@textSize input-group pull-left" id="@idGuid">
+        @Html.CheckBoxFor(m => m, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+    </div>
+    <div class="parsleyError"></div>
+}
+@if (attributes.LabelSize != 0 && !tableRow)
+{
+    @Html.LabelForRequired(m => m, new { @class = labelSize + " col-form-label " })
+    @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+}
+<script>
+    $('#@idGuid').ready(function () {
+        var input = $('#@id');
+        var hdnFldId = $('#@idGuid').find("input[type='hidden'][name='" + $(input).attr('name') + "']");
+        $(hdnFldId).val($(input).is(":checked"));
+    });
+    $('#@id').change(function () {
+        var hdnFldId = $('#@idGuid').find("input[type='hidden'][name='" + $(this).attr('name') + "']");
+        $(hdnFldId).val($(this).is(":checked"));
+        $(this).val($(this).is(":checked"));
+
+    })
+</script>

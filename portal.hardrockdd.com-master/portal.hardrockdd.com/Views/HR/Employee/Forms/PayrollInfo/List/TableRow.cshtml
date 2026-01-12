@@ -1,0 +1,31 @@
+﻿@model  portal.Models.Views.HR.Resource.Form.ResourceSalaryHistoryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = "";
+    ViewBag.TableRow = "True";
+
+    ViewBag.DisplayOnly = true;
+    rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ResourceId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.EffectiveDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Type)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.OldSalary)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.NewSalary)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.NewPositionCode)
+    </td>
+</tr>

@@ -1,0 +1,23 @@
+﻿@model object
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+}
+
+<tr>
+    @foreach (var prp in tableLayout.Properties.Where(f => !f.IsHidden).ToList())
+    {
+
+        <th width="@(prp.Width + "%")">
+            @Html.Label(prp.Property)
+        </th>
+    }
+    @if (!viewOnly && tableLayout.ControllerInfo.AllowAdd)
+    {
+        <th>
+            <button type="button" class="btn btn-primary addRow pull-right">
+                <i class="fa fa-plus"></i>
+            </button>
+        </th>
+    }
+</tr>

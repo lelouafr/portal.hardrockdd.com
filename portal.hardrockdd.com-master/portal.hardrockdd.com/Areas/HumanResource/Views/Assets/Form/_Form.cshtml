@@ -1,0 +1,46 @@
+﻿@model portal.Areas.HumanResource.Models.Assets.AssetViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "Assets")">
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AssetId)
+        @Html.EditorFor(m => m.AssetCategory)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AssetDesc)
+        @Html.EditorFor(m => m.Manufacturer)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ModelYear)
+        @Html.EditorFor(m => m.ModelName)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.PurchDate)
+        @Html.EditorFor(m => m.BookValue)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Identifier)
+        @Html.EditorFor(m => m.Serial)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Assigned)
+        @Html.EditorFor(m => m.Status)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Phone)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

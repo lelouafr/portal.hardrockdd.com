@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveRequestSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        <span class="label @Model.StatusClass">
+            @Html.EditorFor(l => l.Status, new { DisplayOnly = true })
+        </span>
+    </td>
+    <td>
+        @Html.EditorFor(l => l.EmployeeName, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Description, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Hours, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Balance, new { DisplayOnly = true })
+    </td>
+    <td>
+        <div class="pull-right btn-group">
+            <button class="btn btn-success approveRow"
+                    data-entitykey="@entityKey"
+                    data-approvalurl="@Url.Action("Approve","LeaveRequest")">
+                <i class="fa fa-thumbs-up"></i>
+            </button>
+            <button class="btn btn-danger rejectRow"
+                    data-entitykey="@entityKey"
+                    data-toggle="modal"
+                    data-target="#rejectRow">
+                <i class="fa fa-thumbs-down"></i>
+            </button>
+        </div>
+    </td>
+</tr>

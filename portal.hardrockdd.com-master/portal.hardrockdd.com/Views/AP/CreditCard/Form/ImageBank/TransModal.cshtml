@@ -1,0 +1,53 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.ImageBankListViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="model-title">Image Select</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+    </div>
+    <div class="modal-body text-center">
+
+        <form class="form"
+              id="@formId"
+              data-tagurl="@Url.Action("TagImage", "APCreditCardEmployeeImageBank")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+            @Html.Partial("../AP/CreditCard/Form/ImageBank/List/Images", Model)
+            <div class="btn-group">
+                @if (Model.List.Count > 0)
+                {
+                    <button class="btn btn-lg btn-primary tagBtn" type="button">Select </button>
+
+                }
+                <button class="btn btn-lg btn-white" type="button" data-dismiss="modal">Close <i class="fas fa-times"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var files;
+    $(".tagBtn").click(function () {
+        var form = $(this).closest('form');
+        var data = $(form).serializeArray();
+        var url = $(form).data('tagurl');
+
+        //console.log(url, data);
+        $.post(url, data, function (res) {
+            //$('#StatementTransactions').ReloadPanel();
+            $('#reviewPanel').ReloadPanel();
+            $('#imageTransBankModal').modal('toggle');
+        });
+    });
+
+</script>
+

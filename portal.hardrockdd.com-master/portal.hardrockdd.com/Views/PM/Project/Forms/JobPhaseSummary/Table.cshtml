@@ -1,0 +1,112 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobPhaseSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    //var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("JobPhaseSummaryUpdate", "PMProjectForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().JobId)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().JobName)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().StatusId)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsRigUpComplete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsPilotComplete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsReam1Complete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsReam2Complete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsReam3Complete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsReam4Complete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsReam5Complete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsPullPipeComplete)</th>
+            <th class="text-center">@Html.LabelFor(model => model.List.FirstOrDefault().IsRigDownComplete)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../PM/Project/Forms/JobPhaseSummary/TableRow", request)
+        }
+    </tbody>
+</table>
+
+
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        var reamPassCnt = @(Model.ReamPassCount);
+        @*h = tableHeight($('#@tableId'), itemCnt, 42.4) - 15;
+
+        var ite*@mCnt = @(Model.List.Count());
+        console.log('table ready:', itemCnt);
+        h = itemCnt* 42.4;
+        console.log('table before height:', h);
+        if (h > 400) {
+            h = 400;
+        }
+        else {
+            h = null;
+        }
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            columnDefs: [
+                {
+                    targets: [3, 4, 5, 6, 7, 8, 9, 10, 11],
+                    orderable: false
+                },
+                {
+                    targets: [5],
+                    visible: reamPassCnt >= 1
+                },
+                {
+                    targets: [6],
+                    visible: reamPassCnt >= 2
+                },
+                {
+                    targets: [7],
+                    visible: reamPassCnt >= 3
+                },
+                {
+                    targets: [8],
+                    visible: reamPassCnt >= 4
+                },
+                {
+                    targets: [9],
+                    visible: reamPassCnt >= 5
+                },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            }
+        });
+
+        $('#@tableId').find('.js-switch').each(function () {
+            $(this).InitSwitchery();
+        });
+
+        var option = {
+            alias: "numeric",
+            digits: 2,
+            digitsOptional: true,
+            radixPoint: ".",
+            placeholder: "0",
+            autoGroup: false,
+            min: -1000,
+            max: 1000,
+            suffix: " %",
+            allowMinus: true
+        }
+        $('.percent').inputmask(option);  //static mask
+    })
+</script>

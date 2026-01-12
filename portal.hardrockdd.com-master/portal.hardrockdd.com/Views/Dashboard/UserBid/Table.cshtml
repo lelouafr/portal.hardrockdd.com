@@ -1,0 +1,44 @@
+﻿@model List<portal.Models.Views.Bid.BidUserSummaryViewModel>
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+   
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="75px">@Html.LabelForRequired(model => model.FirstOrDefault().Status)</th>
+            <th width="90px">@Html.LabelForRequired(model => model.FirstOrDefault().DueDate)</th>
+            <th width="90px">@Html.LabelForRequired(model => model.FirstOrDefault().BidDate)</th>
+            <th width="120px">@Html.LabelForRequired(model => model.FirstOrDefault().FirmName)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.FirstOrDefault().Description)</th>
+            <th width="160px">@Html.LabelForRequired(model => model.FirstOrDefault().CreatedUser)</th>
+            <th width="120px">
+                <a class='btn btn-success pull-right' href='@Url.Action("Create", "BidForm")'><i class='fas fa-plus'></i></a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            @Html.Partial("UserBid/TableRow", item)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            ordering: true,
+            columnDefs: [
+                {
+                    targets:[6], orderable:false,
+                }
+            ]
+        });
+    });
+</script>

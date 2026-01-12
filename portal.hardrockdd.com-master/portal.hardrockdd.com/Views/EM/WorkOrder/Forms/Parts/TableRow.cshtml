@@ -1,0 +1,32 @@
+﻿@model portal.Models.Views.SM.Request.Forms.EquipmentLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.EquipmentId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RequestComments)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.IsEquipmentDisabled)
+    </td>
+    <td>
+        <button class="btn btn-sm btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

@@ -1,0 +1,33 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "jc";
+}
+@if (User.HasAccess("Job", "OpenIndex"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-briefcase"></i>
+            <span>Jobs</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Job", "GrossMarginIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <span>Reports</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("GrossMarginIndex", "Job", routeValues: new { Area = "Project" })">Gross Margin Report</a></li>
+                    </ul>
+
+                </li>
+            }
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("OpenIndex", "Job", routeValues: new { Area = "Project" })">Open Jobs</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Job", routeValues: new { Area = "Project" })">All Jobs</a></li>
+        </ul>
+    </li>
+}
+

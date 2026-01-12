@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.Web.UserAccessViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var colSpan = viewOnly ? "3" : "4";
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ControllerActionId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.UserId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.UserName, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.LastAccessed, new { DisplayOnly = true })
+        </td>
+        <td data-search="@Model.AccessLevel" data-order="@Model.AccessLevel">
+            @Html.EditorFor(m => m.AccessLevel)
+        </td>
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ControllerActionId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.UserId, new { @id = Guid.NewGuid() })
+        </td>
+        @if (!viewOnly)
+        {
+            <td>
+                <div class="btn-group  pull-right">
+                    <button class="btn btn-danger delRow"
+                            data-entitykey="@entityKey">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        }
+        else
+        {
+            <td></td>
+        }
+    </tr>

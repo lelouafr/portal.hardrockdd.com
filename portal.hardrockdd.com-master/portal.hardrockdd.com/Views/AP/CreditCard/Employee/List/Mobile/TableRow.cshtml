@@ -1,0 +1,84 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.TransactionViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+    </td>
+    <td data-order="@Model.TransDate.ToString("yyyy-MM-dd")" data-search="@Model.TransDate.ToString("M-d-yyyy")">
+        @switch (Model.TransactionStatusId)
+        {
+            case DB.CMTranStatusEnum.Locked:
+            case DB.CMTranStatusEnum.APPosted:
+                <span class="text-danger">
+                    <i class="far fa-lock"></i>
+                </span>
+                break;
+            case DB.CMTranStatusEnum.RequestedInfomation:
+                <span class="text-danger">
+                    <i class="far fa-exclamation-triangle"></i>
+                </span>
+                break;
+            case DB.CMTranStatusEnum.Open:
+                break;
+            default:
+                break;
+        }
+        @Model.TransDate.ToShortDateString()
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Merchant, new { DisplayOnly = true })
+    </td>
+    <td class="text-right" data-order="@Model.TransAmt">
+        @Html.EditorFor(m => m.TransAmt, new { DisplayOnly = true })
+    </td>
+    <td class="text-center"  data-order="@Model.PictureStatusId.ToString()"  data-search="@Model.PictureStatusId.ToString()">
+        @switch (Model.PictureStatusId)
+        {
+            case DB.CMPictureStatusEnum.Empty:
+                <span class="text-danger">
+                    <i class="far fa-times-circle"></i>
+                </span>
+                break;
+            case DB.CMPictureStatusEnum.Attached:
+                <span class="text-green">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                break;
+            case DB.CMPictureStatusEnum.Approved:
+                <span class="text-primary">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                break;
+            case DB.CMPictureStatusEnum.Rejected:
+                <span class="text-danger">
+                    <i class="fas fa-ban"></i>
+                </span>
+                break;
+            case DB.CMPictureStatusEnum.NotNeeded:
+                <span class="text-black-50">
+                    <i class="fas fa-do-not-enter"></i>
+                </span>
+                break;
+            default:
+                break;
+        }
+    </td>
+    <td>
+        <button type="button" 
+                class="btn btn-xs btn-white"
+                data-entitykey="@entityKey"
+                data-toggle="modal"
+                data-target="#imageSelect">
+            <i class="fas fa-camera"></i>
+        </button>
+    </td>
+</tr>

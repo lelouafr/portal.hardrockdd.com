@@ -1,0 +1,97 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("PartialIndex", "PurchaseOrder")"
+       data-urlcreate="@Url.Action("Add", "PurchaseOrder")"
+       data-dataurl="@Url.Action("Data", ViewBag.Controller)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().KeyID)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().POCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().SearchString)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusClass)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().OrderedDate)</th>
+            <th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendorName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PO)</th>
+            <th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            @*<th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var request in Model.List)
+        {
+            @Html.Partial("../PurchaseOrder/TableRow", request)
+        }*@
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({autoWidth: false,
+            paging: true,
+            pageLength: 25,
+            ordering: true,
+            processing: true,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+               "url": $('#@tableId').data('dataurl'),
+               "type": "GET",
+               "datatype": "json",
+            },
+            order: [
+                [0, "desc"]
+            ],
+            columns: [
+                { data: "KeyID" },
+                { data: "Co" },
+                { data: "SearchString" },
+                { data: "StatusClass" },
+                { data: "StatusString" },
+                {
+                    data: "OrderedDate",
+                    render: function (data, type) {
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "VendorName" },
+                { data: "PO" },
+                { data: "Description" },
+                { data: "Cost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                //{ data: "CreatedUser.FullName" }
+            ],
+            columnDefs: [
+                { targets: [0,1,2,3], visible: false },
+                {
+                    targets: [4],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="label ' + rowData.StatusClass + '">' + cellData + '</span>');
+                    }
+                },
+                {
+                    targets: [9],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="pull-right">' + $(cell).html() + '</span>');
+                    }
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "co=" + data.Co + "&po=" + data.PO;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    });
+
+</script>

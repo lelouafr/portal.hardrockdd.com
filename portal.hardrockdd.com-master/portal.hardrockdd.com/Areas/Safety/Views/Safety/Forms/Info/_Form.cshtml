@@ -1,0 +1,47 @@
+﻿@model portal.Areas.Safety.Models.Safety.EmployeeInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.FullName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.HRRef, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.FirstName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.LastName, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.MiddleName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Suffix, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.SSN, new { ViewOnly = true })
+        @Html.EditorFor(m => m.BirthDate, new { ViewOnly = true })
+    </div>
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicNumber, new { ViewOnly = true })
+        @Html.EditorFor(m => m.LicType, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicState, new { ViewOnly = true })
+        @Html.EditorFor(m => m.LicCountry, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicClass, new { ViewOnly = true })
+        @Html.EditorFor(m => m.LicExpDate, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

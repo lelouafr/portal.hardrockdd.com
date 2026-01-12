@@ -1,0 +1,48 @@
+﻿@model portal.Areas.Project.Models.Bid.TrackerListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="75px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th width="90px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DueDate)</th>
+            <th width="90px">@Html.LabelForRequired(model => model.List.FirstOrDefault().BidDate)</th>
+            <th class="hidden-xs hidden-sm" width="120px">@Html.LabelForRequired(model => model.List.FirstOrDefault().FirmName)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th class="hidden-xs hidden-sm" width="160px">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>
+            <th width="120px">
+                <a class='btn btn-success pull-right' href='@Url.Action("Create", "Bid", new { Area = "Project" })'><i class='fas fa-plus'></i></a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("List/User/_TableRow", item)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            ordering: true,
+            order: [[1, "asc"]],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                {
+                    targets: [6], orderable: false,
+                }
+            ]
+        });
+    });
+</script>

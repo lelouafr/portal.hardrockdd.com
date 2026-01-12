@@ -1,0 +1,56 @@
+﻿@model portal.Models.Views.AP.CreditCard.CreditImportListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var guid = tableId.ToString().Replace("-", "");
+}
+<div id="attachmentDropzone_@(guid)"
+     class="dropzone needsclick"
+     method="post"
+     enctype="multipart/form-data"
+     data-co="@Model.Co">
+    <div class="dz-default dz-message" data-dz-message="">
+        <span>Drop files here to upload </span>
+        <br />
+        <span class="small">(Click to upload) </span>
+    </div>
+    @Html.AntiForgeryToken()
+</div>
+<script>
+    $("#attachmentDropzone_@(guid)").ready(function () {
+        $("#attachmentDropzone_@(guid)").dropzone({
+            url: "@Url.Action("Add", "APCreditCardImport")",
+            uploadMultiple: true,
+            parallelUploads: 1,
+            timeout: 360000,
+            maxFilesize: 80, // MB
+            init: function () {
+                dpzMultipleFiles = this;
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+                this.on('success', function (file, json) {
+                    //console.log(json);
+                    //var table = $('#TableCreditImportListViewModel');
+                    //table.ReloadPanel();
+                });
+                this.on('resetFiles', function() {
+                    dpzMultipleFiles.removeAllFiles();
+                    var table = $('#TableCreditImportListViewModel');
+                    $(table).ReloadPanel();
+
+                });
+                this.on("sending", function(file, xhr, data) {
+                    data.append("Co", $("#attachmentDropzone_@(guid)").data('co'));
+                });
+                this.on('queuecomplete', function (data) {
+                    //console.log(data);
+                    dpzMultipleFiles.emit("resetFiles");
+                })
+                this.on("addedfile", function (file) { });
+                this.on('drop', function (file) { });
+                this.on("maxfilesexceeded", function (file) { });
+            }
+        });
+    });
+</script>

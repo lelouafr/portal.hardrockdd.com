@@ -1,0 +1,24 @@
+﻿@{
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+    ViewBag.Title = "Access Denied";
+}
+<div class="error">
+    <div class="error-code m-b-10">403</div>
+    <div class="error-content">
+        <div class="error-message">Access Denied</div>
+        <div class="error-desc m-b-30">
+            Sorry, but the page you are trying to access is denied. Try checking the URL for error, then hit the refresh button on your browser or try found something else in our app.<br />
+            You can go back to main page:
+        </div>
+        <div class="">
+            <a href="@Url.Action("Index","Home", routeValues: new { Area = "" })" class="btn btn-success p-l-20 p-r-20">Return to Main page</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a onclick="LogOff()" class="btn btn-primary p-l-20 p-r-20">Log Out</a>
+            }
+        </div>
+    </div>
+</div>

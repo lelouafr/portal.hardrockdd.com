@@ -1,0 +1,57 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.DetailListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       style="display:none"
+       id="@tableId"
+       data-urlselect="@Url.Action("BoreSetupPanel", "Bid")"
+       data-urlvalidate="@Url.Action("BoreSetupValidate", "Bid")"
+       data-urlupdate="@Url.Action("BoreSetupUpdate", "Bid")"
+       data-dstselect="BoreSetupReview_@(Model.PackageId)"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+
+            <th width="18%">@Html.LabelFor(model => model.List.FirstOrDefault().Description) </th>
+            <th width="7%">@Html.LabelFor(model => model.List.FirstOrDefault().Footage)</th>
+            <th width="7%">@Html.LabelFor(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="7%">@Html.LabelFor(model => model.List.FirstOrDefault().DirtCost)</th>
+            <th width="7%">@Html.LabelFor(model => model.List.FirstOrDefault().RockCost)</th>
+            <th width="5%">@Html.LabelFor(model => model.List.FirstOrDefault().DirtDays)</th>
+            <th width="5%">@Html.LabelFor(model => model.List.FirstOrDefault().RockDays)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Package/BoreSetup/BoreList/_TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        var h = 42 * @(Model.List.Count);
+        if (h > 500) {
+            h = 500;
+            var parent = $(table).parent();
+            var contaner = $('<div></div>');
+            $(contaner).css("height", h + "px");
+            $(contaner).css("overflow-y", "scroll");
+            $(contaner).css("display", "block");
+
+            $(contaner).appendTo(parent);
+            $(table).appendTo(contaner);
+        }
+        $(table).show();
+        Table().init($('#@tableId'));
+    });
+</script>
+

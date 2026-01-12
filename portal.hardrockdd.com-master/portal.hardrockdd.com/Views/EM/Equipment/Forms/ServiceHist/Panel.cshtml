@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.EM.Equipment.Forms.ServiceHistoryListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panelId_" + Guid.NewGuid();
+}
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("ServiceHistoryTable", "Equipment", new { emco = Model.EMCo, equipmentId = Model.EquipmentId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Service Request History
+        </div>
+    </div>
+    <div class="panel-body collapse" id="@panelId">
+        @Html.Partial("../EM/Equipment/Forms/ServiceHist/Table", Model)
+    </div>
+</div>

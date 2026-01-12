@@ -1,0 +1,128 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderItemViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlcreate="@Url.Action("Add", "POItem")"
+      data-urldelete="@Url.Action("Delete", "POItem")"
+      data-urlupdate="@Url.Action("Update", "POItem")"
+      data-urlvalidate="@Url.Action("Validate", "POItem")"
+      data-relatedpanel="PurchaseOrderItemListViewModel"
+      data-postupdate="PostUpdate@(id)">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TaxGroupId, new { @id = Guid.NewGuid() })
+
+    @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PO, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.POItem, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorId, new { @id = Guid.NewGuid() })
+
+    <fieldset>
+        <legend>Info</legend>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.ItemTypeId)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.Description)
+        </div>
+    </fieldset>
+    <fieldset class="jobGroup">
+        <legend>Job Info</legend>
+        @if (Model.VendorId != null)
+        {
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.JobId)
+                @Html.EditorFor(m => m.CrewId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.PhaseId)
+                @Html.EditorFor(m => m.JobCostTypeId)
+            </div>
+        }
+        else
+        {
+            <label class="label label-danger">No Vendor Selected Job Cannot be added</label>
+        }
+    </fieldset>
+    <fieldset class="eqpGroup" style="display: none;">
+        <legend>Equipment Info</legend>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.EquipmentId)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.CostCodeId)
+            @Html.EditorFor(m => m.CostTypeId)
+        </div>
+    </fieldset>
+    <fieldset class="glGroup">
+        <legend>General Ledger</legend>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.GLAcct)
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Amount</legend>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.CalcType)
+        </div>
+        <div class="form-group has-feedback row unitGroup" style="display: none;">
+            @Html.EditorFor(m => m.Units)
+            @Html.EditorFor(m => m.UM)
+            @Html.EditorFor(m => m.UnitCost)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.Cost)
+        </div>
+    </fieldset>
+    <fieldset class="taxFieldSet">
+        <legend>Tax Info</legend>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.TaxTypeId)
+        </div>
+        <div class="form-group has-feedback row taxGroup">
+            @Html.EditorFor(m => m.TaxCodeId)
+            @Html.EditorFor(m => m.TaxRate)
+        </div>
+        <div class="form-group has-feedback row taxGroup">
+            @Html.EditorFor(m => m.TaxAmount)
+        </div>
+    </fieldset>
+
+</form>
+
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+    function PostUpdate@(id)(elem) {
+        if ($(elem).attr('name') == "CalcType") {
+            handleCalcView($('#@formId'));
+        }
+        if ($(elem).attr('name') == "ItemTypeId") {
+            handleTypeView($('#@formId'));
+        }
+        if ($(elem).attr('name') == "TaxTypeId") {
+            handleTaxView($('#@formId'));
+        }
+    }
+</script>

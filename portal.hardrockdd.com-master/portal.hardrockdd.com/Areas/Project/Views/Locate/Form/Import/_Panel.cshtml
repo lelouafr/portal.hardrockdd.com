@@ -1,0 +1,15 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateImportViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Excel Import Data
+        </div>
+    </div>
+    <div class="panel-body collapse" id="@panelId">
+        @Html.Partial("Form/Import/_Form", Model)
+    </div>
+</div>

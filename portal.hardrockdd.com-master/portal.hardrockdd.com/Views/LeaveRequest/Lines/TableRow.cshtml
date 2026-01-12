@@ -1,0 +1,37 @@
+﻿@model  portal.Models.Views.Payroll.Leave.LeaveRequestLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EntityName, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EntityKeyString, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.WorkDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LeaveCodeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Comments)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Hours)
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>

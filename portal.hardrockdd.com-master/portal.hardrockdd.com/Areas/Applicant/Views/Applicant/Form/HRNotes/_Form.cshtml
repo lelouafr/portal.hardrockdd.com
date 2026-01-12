@@ -1,0 +1,23 @@
+﻿@model portal.Areas.Applicant.Models.NotesViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("HRNoteUpdate", "Applicant")">
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Notes)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

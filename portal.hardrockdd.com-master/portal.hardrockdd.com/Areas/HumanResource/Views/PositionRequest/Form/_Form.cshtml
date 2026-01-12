@@ -1,0 +1,33 @@
+﻿@model portal.Areas.HumanResource.Models.PositionRequest.RequestFormViewModel
+
+<div class="row">
+    <div class="col-8 validationContaner">
+            @Html.Partial("Form/_Buttons", Model.Actions)
+            @Html.Partial("Form/Info/_Panel", Model.Info)
+            @if ((Model.Info.Status == DB.HRPositionRequestStatusEnum.ManagementReviewed ||
+                    Model.Info.Status == DB.HRPositionRequestStatusEnum.HRReview) &&
+                    (User.IsInPosition("IT-DIR") ||
+                    User.IsInPosition("HR-MGR") ||
+                    User.IsInPosition("HR-PRMGR") ||
+                    User.HasFullAccess("Applicant", "Index")))
+            {
+                @Html.Partial("Form/HRInfo/_Panel", Model.PayrollInfo)
+            }
+            @if (Model.Info.Status == DB.HRPositionRequestStatusEnum.HRApproved ||
+                Model.Info.Status == DB.HRPositionRequestStatusEnum.ManagementReviewed)
+            {
+                @Html.Partial("Form/Applicants/_Panel", Model.Applications)
+            }
+
+        </div>
+        <div class="col-4">
+            @Html.Partial("Form/StatusLog/_Panel", Model.StatusLogs)
+        </div>
+    </div>
+@if ((Model.Info.Status == DB.HRPositionRequestStatusEnum.Complete ||
+    Model.Info.Status == DB.HRPositionRequestStatusEnum.Hire ||
+    Model.Info.Status == DB.HRPositionRequestStatusEnum.PRReview) &&
+    User.HasAccess("Resource", "Index"))
+{
+    @Html.Action("Panel", "Resource", new { Area = "HumanResource", hrco = Model.Info.HRCo, employeeId = Model.Info.NewEmployeeId })
+}

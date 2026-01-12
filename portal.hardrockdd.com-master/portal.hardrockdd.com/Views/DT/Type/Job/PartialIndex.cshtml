@@ -1,0 +1,79 @@
+﻿@model portal.Models.Views.DailyTicket.Form.JobTicketFormViewModel
+
+
+@{
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{1}_{0}", Model.Ticket.DTCo, Model.Ticket.TicketId);
+}
+<div id="@formId">
+
+    <div class="row validationContaner">
+        <div class="col-xl-7">
+            @Html.Partial("../DT/Type/Job/Form/Panel", Model.Ticket)
+        </div>
+        <div class="col-xl-5">
+            <div class="row">
+                <div class="col-xl-12">
+                    @Html.Partial("../DT/StatusLog/List/Panel", Model.StatusLogs)
+                </div>
+                @if (!ViewBag.Partial)
+                {
+                    <div class="col-xl-12" id="progressPanel">
+                        @Html.Action("ProductionVariancePanel", "Job", new { Area = "Project", jcco = Model.Ticket.JCCo, jobId = Model.Ticket.JobId })
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xl-12">
+                        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchID })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row validationContaner">
+        <div class="col-xl-12" id="infoPanel">
+        </div>
+        @if (ViewBag.Partial)
+        {
+            <div class="col-xl-12" id="progressPanel">
+                @Html.Action("ProductionVariancePanel", "Job", new { Area = "Project", jcco = Model.Ticket.JCCo, jobId = Model.Ticket.JobId })
+            </div>
+        }
+    </div>
+    <div class="row validationContaner">
+        <div class="col-xl-6">
+            @Html.Partial("../DT/Type/Job/Employee/List/Panel", Model.Employees)
+        </div>
+        <div class="col-xl-6">
+            @Html.Partial("../DT/Type/Job/Phases/List/Panel", Model.Phases)
+
+        </div>
+    </div>
+
+    @if (Model.Audit.Audit != null)
+    {
+        <div class="row validationContaner">
+            <div class="col-xl-12">
+                @Html.Partial("../EM/Audit/Types/Meter/List/Panel", Model.Audit)
+            </div>
+        </div>
+    }
+    <div class="row validationContaner">
+        <div class="col-xl-12" id="infoPanel">
+        </div>
+        @if (ViewBag.Partial)
+        {
+            @*<div class="col-xl-12" id="chartPanel">
+                    @Html.Partial("../Dashboard/Job/ProgressChart", Model)
+                </div>*@
+        }
+        else
+        {
+            <div class="col-xl-12">
+                @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchID })
+            </div>
+        }
+    </div>
+</div>

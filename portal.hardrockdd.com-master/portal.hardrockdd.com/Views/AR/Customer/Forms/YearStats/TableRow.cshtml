@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.AR.Customer.Forms.CustomerStatViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.EditorFor(m => m.Year)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Revenue)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Cost)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossProfit)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossMargin)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Paid)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Balance)
+    </td>
+</tr>

@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.JC.Industry.Form.IndustryInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "JCIndustryInfo")"
+      data-urlvalidate="@Url.Action("Validate", "JCIndustryInfo")"
+      data-relatedpanel="IndustryListViewModel">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.IndustryId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

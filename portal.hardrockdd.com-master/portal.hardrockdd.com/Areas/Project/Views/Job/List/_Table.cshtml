@@ -1,0 +1,143 @@
+﻿@model portal.Areas.Project.Models.Job.JobListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<style>
+    .form-inline .form-control {
+        width: 100%;
+    }
+    th, td {
+        white-space: nowrap;
+    }
+
+    div.dataTables_wrapper {
+        margin: 0 auto;
+    }
+</style>
+<table class="table  order-column"
+       id="@tableId"
+       data-reloadurl="@Url.Action(ViewBag.TableAction, "Job")"
+       data-dataurl="@Url.Action(ViewBag.DataAction, ViewBag.DataController)"
+       data-urlselect="@Url.Action("Panel", "Job")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().JCCo)</th>
+            <th data-datatable-filter-type="checkbox" width="15px"><label><i class="fas fa-paperclip"></i></label></th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th data-datatable-filter-type="multiselect" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobType)</th>
+            <th data-datatable-filter-type="input" width="300px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobName)</th>
+            <th data-datatable-filter-type="input" width="300px">@Html.LabelForRequired(model => model.List.FirstOrDefault().ProjectName)</th>
+            <th data-datatable-filter-type="multiselect" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="multiselect" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Footage)</th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th data-datatable-filter-type="multiselect" width="140px">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerName)</th>
+            <th data-datatable-filter-type="multiselect" width="140px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Owner)</th>
+            <th data-datatable-filter-type="multiselect" width="140px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Crew)</th>
+            <th data-datatable-filter-type="multiselect" width="240px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Rig)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= $(panel).height();
+        h -= $(tableElem).find('thead').height();
+        h -= 130;
+        var table = $('#@tableId').DataTable({
+            dom: 'Bfrtip',
+            orderCellsTop: true,
+            paging: true,
+            pageLength: 50,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            scrollX: true,
+            //fixedColumns: {
+            //    leftColumns: 3
+            //},
+            //searching: false,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "JCCo" },
+                { data: "HasAttachment" },
+                { data: "JobId" },
+                { data: "JobType" },
+                { data: "JobName" },
+                { data: "ProjectName" },
+                { data: "StatusString" },
+                { data: "Division" },
+                { data: "Footage" },
+                { data: "PipeSize" },
+                { data: "CustomerName" },
+                { data: "Owner" },
+                { data: "Crew" },
+                { data: "Rig" },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init('#@tableId');
+
+                var dtButtons = $(panel).find('.dt-buttons');
+                var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+                $(dtButtons).hide();
+            },
+            columnDefs: [
+                { targets: [0], visible: false },
+                { targets: [1], orderable: false },
+                //{ targets: [4], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+                {
+                    targets: [1],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        if (colIndex === 1) {
+                            if (cellData === true) {
+                                $(cell).html('<i class="fas fa-paperclip"></i>');
+                            }
+                            else {
+                                $(cell).html(cellData);
+                            }
+                        }
+                    }
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "JCCo=" + data.JCCo + "&JobId=" + data.JobId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+
+
+        $(panel).find('[data-click="panel-excel"]').on('click', function () {
+            var panel = $("#@tableId").closest('.panel').first();
+            var dtButtons = $(panel).find('.dt-buttons');
+            var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+            console.log('clicked', dtExcelBtn);
+            $(dtExcelBtn).click();
+        });
+
+    })
+</script>

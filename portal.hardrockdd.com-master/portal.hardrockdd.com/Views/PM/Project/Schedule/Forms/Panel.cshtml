@@ -1,0 +1,75 @@
+﻿@model portal.Models.Views.PM.Project.Schedule.FormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse panel-with-tabs" id="@panelId">
+    <div class="panel-heading p-0">
+        <div class="tab-overflow">
+            <ul class="nav nav-tabs nav-tabs-inverse">
+                <li class="nav-item"><a href="#H_Project" id="N_Project" data-toggle="tab" class="nav-link ticket-tab active">Project Details</a></li>
+                <li class="nav-item"><a href="#H_Gantt" id="N_Gantt" data-toggle="tab" class="nav-link ticket-tab">Gantt</a></li>
+                <li class="nav-item"><a href="#H_TimeLine" id="N_TimeLine" data-toggle="tab" class="nav-link ticket-tab">Time Line</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- end tab-content -->
+    <div class="tab-content p-1" style=" overflow: unset;">
+        <!-- begin tab-pane -->
+        <div class="tab-pane active" data-loaded="False" id="H_Project">
+            @Html.Partial("../PM/Project/Schedule/Forms/Form", Model)
+        </div>
+        <div class="tab-pane" data-loaded="False" id="H_Gantt" data-url="@Url.Action("GanttForm", "PMProjectScheduleForm", new { bdco = Model.BDCo, projectId = Model.JobId, jcco = Model.JCCo, packageId = Model.PackageId, bidId = Model.BidId })">
+            @*@Html.Partial("../PM/Project/Schedule/Forms/Gantt/Form", Model)*@
+        </div>
+        <div class="tab-pane" data-loaded="False" id="H_TimeLine" data-url="@Url.Action("TimeLineForm", "PMProjectScheduleForm", new { bdco = Model.BDCo, projectId = Model.JobId, jcco = Model.JCCo, packageId = Model.PackageId, bidId = Model.BidId })">
+            @*@Html.Partial("../PM/Project/Schedule/Forms/TimeLine/Form", Model.TimeLine)*@
+        </div>
+        <!-- end tab-pane -->
+    </div>
+<script>
+    $(document).ready(function () {
+        $('#@panelId').on('click', '.nav-link', function () {
+            var elem = this;
+            var dstId = $(elem).attr('href');
+            var tabPane = $(dstId);
+
+            var setFullHeight = function (dst) {
+                setTimeout(function () {
+                    var windowHeight = $(window).innerHeight();
+                    var elemTop = $(dst).offset().top;
+                    var bufferHeight = 10;
+                    var availableWindowSize = windowHeight - elemTop - bufferHeight;
+                    console.log(windowHeight, elemTop, bufferHeight, $(dst).attr("id"));
+
+                    if (availableWindowSize > 600) {
+                        $(dst).height(availableWindowSize);
+                    }
+
+                }, 10);
+
+            };
+            var url = $(tabPane).data('url');
+            if (url) {
+                var spinnerHtml = '<div style="height:100px;"><span class="spinner spinner-small"></span></div>';
+                $(tabPane).html(spinnerHtml);
+                console.log(url);
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: url,
+                    success: function (res) {                        
+                        $(tabPane).html(res);
+                        if ($(tabPane).find('.gantt_chart').length > 0) {
+                            setFullHeight($(dstId).find('.gantt_chart')[0]);
+                        }
+
+                        if ($(tabPane).find('.dhx_cal_container').length > 0) {
+                            setFullHeight($(dstId).find('.dhx_cal_container')[0]);
+                        }
+                    }
+                });
+            }
+            //console.log(elem, dstId, $(dst))
+        });
+    });
+</script>

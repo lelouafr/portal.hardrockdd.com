@@ -1,0 +1,31 @@
+﻿@model portal.Models.Views.Payroll.PayrollReviewSummaryListViewModel
+
+@{
+    ViewBag.Title = "Employee Entries";
+}
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<div class="row">
+    <div class="col-xl-6">
+        <form class="form-horizontal">
+            <div class="form-group has-feedback row">
+                <h1 class="page-header">@ViewBag.Title </h1>
+            </div>
+        </form>
+    </div>
+</div>
+@Html.Partial("../DT/Summary/User/PartialIndex", Model)
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/assets/plugins/DataTables/media/js/dataTables.rowsGroup.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}
+

@@ -1,0 +1,237 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentLineViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var updateId = string.Format("PostUpdate_{0}", Guid.NewGuid().ToString().Replace("-","_"));
+
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("LineUpdate", "Document", new { Area = "AccountsPayable" })"
+      data-urlvalidate="@Url.Action("LineValidate", "Document", new { Area = "AccountsPayable" })"
+      data-relatedpanel="ApDocumentSeqLineListViewModel"
+      data-postupdate="@(updateId)"
+      style="display:none;">
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TaxGroupId, new { @id = Guid.NewGuid() })
+
+    <div class="row">
+        <div class="col-xl-6">
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.DivisionId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.LineTypeId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.Description)
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.CalcType)
+                </div>
+                <div class="form-group has-feedback row unitGroup">
+                    @Html.EditorFor(m => m.Units)
+                    @Html.EditorFor(m => m.UM)
+                </div>
+                <div class="form-group has-feedback row unitGroup">
+                    @Html.EditorFor(m => m.UnitCost)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.GrossAmt)
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-xl-6">
+            <fieldset class="poGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.PO)
+                    @Html.EditorFor(m => m.POItemId)
+                    @Html.HiddenFor(m => m.POItemTypeId, new { @id = Guid.NewGuid() })
+                </div>
+            </fieldset>
+            <fieldset class="jobGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.HiddenFor(m => m.JobId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => m.JobId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.HiddenFor(m => m.PhaseId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.JobCostTypeId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => m.PhaseId)
+                    @Html.EditorFor(m => m.JobCostTypeId)
+                </div>
+            </fieldset>
+            <fieldset class="eqpGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => m.EquipmentId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.HiddenFor(m => m.CostCodeId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.CostTypeId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => m.CostCodeId)
+                    @Html.EditorFor(m => m.CostTypeId)
+                </div>
+            </fieldset>
+            <fieldset class="glGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.GLAcct)
+                </div>
+            </fieldset>
+            <fieldset class="taxFieldSet">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.TaxTypeId)
+                </div>
+                <div class="form-group has-feedback row taxGroup">
+                    @Html.EditorFor(m => m.TaxCodeId)
+                    @Html.EditorFor(m => m.TaxRate)
+                </div>
+                <div class="form-group has-feedback row taxGroup">
+                    @Html.EditorFor(m => m.TaxAmount)
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function(){
+        Form().init($('#@formId'));
+        handleCalcView($('#@formId'));
+        handleTypeView($('#@formId'));
+        handleTaxView($('#@formId'));
+        $('#@formId').fadeIn(1000);
+
+    });
+    function @(updateId)(elem) {
+        handleCalcView($('#@formId'));
+        handleTypeView($('#@formId'));
+        handleTaxView($('#@formId'));
+    }
+
+    function handleTaxView(form) {
+        var elem = $(form).find("[name='TaxTypeId']");
+        var val = $(elem).val();
+        var tax = $(form).find('.taxFieldSet');
+        var taxAmount = $(form).find('.TaxAmount');
+        var taxRate = $(form).find('.TaxRate');
+        var taxType = $(form).find('.TaxTypeId');
+        var taxCode = $(form).find('.TaxCodeId');
+        var lineTypeId = $(form).find("[name='LineTypeId']").val();
+
+        $(form).find('.taxGroup').hide();
+        if (lineTypeId !== "6") {
+            $(taxType).removeAttr("disabled");
+        }
+        if (val != "0") {
+            $(form).find('.taxGroup').fadeIn(500);
+        }
+        //$(taxAmount).attr("disabled", true);
+        $(taxRate).attr("disabled", true);
+
+    }
+
+    function handleCalcView(form) {
+        var elem = $(form).find("[name='CalcType']");
+        var val = $(elem).val();
+
+        $(form).find('.unitGroup').hide();
+        $(form).find('.unitCostGroup').hide();
+        if (val == "1") {
+            $(form).find('.unitGroup').fadeIn(500);
+            $(form).find('.unitCostGroup').fadeIn(500);
+        }
+    }
+
+    function handleTypeView(form) {
+        var elem = $(form).find("[name='LineTypeId']");
+        var calcType = $(form).find("[name='CalcType']")
+        var taxType = $(form).find("[name='TaxTypeId']");
+        var um = $(form).find("[name='UM']");
+
+        var lineTypeId = parseInt($(elem).val());
+        //console.log('handleTypeView, lineTypeId:', lineTypeId);
+
+        $(form).find(":disabled").removeAttr("disabled");
+
+        $(calcType).removeAttr("disabled");
+        $(taxType).removeAttr("disabled");
+        $(um).removeAttr("disabled");
+
+        $(form).find('.jobGroup').hide();
+        $(form).find('.eqpGroup').hide();
+        $(form).find('.poGroup').hide();
+        $(form).find('.glGroup').hide();
+
+        if (lineTypeId == 4) {
+            $(form).find('.eqpGroup').fadeIn(500);
+            $(form).find('.jobGroup').each(function () {
+                $(this).removeAttr("disabled");
+            });
+        }
+        else if (lineTypeId == 1) {
+            $(form).find('.jobGroup').fadeIn(500);
+            $(form).find('.jobGroup').each(function () {
+                $(this).removeAttr("disabled");
+            });
+        }
+        else if (lineTypeId == 3) {
+            $(form).find('.glGroup').fadeIn(500);
+        }
+        else if (lineTypeId == 6) {
+            $(form).find('.poGroup').fadeIn(500);
+            var elem = $(form).find("[name='POItemTypeId']");
+            var itemTypeId =  $(elem).val();
+
+            $(calcType).attr("disabled","");
+            $(taxType).attr("disabled", "");
+            $(um).attr("disabled", "");
+
+            if (itemTypeId == "4" || itemTypeId == "Equipment") {
+                $(form).find('.eqpGroup').fadeIn(500);
+                $(form).find('.eqpGroup').attr("disabled", true);
+            }
+            else if (itemTypeId == "1" || itemTypeId == "Job") {
+                $(form).find('.jobGroup').fadeIn(500);
+                $(form).find('.jobGroup').attr("disabled", true);
+            }
+            else if (itemTypeId == "3" || itemTypeId == "Expense") {
+                $(form).find('.glGroup').fadeIn(500);
+                $(form).find('.glGroup').attr("disabled", true);
+            }
+        }
+
+        handleCalcView(form);
+        handleTaxView(form);
+
+    }
+</script>

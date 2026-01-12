@@ -1,0 +1,132 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditMeterLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var rowId = string.Format("row_{0}", Guid.NewGuid());
+    var colSpan = viewOnly ? "3" : "4";
+    ViewBag.TableRow = "True";
+}
+    <tr data-entitykey="@entityKey" id="@rowId" class="meter">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.EntityName, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EntityKeyString, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.AuditId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.ActionId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Comments, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.StatusId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.AuditTypeId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LastHourReading, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LastOdoReading, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.Completed)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.EquipmentId, new { ViewOnly = Model.IsEquipmentIdLocked })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.LicensePlateNo, new { ViewOnly = true })
+        </td>
+        <td class="meterGrp">
+            @Html.EditorFor(m => m.MeterTypeId, new { ViewOnly = true })
+        </td>
+        <td class="meterGrp">
+            @Html.EditorFor(m => m.OdoReading)
+        </td>
+        <td class="meterGrp">
+            @Html.EditorFor(m => m.HourReading)
+        </td>
+        <td class="meterGrp">
+            <div class="btn-group pull-right ">
+                @if (Model.ActionId == DB.EMAuditLineActionEnum.Add)
+                {
+                    <button class="btn btn-danger delRow"
+                            data-entitykey="@entityKey">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-danger transfer"
+                            data-entitykey="@entityKey">
+                        <i class="fas fa-trash-undo-alt"></i>
+                    </button>
+                }
+                <button class="btn btn-primary commentRowBtn"
+                        style="@(String.IsNullOrEmpty(Model.Comments) ? " display: normal;" : "display: none;" )"
+                        id="@(" commentRowBtn_" + @Model.SeqId)"
+                        data-seqid="@Model.SeqId">
+                    <i class="fa fa-comment"></i>
+                </button>
+            </div>
+        </td>
+
+
+        <td class="transferGrp" style="display:none">
+            @switch (Model.AuditTypeId)
+            {
+                case DB.EMAuditTypeEnum.CrewAudit:
+                    @Html.EditorFor(m => m.ToCrewId)
+                    @Html.HiddenFor(m => m.ToEmployeeId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToJobId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToLocationId, new { @id = Guid.NewGuid() })
+                    break;
+                case DB.EMAuditTypeEnum.EmployeeAudit:
+                    @Html.EditorFor(m => m.ToEmployeeId)
+                    @Html.HiddenFor(m => m.ToCrewId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToJobId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToLocationId, new { @id = Guid.NewGuid() })
+                    break;
+                case DB.EMAuditTypeEnum.LocationAudit:
+                    @Html.EditorFor(m => m.ToLocationId)
+                    @Html.HiddenFor(m => m.ToCrewId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToJobId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => m.ToEmployeeId, new { @id = Guid.NewGuid() })
+                    break;
+                default:
+                    break;
+            }
+        </td>
+        <td class="transferGrp" style="display:none">
+        </td>
+        <td class="transferGrp" style="display:none">
+        </td>
+        <td class="transferGrp" style="display:none">
+            <div class="btn-group pull-right ">
+                @if (Model.ActionId == DB.EMAuditLineActionEnum.Add)
+                {
+                    <button class="btn btn-danger delRow"
+                            data-entitykey="@entityKey">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-warning untransfer"
+                            data-entitykey="@entityKey">
+                        <i class="fas fa-undo"></i>
+                    </button>
+
+                }
+                <button class="btn btn-primary commentRowBtn"
+                        style="@(String.IsNullOrEmpty(Model.Comments) ? " display: normal;" : "display: none;" )"
+                        id="@(" commentRowBtn_" + @Model.SeqId)"
+                        data-seqid="@Model.SeqId">
+                    <i class="fa fa-comment"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+@if (Model.ActionId == DB.EMAuditLineActionEnum.Add)
+{
+    <script>
+        $('#@rowId').ready(function () {
+            $('#@rowId').find('.ActionId').each(function () { handleActionView(this) });
+            $('#@rowId').find('.MeterTypeId').each(function () { handleMeterView(this) });
+        });
+    </script>
+}

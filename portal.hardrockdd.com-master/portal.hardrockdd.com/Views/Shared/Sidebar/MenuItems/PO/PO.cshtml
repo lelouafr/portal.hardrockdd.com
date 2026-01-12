@@ -1,0 +1,44 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "po";
+}
+@if (User.HasAccess("PO") ||
+     User.HasAccess("PORequest"))
+
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Purchase Orders</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "UserPO", routeValues: new { Area = "" })">Your PO's</a></li>
+            @if (User.HasAccess("AllPO"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "AllPO", routeValues: new { Area = "" })">All PO's</a></li>
+            }
+            @if (User.HasAccess("PORequest"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <span>PO Request</span>
+                    </a>
+                    <ul class="sub-menu">
+                        @Html.Partial("../Shared/Sidebar/MenuItems/PO/PO_User")
+                        @if (User.HasAccess("AllPORequest"))
+                        {
+                            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "AllPORequest", routeValues: new { Area = "" })">All PO Request</a></li>
+                        }
+                        @if (User.HasAccess("PORequestProcess"))
+                        {
+                            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "PORequestProcess", routeValues: new { Area = "" })">Process PO Request</a></li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </li>
+}

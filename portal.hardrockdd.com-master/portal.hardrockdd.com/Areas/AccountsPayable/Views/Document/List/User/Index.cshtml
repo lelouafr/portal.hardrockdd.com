@@ -1,0 +1,45 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentListViewModel
+
+@{
+    ViewBag.Title = "AP Documents Needing your Info";
+}
+@section styles {
+    @Styles.Render("~/csspage/inputcontrols")
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-xl-4">
+        @Html.Partial("List/User/_Panel", Model)
+    </div>
+    <div class="col-xl-8">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="requestInfoModel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/assets/plugins/DataTables/media/js/dataTables.rowsGroup.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+
+
+    <script src="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+    <script src="~/Content/assets/plugins/parsley/parsley.min.js"></script>
+
+}

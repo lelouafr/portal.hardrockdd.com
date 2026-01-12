@@ -1,0 +1,14 @@
+﻿@model portal.Models.Views.HR.Request.Term.TermRequestFormViewModel
+
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("../HR/Request/Term/Form/Buttons", Model.Actions)
+        @Html.Partial("../HR/Request/Term/Form/Info/Panel", Model.Info)
+    </div>
+    <div class="col-4">
+        @Html.Partial("../HR/Request/Term/Form/StatusLog/Panel", Model.StatusLogs)
+    </div>
+    <div class="col-12">
+        @Html.Partial("../HR/Request/Term/Form/Assets/Panel", Model.AssignedAssets)
+    </div>
+</div>

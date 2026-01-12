@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.HQ.Batch.ActionListViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Actions List
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("../HQ/Batch/Action/List/Table", Model)
+    </div>
+</div>

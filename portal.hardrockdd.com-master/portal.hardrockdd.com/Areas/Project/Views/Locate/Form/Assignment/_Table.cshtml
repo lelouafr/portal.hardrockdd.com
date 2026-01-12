@@ -1,0 +1,179 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateAssignmentListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey"
+       data-urlupdate="@Url.Action("LocateAssignmentUpdate", "Locate")"
+       data-urldata="@Url.Action("LocateAssignmentData", "Locate", new { locateId = Model.LocateId })">
+    <thead>
+        <tr>
+            @*<th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateId)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().BDCo)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().BidId)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Bid)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PackageId)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Package)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreId)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().JCCo)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>*@
+            <th></th>
+            <th width="65%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Footage)</th>
+            <th width="15%"><label>Status</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Included)</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+
+<script>
+    $('#@tableId').ready(function () {
+
+        var expandTree = function () {
+            var newExp = false;
+            setTimeout(function () {
+                //var dt = $(table).DataTable();
+                //var data = dt.data();
+                //if (data.children && data.children.length) {
+                //    data.children.forEach(function (item) {
+                //        if (item.expand || item.expand == true) {
+
+                //        }
+                //    });
+                //}
+
+                $('#@tableId').find('input:checked').each(function () {
+                    var $row = $(this).closest('tr');
+                    var $expand = $row.find('.treegrid-control');
+                    if ($expand.length !== 0) {
+                        $expand.click();
+                        newExp = true;
+                    }
+                });
+
+                if (newExp) {
+                    expandTree();
+                }
+            }, 250);
+        };
+
+        var countMark = function (cnt, transCnt, item) {
+            //console.log(cnt, transCnt);
+            var div = $('<div></div>');
+            var span = $('<span></span>');
+            var icon = $('<i></i>');
+            $(div).append($(span));
+            $(span).append($(icon));
+            if (item.children) {
+                $(div).addClass("text-center");
+                if (cnt == 0) {
+                    $(span).addClass("text-warning");
+                }
+                else if (cnt == transCnt) {
+                    $(span).addClass("text-green");
+                }
+                else {
+                    $(span).addClass("text-warning");
+                }
+                $(span).html("<b>" + cnt + "</b>")
+                $(div).append(" of " + "<b>" + transCnt + "</b>")
+            }
+            else {
+
+            }
+            return $(div).get(0).outerHTML;
+        }
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            ordering: false,
+            processing: true,
+            scrollCollapse: true,
+            bInfo: false,
+            treeGrid: {
+                left: 5,
+                expandIcon: '<span><i class="fas fa-caret-right"></i></span>',
+                collapseIcon: '<span><i class="fas fa-caret-down"></i></span>'
+            },
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('urldata'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                //{ data: "LocateId" },
+                //{ data: "SeqId" },
+                //{ data: "BDCo" },
+                //{ data: "BidId" },
+                //{ data: "Bid" },
+                //{ data: "PackageId" },
+                //{ data: "Package" },
+                //{ data: "BoreId" },
+                //{ data: "JCCo" },
+                //{ data: "JobId" },
+                {
+                    className: 'treegrid-control',
+                    data: function (item) {
+                        if (item.children) {
+                            return '<span><i class="fas fa-caret-right"></i></span>';
+                        }
+                        return '';
+                    }
+                },
+                { data: "Description" },
+                { data: "Footage" },
+                {
+                    class: 'text-center',
+                    data: function (item) {
+                        return countMark(item.AssignedCnt, item.ChildCnt, item);
+                    }
+                },
+                {
+                    target: 2,
+                    data: function (item) {
+                        value = item.Included == true ? "true" : "false";
+                        if (value == "true") {
+                            return '<input name="Included" class="Included" data-size="small" data-render="switchery" checked data-theme="green" type="checkbox" value="' + value + '"  data-switchery="true" >';
+                        }
+                        return '<input name="Included" class="Included" data-size="small" data-render="switchery"  data-theme="green" type="checkbox" value="' + value + '"  data-switchery="true" >';
+                    },
+                },
+            ],
+            columnDefs: [
+                //{ targets: [0], visible: false },
+            ],
+            fnInitComplete: function ()
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "";
+                rowKey += "LocateId=" + data.LocateId;
+                rowKey += "&SeqId=" + data.SeqId;
+                rowKey += "&BDCo=" + data.BDCo;
+                rowKey += "&BidId=" + data.BidId;
+                rowKey += "&PackageId=" + data.PackageId;
+                rowKey += "&BoreId=" + data.BoreId;
+                rowKey += "&JCCo=" + data.JCCo;
+                rowKey += "&JobId=" + data.JobId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+</script>

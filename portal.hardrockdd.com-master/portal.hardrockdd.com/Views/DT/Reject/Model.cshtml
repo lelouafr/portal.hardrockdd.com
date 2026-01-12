@@ -1,0 +1,74 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketRejectViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="model-title">Reject Ticket</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+    </div>
+    <div id="rejectModel" class="modal-body validationContaner">
+        @Html.EditorForModel("Form/FormList", new
+            {
+                viewOnly = "False",
+                tableRow = "False",
+                ValidateUrl = @Url.Action("RejectValidate", "DailyTicketForm"),
+                SubmitUrl = @Url.Action("Reject", "DailyTicketForm")
+            })
+    </div>
+    <div class="modal-footer">
+        <div class="pull-right">
+            <button class="btn btn-primary pr-20 cancelReject">
+                <i class="fa fa-ban"> Cancel</i>
+            </button>
+            <button class="btn btn-danger rejectTicket"
+                    data-dtco="@Model.DTCo"
+                    data-ticketid="@Model.TicketId">
+                Reject Ticket
+                <i class="fa fa-thumbs-down"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.rejectTicket')
+            .off('click')
+            .on('click', function () {
+                var button = this;
+                var func = function (rejectModel, ticketPanel) {
+                    data = $(rejectModel).find('form').serialize();
+                    url = $(rejectModel).find('form').data('urlsubmit');
+                    $.post(url, data, function (res) {
+                        if (res.success === "true") {
+                            var model = res.model;
+                            var dtco = model.DTCo;
+                            var ticketId = model.TicketId;
+                            var rowKey = "DTCo=" + dtco + "&TicketId=" + ticketId + "";
+                            var rowElem = $('tr[data-entitykey="' + rowKey + '"]');
+                            rowElem.remove();
+
+                            $(ticketPanel).data('ticketco', dtco)
+                            $(ticketPanel).data('ticketid', ticketId)
+                            $('#rejectTicket').modal('hide');
+                        }
+                        ReloadTicket(ticketPanel);
+                    });
+                };
+                var from = $('#rejectModel')
+                var ticketPanel = $('.ticketPanel').children()[0];
+                $(from).PostValidate(button, function (valid) {
+                    if (valid) {
+                        func(from, ticketPanel);
+                    }
+                });
+            });
+        $("button.cancelReject").click(function () {
+            $('#rejectTicket').modal('hide');
+        });
+    });
+</script>

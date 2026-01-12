@@ -1,0 +1,59 @@
+﻿@model portal.Models.Views.JC.Job.JobSummaryViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      @*
+          data-urlcreate="@Url.Action("Add", "PurchaseOrder")"
+          data-urldelete="@Url.Action("Delete", "PurchaseOrder")"
+      data-urlupdate="@Url.Action("Update", "PurchaseOrder")"
+      data-urlvalidate="@Url.Action("Validate", "PurchaseOrder")"
+      data-postupdate="PostUpdate@(id)"
+              *@>
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.StatusId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.JobId)
+        @Html.EditorFor(m => m.JobName)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Customer)
+        @Html.EditorFor(m => m.CustomerName)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId)
+        @Html.EditorFor(m => m.RigId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.PipeSize)
+        @Html.EditorFor(m => m.Footage)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DivisionId)
+        @Html.EditorFor(m => m.EndMarket)
+    </div>
+</form>
+
+<script>
+    function PostUpdate@(id)(elem) {
+    }
+</script>

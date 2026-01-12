@@ -1,0 +1,30 @@
+﻿@model List<portal.Models.Views.Notification.NotificationViewModel>
+
+@{
+    ViewBag.Title = "Your Alerts";
+}
+
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="panel panel-inverse" data-sortable-id="table-basic-1" data-reloadurl="@Url.Action("Table", "Notification")">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                    
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+                </div>
+                <h4 class="panel-title">Notification List</h4>
+            </div>
+            <div class="panel-body" id="ticketlist">
+                @Html.Partial("~/Views/Notification/Table.cshtml", Model)
+            </div>
+        </div>
+    </div>
+</div>

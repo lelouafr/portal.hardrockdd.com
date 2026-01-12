@@ -1,0 +1,41 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "pm_locate";
+}
+
+@if (User.HasAccess("Locate") ||
+     User.HasAccess("Request"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Locate</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Locate", "RequestIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("RequestIndex", "Locate", new { Area = "Project"})">Request(s)</a></li>
+            }
+            @if (User.HasAccess("Locate", "RequestOpenIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("RequestOpenIndex", "Locate", new { Area = "Project"})">Open Request(s)</a></li>
+            }
+
+            @if (User.HasAccess("Locate", "LocateIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("LocateIndex", "Locate", new { Area = "Project"})">Locate(s)</a></li>
+            }
+            @if (User.HasAccess("Locate", "LocateOpenIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("LocateOpenIndex", "Locate", new { Area = "Project" })"> Open Locate(s) </a></li>
+            }
+            @if (User.HasAccess("Locate", "LocateExpiredIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("LocateExpiredIndex", "Locate", new { Area = "Project"})">Expired Locate(s)</a></li>
+            }
+
+            @Html.Partial("../Shared/Sidebar/MenuItems/PM/PM_LocateImport")
+        </ul>
+    </li>
+}

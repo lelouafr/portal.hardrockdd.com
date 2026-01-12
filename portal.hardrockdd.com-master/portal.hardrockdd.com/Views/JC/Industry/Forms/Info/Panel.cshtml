@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.JC.Industry.Form.IndustryInfoViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<!-- begin card -->
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Info
+    </div>
+    <div id="@panelId" class="collapse show">
+        <div class="card-body">
+            @Html.Partial("../JC/Industry/Forms/Info/Form", Model)
+        </div>
+    </div>
+</div>
+<!-- end card -->

@@ -1,0 +1,33 @@
+﻿@model portal.Areas.Applicant.Models.WorkHistoryListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelShow = ViewBag.ExpandAllPanels == true ? "show" : "collapse"; ;
+
+    panelShow = "show";
+}
+
+<div class="panel panel-default b-3 m-b-5"
+     data-reloadurl="@Url.Action("WorkHistoryTable", "Applicant", new { applicantId = Model.ApplicantId , applicationId = Model.ApplicationId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Work History (@Model.List.Count)
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("Application/Form/WorkHistory/_FormList", Model)
+    </div>
+</div>
+<!-- begin card -->
+@*<div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Work History
+        </div>
+        <div id="@panelId" class="show">
+            <div class="card-body">
+            </div>
+        </div>
+    </div>*@
+<!-- end card -->

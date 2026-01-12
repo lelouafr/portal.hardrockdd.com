@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <title>@ViewBag.Title </title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/Content/assets/img/logo/favicon.png">
+    
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
+    @Styles.Render("~/cssbase/font-google")
+    @Styles.Render("~/cssbase/theme")
+    @Styles.Render("~/cssbase/style")
+    <link href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous" rel="stylesheet">
+    @*@Styles.Render("~/cssbase/font-awesome")*@
+    @Styles.Render("~/cssbase/notifications")
+    <!-- ================== END BASE CSS STYLE ================== -->
+    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+    @if (IsSectionDefined("Styles"))
+    {
+        @RenderSection("Styles", required: false)
+    }
+    <!-- ================== END PAGE LEVEL STYLE ================== -->
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/pageloader")
+    @Scripts.Render("~/jsbase/jquery")
+    <!-- ================== END BASE JS ================== -->
+</head>
+<body>
+    <div id="page-loader" class="fade show"><span class="spinner"></span></div>
+
+    
+    @RenderBody()
+    @Html.Partial("_Modals")
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/bootstrap")
+    <!--[if lt IE 9]>
+        @Scripts.Render("~/jsbase/ie9")
+    <![endif]-->
+    @Scripts.Render("~/jsbase/slimScroll")
+    @Scripts.Render("~/jsbase/lsCache")
+    @Scripts.Render("~/jsbase/jscookie")
+    @Scripts.Render("~/jsbase/theme")
+    @Scripts.Render("~/jsbase/notifications")
+    @Scripts.Render("~/jsbase/inputmask")
+
+    <!-- ================== END BASE JS ================== -->
+    <!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    @RenderSection("scripts", required: false)
+    <!-- ================== END PAGE LEVEL JS ================== -->
+    <script>
+        $(document).ready(function () {
+            //lscache.flush();
+            var token = $("#content").find('[name="__RequestVerificationToken"]')[0];
+            App.init();
+            //console.log(token);
+            App.initForgeryToken(token);
+
+            lscache.enableWarnings(true);
+            $('#page-container').addClass(lscache.get('SideBar'));
+            $("#auditLog").draggable({
+                handle: ".modal-dialog"
+            });
+        });
+        function LogOff() {
+            //var token = $(document).find('[name="__RequestVerificationToken"]');
+            var url = '@Url.Action("LogOff", "Account")'
+            //var data = {
+            //    __RequestVerificationToken: token.val()
+            //};
+            $.post(url).done(function (res) {
+                //console.log(res);
+                window.location.href = res.url;
+            });
+        }
+    </script>
+</body>
+</html>

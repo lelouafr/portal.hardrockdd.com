@@ -1,0 +1,7 @@
+﻿@model portal.Models.Views.Payroll.PayrollPerdiemReviewViewModel
+
+@Html.EditorForModel("Form/TDForm", new {
+                    UpdateUrl = @Url.Action("Update", "PayrollPerdiem"),
+                    ValidateUrl = @Url.Action("Validate", "PayrollPerdiem"),
+                    TableRow = "True"
+                })

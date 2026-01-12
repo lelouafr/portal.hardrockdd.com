@@ -1,0 +1,21 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em_usage";
+}
+
+@if (User.HasAccess("DailyEquipmentUsage"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Posting</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("DailyEquipmentUsage", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "DailyEquipmentUsage", routeValues: new { Area = "" })">Usage Posting</a></li>
+            }
+        </ul>
+    </li>
+}

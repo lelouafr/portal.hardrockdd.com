@@ -1,0 +1,172 @@
+﻿@model portal.Models.Views.AP.Document.DocumentViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="data"
+     data-id="@Model.DocId"
+     data-url="@Url.Action("Open", "APDocument", new { apco = Model.APCo, docId = Model.DocId})"
+     class="panel panel-default">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-popout"><i class="far fa-window-maximize"></i></a>
+
+
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> File Preview
+        </div>
+    </div>
+    <div class="panel-body" id="@panelId">
+        <div class="code" style="display: none;"><textarea id="code" readonly="readonly"></textarea></div>
+        <div class="folder" style="display: none;"></div>
+        <div class="file" style="display: none;">
+            <iframe id="preview" frameborder="0" style="width: 100%; height: 600px;" allowfullscreen>
+            </iframe>
+        </div>
+        <div class="image" style="position: relative; display: none;">
+            <img src="data:inode/x-empty;base64," alt="" style="display:block; left:50%; top:50%; padding:0; max-height:90%; max-width:90%;">
+        </div>
+        @*<div class="google-map" style="position: relative; display: none;">
+                <div id="googlemap">
+                </div>
+                <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+            </div>*@
+        <div class="default" style="text-align: center; display: none;">
+            <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var panelId = 'data';
+        var url = $('#' + panelId).data('url');
+        var id = $('#' + panelId).data('id');
+        var text = "@Model.DocumentName";
+        var mime = "@Model.Mime";
+        var cacheKey = "DocumentViewModelPreview"
+        var isPoppedOut = lscache.get("DocumentViewModelPreview_IsPopedOut");
+
+        var data = {
+            url: url,
+            text: text,
+            mime: mime
+        };
+        lscache.set(cacheKey, data, 10);
+        loadPreview(url, text, mime);
+        if (!isPoppedOut) {
+        }
+        else {
+            reloadPreview(id);
+        };
+    });
+
+    $('#data').on('click', '[data-click=panel-popout]', function (e) {
+        e.preventDefault();
+        //console.log('Popout');
+        lscache.set('DocumentViewModelPreview_IsPopedOut', true, 10);
+    });
+
+    $(window).on('beforeunload', function () {
+        //lscache.set('DocumentViewModelPreview_IsPopedOut', false, 10);
+    });
+
+    function reloadPreview(panelId) {
+        var cacheKey = "DocumentViewModelPreview"
+        var isPoppedOut = lscache.get("DocumentViewModelPreview_IsPopedOut");
+        if (isPoppedOut) {
+            //console.log('Is Popped Out');
+            setTimeout(function () {
+                var data = lscache.get(cacheKey)
+                var currentId = $('#data').data('id');
+                if (data != null && isPoppedOut) {
+                    if ($('#data').data('url') != data.url) {
+                        //console.log('Reload Preview');
+                        $('#data').data('url', data.url);
+                        loadPreview(data.url, data.text, data.mime);
+                    }
+                }
+                if (!$('#data').is(":hidden") && currentId == panelId && isPoppedOut) {
+                    reloadPreview(currentId);
+                }
+            }, 1000);
+        }
+        else {
+            //console.log('Is Not Popped Out');
+        }
+    }
+
+    function loadPreview(href, text, mime) {
+        //console.log(href, text, mime);
+        $('#data').hide();
+        $('#data .image').hide();
+        $('#data .file').hide();
+        $('#data .google-map').hide();
+        $('#data .default').hide();
+        switch (mime) {
+            case 'application/pdf':
+                $('#data').show();
+                $('#data .file').show();
+                $('#preview').attr('src', href);
+                break;
+            case 'application/octet-stream':
+                var fileName = text;
+                if (fileName.indexOf('.kmz') > -1 || fileName.indexOf('.kml') > -1) {
+                    $('#data').show();
+                    $('#data .google-map').show();
+                    initialize(href);
+                    var aTag = $('#data .google-map a');
+                    $(aTag).attr('href', href);
+                    $(aTag).html("Open " + text);
+                }
+                else {
+                    $('#data').show();
+                    $('#data .default').show();
+                    var aTag = $('#data .default a');
+                    $(aTag).attr('href', href);
+                    $(aTag).html("Open " + text);
+                }
+                break;
+            case 'application/txt':
+            case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            case 'htaccess':
+            case 'log':
+            case 'sql':
+            case 'php':
+            case 'js':
+            case 'json':
+            case 'css':
+            case 'html':
+                $('#data').show();
+                $('#data .default').show();
+                var aTag = $('#data .default a');
+                $(aTag).attr('href', href);
+                $(aTag).html("Open " + text);
+                //console.log(mime);
+                break;
+            case 'image/jpeg':
+            case 'image/jpg':
+            case 'image/bmp':
+            case 'image/gif':
+            case 'image/png':
+                $('#data').show();
+                $('#data .image img').attr('src', href)
+                    .one('load', function () {
+                        resizeImage(this);
+                    });
+                $('#data .image').show();
+                break;
+            default:
+                $('#data').show();
+                $('#data .default').show();
+                var aTag = $('#data .default a');
+                $(aTag).attr('href', href);
+                $(aTag).html("Open " + text);
+                //console.log(mime);
+                break;
+        }
+    }
+
+
+</script>

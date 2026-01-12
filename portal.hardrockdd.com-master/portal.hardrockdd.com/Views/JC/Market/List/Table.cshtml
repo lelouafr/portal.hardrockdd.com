@@ -1,0 +1,36 @@
+﻿@model portal.Models.Views.JC.Market.MarketListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("Update", "JCMarket")"
+       data-urlcreate="@Url.Action("Add", "JCMarket")"
+       data-urldelete="@Url.Action("Delete", "JCMarket")"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../JC/Market/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

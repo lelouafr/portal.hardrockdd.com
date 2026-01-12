@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.DailyTicket.DailyShopTicketViewModel
+@{ 
+    var id = Guid.NewGuid().ToString().Replace("-","");
+    var tablePanelId = "panel_DailyShopEmployeeListViewModel" + Model.TicketId.ToString();
+}
+<div class="panel panel-inverse"
+     data-sortable-id="DailyJobTicketViewModel"
+     data-reloadurl="@Url.Action("ShopTicketForm", "DailyTicketForm", new { dtco = Model.DTCo, ticketId = Model.TicketId })"
+     data-initpane="initPane@(id)"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>            
+        </div>
+        <h4 class="panel-title">Info @Model.TicketId</h4>
+    </div>
+    <div class="panel-body" id="forminfo">
+        @Html.Partial("../DT/Type/Shop/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+         setTimeout(function () {
+           // handleCrewChange();
+            handleEmployeeView();
+        }, 500);
+    }
+
+    function handleEmployeeView() {
+        //console.log('handleEmployeeView');
+        if ($("[name='CrewId']").val() !== null && $("[name='CrewId']").val() !== "") {
+            $('#@tablePanelId').find('.panel-body').show();
+        }
+        else {
+            $('#@tablePanelId').find('.panel-body').hide();
+        }
+    }
+
+    function handleCrewChange() {
+        console.log('handleCrewChange', 'Panel Id', $('#@tablePanelId').length);
+       //$("[name='CrewId']").change(function () {
+            $('#@tablePanelId').find('[data-click=panel-reload]').click();
+            handleEmployeeView();
+        //});
+    }
+
+</script>

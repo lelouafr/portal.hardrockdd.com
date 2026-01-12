@@ -1,0 +1,34 @@
+﻿@model portal.Models.TableViewModel
+
+<div class="row">
+    <div class="col-sm-5">
+        <div class="dataTables_info" id="@(Model.TableId + "_info")" role="status" aria-live="polite">
+            @Model.RecordSummary
+        </div>
+    </div>
+    <div class="col-sm-7">
+        @Html.HiddenFor(m => m.CurrentPage)
+        <div class="dataTables_paginate paging_simple_numbers" id="@(Model.TableId + "_paginate")">
+            <ul class="pagination">
+                @if (Model.PrevEnabled)
+                {
+                    <li class="paginate_button previous" id="@(Model.TableId + "_previous")">
+                        <a href="#" aria-controls="@Model.TableId" data-dt-idx="@(Model.CurrentPage - 1)" tabindex="0">Previous</a>
+                    </li>
+                }
+                @foreach (var page in Model.Pages)
+                {
+                    <li class="paginate_button @(page.Active ? "active" : "") @(page.Disabled ? "disabled" : "")">
+                        <a href="#" aria-controls="@Model.TableId" data-dt-idx="@page.PageNumber" tabindex="0">@page.PageLabel</a>
+                    </li>
+                }
+                @if (Model.NextEnabled)
+                {
+                    <li class="paginate_button next" id="@(Model.TableId + "_next")">
+                        <a href="#" aria-controls="DailyTicketSummary" data-dt-idx="@(Model.CurrentPage + 1)" tabindex="0">Next</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

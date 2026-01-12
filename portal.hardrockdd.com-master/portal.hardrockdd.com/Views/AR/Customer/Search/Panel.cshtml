@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.AR.Customer.CustomerListViewModel
+<div class="panel panel-inverse"
+     
+     data-reloadurl="@Url.Action("TableSearch", "ARCombo")"
+     style="padding: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Customer Lookup</h4>
+    </div>
+    <div class="panel-body" id="CustomerListViewModel" style="padding: 10px 5px 10px 5px;">
+        @Html.Partial("../AR/Customer/Search/Table", Model)
+    </div>
+</div>

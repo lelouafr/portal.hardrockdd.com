@@ -1,0 +1,74 @@
+﻿@model portal.Models.Views.HR.Request.Position.PayroleViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid().ToString().Replace("-", ""));
+    var panelBodyId = string.Format("panelBody_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default"
+     id="@panelId"
+     data-initpane="initPane@(panelId)"
+     >
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelBodyId)">
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> PR Info: (@Model.RequestId)
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("../HR/Request/Position/Form/HRInfo/Form", Model)
+    </div>
+</div>
+
+
+<script>
+    $('#@panelId').ready(function () {
+        initPane@(panelId)();
+    });
+
+    function initPane@(panelId)() {
+        setTimeout(function () {
+            $('#@panelBodyId').find('form').each(function () {
+                handlePRView(this);
+            });
+        }, 100);
+    }
+
+
+    function handlePRView(form) {
+        var elem = $(form).find("[name='WAApplicantId']");
+        var val = $(elem).val();
+
+        var prInfo = $(form).find('.prInfo');
+        if (val !== null && val !== '') {
+            $(prInfo).show();
+            var elemEarnCodeId = $(form).find("[name='PREarnCodeId']");
+            var valEarnCodeId = parseInt($(elemEarnCodeId).val());
+            console.log('valEarnCodeId', valEarnCodeId, elemEarnCodeId);
+
+
+            $(form).find("[name='PRHrlyRate']").hide();
+            $(form).find("[for='PRHrlyRate']").hide();
+            $(form).find("[data-valmsg-for='PRHrlyRate']").hide();
+            $(form).find("[name='PRSalaryAmt']").hide();
+            $(form).find("[for='PRSalaryAmt']").hide();
+            $(form).find("[data-valmsg-for='PRSalaryAmt']").hide();
+
+            if (valEarnCodeId === 1) {
+                $(form).find("[name='PRHrlyRate']").show();
+                $(form).find("[for='PRHrlyRate']").show();
+                $(form).find("[data-valmsg-for='PRHrlyRate']").show();
+            }
+            else if (valEarnCodeId === 4) {
+                $(form).find("[name='PRSalaryAmt']").show();
+                $(form).find("[for='PRSalaryAmt']").show();
+                $(form).find("[data-valmsg-for='PRSalaryAmt']").show();
+            }
+
+
+        }
+        else {
+            console.log('hide');
+            $(prInfo).hide();
+        }
+    }
+
+</script>

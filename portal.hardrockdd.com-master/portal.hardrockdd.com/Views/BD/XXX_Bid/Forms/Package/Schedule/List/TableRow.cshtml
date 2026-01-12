@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Schedule.ScheduleViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DivisionId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.NumberOfBores)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RigCategoryId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.StartDate)
+    </td>
+</tr>

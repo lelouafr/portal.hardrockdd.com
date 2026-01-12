@@ -1,0 +1,53 @@
+﻿@model portal.Models.Views.Bid.Wizard.ContractApproval.PackageViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (rowKey != string.Empty)
+            {
+                rowKey += "&";
+            }
+            rowKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.Description)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.DivisionId)
+        </td>
+        <td>
+            @if (Model.TempCustomerId > 90000)
+            {
+                @Html.EditorFor(m => m.TempCustomerId, new { ViewOnly = true })
+            }
+            @Html.EditorFor(m => m.CustomerId)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.CustomerReference)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.JobId)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Pricing.DirtLFPrice, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Pricing.RockLFPrice, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Status)
+        </td>
+    </tr>

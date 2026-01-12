@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditListViewModel
+
+
+<div class="panel panel-inverse" data-sortable-id="EquipmentAuditListViewModel"
+     data-reloadurl="@Url.Action("ApprovalTable", "EMAudit")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Approval List</h4>
+    </div>
+    <div class="panel-body" id="EquipmentAuditListViewModel">
+        @Html.Partial("../EM/Audit/Approval/List/Table", Model)
+    </div>
+</div>

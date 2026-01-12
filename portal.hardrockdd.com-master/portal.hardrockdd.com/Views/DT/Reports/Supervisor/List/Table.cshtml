@@ -1,0 +1,169 @@
+﻿@model portal.Models.Views.Dashboard.DirectReportSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    var maxPREndingDate = Model.List.DefaultIfEmpty().Max(max => max == null ? DateTime.Now.Date : max.PREndDate);
+}
+<table class="table table-responsive"
+       id="@tableId"
+       @*data-urlselect="@Url.Action("Panel", "PayrollEmployeeSummary")"*@
+       @*data-urlupdatepayrollstatus="@Url.Action("UpdatePayrollStatus", "PayrollReview")"*@
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PREndDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            @foreach (var DayofWeek in Model.List.GroupBy(g => g.WorkDate.DayOfWeek).Select(s => new { DayOfWeek = s.Key }).ToList())
+            {
+                <th><label>@DayofWeek.DayOfWeek.ToString().Substring(0, 3)</label></th>
+            }
+            <th><label>Total</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var empWeek in Model.List
+
+                                        .GroupBy(g => new { g.PRCo, g.EmployeeId, g.EmployeeName, g.PREndDate, g.WeekId })
+                                        .Select(s => new
+                                        {
+                                            PRCo = s.Key.PRCo,
+                                            EmployeeId = s.Key.EmployeeId,
+                                            EmployeeName = s.Key.EmployeeName,
+                                            PREndDate = s.Key.PREndDate,
+                                            WeekId = s.Key.WeekId,
+                                            TotalHours = s.Sum(sum => sum.Hour),
+                                            TotalDays = s.Sum(sum => ((int)(sum.PerdiemId ?? 0) >= 1 ? 1 : 0)),
+                                            List = s
+                                        })
+                                        .OrderBy(o => o.EmployeeName)
+                                        .ThenBy(o => o.PREndDate)
+                                        .ToList())
+        {
+            var firstItem = empWeek.List.FirstOrDefault();
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "PRCo={0}&EmployeeId={1}&WeekId={2}", empWeek.PRCo, empWeek.EmployeeId, empWeek.WeekId);
+            var rowSpan = empWeek.List.GroupBy(g => g.Status).Count();
+            foreach (var hourStatus in empWeek.List.GroupBy(g => g.Status)
+                                                   .Select(s => new { Status = s.Key, List = s })
+                                                   .ToList()
+                                                   .OrderBy(o => o.Status)
+                                                   .ToList())
+            {
+                var hoursClass = "";
+                if (hourStatus.Status == DB.EmployeeEntryStatusEnum.Pending)
+                {
+                    hoursClass = "bg-yellow-lighter";
+                }
+                if (hourStatus.Status == DB.EmployeeEntryStatusEnum.Posted)
+                {
+                    hoursClass = "bg-aqua-lighter";
+
+                }
+        <tr data-entitykey="@entityKey"
+            data-prco="@empWeek.PRCo"
+            data-employeeid="@empWeek.EmployeeId"
+            data-weekid="@empWeek.WeekId"
+            class="">
+            <td data-sort="@firstItem.PREndDate.ToString("yyyyMMdd")">
+                @firstItem.PREndDate.ToShortDateString()
+            </td>
+            <td>
+                <div>@Html.EditorFor(l => firstItem.EmployeeName, new { DisplayOnly = true })</div>
+                <div class="p-r-5 f-s-8">(@Html.EditorFor(l => firstItem.Postion, new { DisplayOnly = true }))</div>
+            </td>
+            <td>
+                <div>
+                    @hourStatus.Status
+                </div>
+            </td>
+            @{
+                var originalhoursClass = hoursClass;
+            }
+            @foreach (var DayofWeek in Model.List.GroupBy(g => g.WorkDate.DayOfWeek)
+                                    .Select(s => new { DayOfWeek = s.Key })
+                                    .ToList())
+            {
+                var subItem = hourStatus.List.Where(f => f.WorkDate.DayOfWeek == DayofWeek.DayOfWeek).ToList();
+                var entryCnt = empWeek.List.Where(f => f.WorkDate.DayOfWeek == DayofWeek.DayOfWeek && f.Hour != null).Count();
+                var hours = subItem.Sum(sum => sum.Hour);
+                if (firstItem.PREndDate < maxPREndingDate && hours == 0)
+                {
+                    hours = null;
+                }
+                if (hourStatus.Status == DB.EmployeeEntryStatusEnum.Approved && firstItem.PREndDate < maxPREndingDate && hours != 0)
+                {
+                    hoursClass = "bg-purple-transparent-5";
+                }
+                if (firstItem.PREndDate >= maxPREndingDate && hours > 12)
+                {
+                    hoursClass = "bg-red-transparent-5";
+                }
+                else
+                {
+                    hoursClass = originalhoursClass;
+                }
+                <td>
+                    @if (entryCnt != 0)
+                    {
+                        <div class="@hoursClass">
+                            <b>
+                                @string.Format(AppCultureInfo.CInfo(), "{0:F2}", hours)
+                            </b>
+                        </div>
+                    }
+                    else if (entryCnt == 0)//hourStatus.Status == DB.PayrollReviewStatusEnum.Approved &&
+                    {
+                        <div class="text-red-lighter"><b>Empty</b></div>
+                    }
+                    @if (subItem.Max(max => max.PerdiemId) != null)
+                    {
+                        <div class="@hoursClass">
+                            @{
+                                var employeePerdiem = subItem.Max(max => max.PerdiemId);
+                            }
+
+                            <div><b>@string.Format(AppCultureInfo.CInfo(), "{0}", employeePerdiem)</b></div>
+                        </div>
+                    }
+                </td>
+            }
+
+            <td>
+                @{
+                    var totalHours = Math.Round(empWeek.TotalHours ?? 0, 2);
+                }
+                @if (totalHours >= 60)
+                {
+                    <div class="bg-red-transparent-5 f-s-16"><b> @String.Format("{0:F2}", totalHours)</b></div>
+                }
+                else
+                {
+                    <div class="f-s-16"><b> @String.Format("{0:F2}", totalHours)</b></div>
+
+                }
+                <div class=""><b>@empWeek.TotalDays Days</b></div>
+            </td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            'order': [
+                [0, "asc"],
+                [1, "asc"],
+                [2, "desc"]],
+            'rowsGroup': [0,1,10],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+
+    });
+</script>

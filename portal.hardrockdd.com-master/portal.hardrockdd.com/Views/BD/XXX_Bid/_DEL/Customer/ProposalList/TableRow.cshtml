@@ -1,0 +1,37 @@
+﻿@model portal.Models.Views.Bid.BidCustomerViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (rowKey != string.Empty)
+            {
+                rowKey += "&";
+            }
+            rowKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+    var colSpan = viewOnly ? "3" : "4";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.CustomerId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ContactId)
+    </td>
+    <td>
+        <div class="pull-right">
+            <a href="@Url.Action("BidProposalPDF","PDF", new { co = Model.Co, bidId = Model.BidId, customerID = Model.CustomerId })" target="_blank" class="btn btn-success btn-lg"><i class="far fa-file-pdf"></i> Proposal</a>
+        </div>
+    </td>
+</tr>

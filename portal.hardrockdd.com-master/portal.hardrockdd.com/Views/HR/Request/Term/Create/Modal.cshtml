@@ -1,0 +1,36 @@
+﻿<div class="modal fade" id="termination">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style=" padding: 0px 0px 5px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPanels();
+        $("#termination").on("show.bs.modal", function (event) {
+            if (event.target == this) {
+
+                console.log("termination.show.bs.modal", event, this);
+                var button = $(event.relatedTarget);
+                $(button).Busy();
+                if (true) {
+                    var url = "@Url.Action("Create", "HRTermRequestForm", new { Area = "" })";
+                    //console.log(url);
+                    $(this).find(".modal-body").load(url);
+                    $(button).NotBusy();
+                }
+            }
+        });
+        $("#termination").on("hide.bs.modal", function (event) {
+            if (event.target == this) {
+                var button = $(event.relatedTarget);
+                console.log("termination.hide.bs.modal", event, this);
+            
+                // Place the returned HTML into the selected element
+                $(this).find(".modal-body").html("");
+            }
+        });
+    });
+</script>

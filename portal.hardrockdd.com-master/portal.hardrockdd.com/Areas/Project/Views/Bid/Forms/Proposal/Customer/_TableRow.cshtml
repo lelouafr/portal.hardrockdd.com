@@ -1,0 +1,23 @@
+﻿@model portal.Areas.Project.Models.Bid.CustomerViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.CustomerId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ContactId)
+    </td>
+    <td>
+        <div class="pull-right">
+            <a href="@Url.Action("BidProposalPDF","Bid", new { bdco = Model.BDCo, bidId = Model.BidId, customerID = Model.CustomerId })" target="_blank" class="btn btn-success"><i class="far fa-file-pdf"></i> Proposal</a>
+        </div>
+    </td>
+</tr>

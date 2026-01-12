@@ -1,0 +1,91 @@
+﻿
+<script>
+        $(document).ready(function () {
+            setTimeout(function () {
+                var urlAction = "@Url.Action("UserNotifications", "Notification", new { Area = "" })";
+                var data = { };
+                $.ajax({
+                        type: "get",
+                        url: urlAction,
+                        data: data,
+                        success: function (res) {
+                            var notifications = res;
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                timeOut: 15000,
+                                showMethod: 'slideDown',
+                                //extendedTimeOut: 0
+                            };
+
+                            for (var x = 0; x < notifications.length; x++) {
+                                var note = notifications[x];
+                                closeHtml = "<button type='button' class='toast-close-button' onclick='clearNotification(this);' data-id='" + note.Id + "'><i class='fas fa-times'></i></button>"
+                                switch (note.NotificationLevel) {
+                                    case 1:   //Info
+                                        toastr.info(note.Notes, note.Title, {
+                                            closeHtml: closeHtml
+                                        });
+                                        break;
+                                    case 2:   //Warning
+                                        toastr.warning(note.Notes,note.Title, {
+                                            closeHtml: closeHtml
+                                        });
+                                        break;
+                                    case 3:   //Danger
+                                        var elem = toastr.error(note.Notes, note.Title, {
+                                            closeHtml: closeHtml,
+                                            onCloseClick: function () {
+                                                alert('closed');
+                                            }
+                                        });
+                                        break;
+                                }
+                            }
+                        },
+                        error: function (res) {
+                            //console.log(res);
+                        }
+                    });
+            }, 1300);
+    });
+
+
+    $(document).on('click', '.toast', function () {
+        var id = $(this).find('.toast-close-button').data('id');
+        var urlAction = "@Url.Action("SetNotificationRead", "Notification", new { Area = "" })";
+        var data = {
+            id: id
+        };
+        $.post(urlAction, data, function () {
+            var urlGoto = "@Url.Action("GotoNotificationObjectURL", "Notification", new { Area = "" })";
+            $.ajax({
+                type:"Get",
+                dataType: "json",
+                url: urlGoto,
+                data: data,
+                success: function (res) {
+                    if (res.url !== "") {
+                        //console.log(res.url);
+                        window.location.href = res.url;
+                    }
+                }
+            });
+        });
+
+    });
+
+    function clearNotification(elem) {
+        var urlAction = "@Url.Action("SetNotificationRead", "Notification", new { Area = "" })";
+        var data = {
+            id: $(elem).data('id')
+        };
+        //console.log(urlAction, elem, data);
+        
+        $.post(urlAction, data, function () {
+           
+        });
+        
+    }
+
+</script>

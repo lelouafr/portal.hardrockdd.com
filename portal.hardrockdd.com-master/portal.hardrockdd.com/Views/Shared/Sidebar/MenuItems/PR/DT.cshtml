@@ -1,0 +1,29 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+}
+@if (User.HasAccess("Ticket") )
+{
+    <li id="menu_li_dt_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fab fa-wpforms"></i>
+            <span>Daily Tickets</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Ticket", "UserIndex"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("UserIndex", "Ticket", routeValues: new { Area = "Payroll" })">Your Tickets</a></li>
+            }
+            @if (User.HasAccess("Ticket", "PendingIndex"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("PendingIndex", "Ticket", routeValues: new { Area = "Payroll" })">Pending Ticket</a></li>
+            }
+            @if (User.HasAccess("Ticket", "Index"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "Ticket", routeValues: new { Area = "Payroll" })">All Tickets</a></li>
+            }
+
+        </ul>
+    </li>
+}

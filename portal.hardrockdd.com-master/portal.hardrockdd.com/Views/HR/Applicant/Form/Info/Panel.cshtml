@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.WA.Applicant.ApplicantInfoViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<!-- begin card -->
+<div class="card " style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Applicant Details
+    </div>
+    <div id="@panelId" class="collapse show">
+        <div class="card-body p-10 b-3">
+            @Html.Partial("../HR/Applicant/Form/Info/Form", Model)
+        </div>
+    </div>
+</div>
+<!-- end card -->

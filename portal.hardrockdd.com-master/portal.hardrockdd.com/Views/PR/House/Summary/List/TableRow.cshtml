@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.Employee.Housing.EmployeeHousingViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+    </td>
+    <td  data-search="@Model.Employee">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.WeekId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.EmployeeId, new { viewOnly = true })
+    </td>
+    <td data-search="@Model.CrewLeader">
+        @Html.EditorFor(m => m.CrewLeader, new { viewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SaturdayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SundayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.MondayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.TuesdayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.WednesdayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ThursdayHouse)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.FridayHouse)
+    </td>
+</tr>

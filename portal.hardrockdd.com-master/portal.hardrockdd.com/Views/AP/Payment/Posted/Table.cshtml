@@ -1,0 +1,103 @@
+﻿@model portal.Models.Views.AP.Payment.PostedBatchListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+
+<div class="row tableFilter">
+    <div class="col-12">
+        <form class="form-horizontal" id="PostedBatchListViewModelFilter">
+            <div class="form-group has-feedback row">
+                @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+                @Html.EditorFor(m => m.Mth, new { ViewOnly = false })
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table"
+       id="@tableId"
+       data-dataurl="@Url.Action("BatchListData",  "APPayment")"
+       data-urlselect="@Url.Action("BatchDetailPanel", "APPayment")"
+       data-mth="@Model.Mth"
+       data-co="@Model.APCo"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Mth)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().BatchId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().DateCreated)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().CMAcct)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().TransCount)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#PostedBatchListViewModelFilter'));
+        var tableElem = $('#@tableId');
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -75;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: true,
+            pageLength: 25,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            //scrollX: false,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                "url": $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.mth = $(tableElem).attr('data-mth');
+                    d.apco = $(tableElem).attr('data-co');
+                },
+               "type": "GET",
+               "datatype": "json",
+            },
+            order: [
+                [0, "desc"]
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columns: [
+                { data: "APCo", visible: false },
+                { data: "Mth", visible: false },
+                { data: "BatchId" },
+                {
+                    data: "DateCreated",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = data;
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                },
+                { data: "CMAcct" },
+                { data: "TransCount" },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "apco=" + data.APCo + "&mth=" + data.Mth + "&BatchId=" + data.BatchId + "&cmAcct=" + data.CMAcct;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        DataTablesMoveSearch(tableElem, $('.tableFilter'))
+    });
+
+
+    $(document).on('change', '[name="Mth"]', function () {
+        var table = $('#@tableId');
+        $(table).attr('data-Mth', $(this).val());
+        $('#@tableId').DataTable().ajax.reload();
+    })
+
+</script>

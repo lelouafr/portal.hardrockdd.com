@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.Bid.Wizard.Base.BidWizardFormViewModel
+
+@{
+    ViewBag.Title = "Wizard";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/smartwizard@5/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+
+@Html.Partial("../BD/Bid/Wizard/Quick/Wizard", Model)
+<br />
+<div class="row">
+    <div class="col-lg-4">
+        @Html.Partial("../Forum/Panel", Model.Forum)
+        @Html.Partial("../WF/AssignedUsers/Panel", Model.WorkFlowUsers)
+    </div>
+    <div class="col-lg-8">
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/keytable/2.5.3/js/dataTables.keyTable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+    <script src="~/Content/assets/plugins/arrow-table/arrow-table.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}
+

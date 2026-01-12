@@ -1,0 +1,85 @@
+﻿@model portal.Models.Views.AP.Vendor.VendorListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<style>
+    .form-inline .form-control {
+        width: 100%;
+    }
+
+    th, td {
+        white-space: nowrap;
+    }
+
+    div.dataTables_wrapper {
+        margin: 0 auto;
+    }
+</style>
+@*<div class="row">
+        @Html.EditorFor(m => m.StatusId)
+    </div>
+    <br />*@
+<table class="table  order-column"
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table", "Merchant")"
+       data-dataurl="@Url.Action(ViewBag.DataAction, ViewBag.DataController)"
+       data-urlselect="@Url.Action("Panel", "VendorForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendGroupId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendorId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusString)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        h = tableHeight($('#@tableId'), 100, 24.6);
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "VendGroupId" },
+                { data: "VendorId" },
+                { data: "Name" },
+                { data: "StatusString" },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "VendGroupId=" + data.VendGroupId + "&VendorId=" + data.VendorId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+</script>

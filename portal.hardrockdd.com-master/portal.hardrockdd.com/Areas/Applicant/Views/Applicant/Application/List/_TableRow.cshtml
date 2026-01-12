@@ -1,0 +1,21 @@
+﻿@model portal.Areas.Applicant.Models.ApplicationViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.ApplicantId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ApplicationId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ApplicationDate, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+</tr>

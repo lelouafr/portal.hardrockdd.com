@@ -1,0 +1,8 @@
+﻿@model portal.Models.Views.AR.Contact.ContactViewModel
+
+@Html.EditorForModel("Form/NewForm", new
+{
+    CreateUrl = @Url.Action("Create", "Contact"),
+    SaveUrl = @Url.Action("Update", "Contact"),
+    ValidateUrl = @Url.Action("Validate", "Contact")
+})

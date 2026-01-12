@@ -1,0 +1,83 @@
+﻿@{
+    var controller = (portal.Models.Views.Web.ControllerViewModel)ViewBag.ControllerViewModel;
+}
+<style>
+    .scrollbar {
+        height: auto;
+        max-height: 415px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        margin-top: 0px;
+    }
+</style>
+@if (controller != null)
+{
+    <div class="btn-group">
+
+        <a id="UserAccessListBtn" href="#" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+            <i class="fa fa-users"></i>
+            <span class="d-none d-md-inline">User Access</span>
+            <b class="caret"></b>
+        </a>
+        <ul id="UserAccessList" class="dropdown-menu media-list dropdown-menu-right scrollable-menu ">
+            <li class="dropdown-header">
+                Current Access (@controller.Users.List.Count)
+            </li>
+            @if (controller.Users.List.Any(f => f.UserId == StaticFunctions.GetUserId() && f.AccessLevel == DB.AccessLevelEnum.Full) ||
+                User.IsInRole("UserOverride"))
+            {
+                <li class="media">
+                    <div class="media-body align-self-center text-center">
+                        <div class=btn-group>
+                            @if (controller.Users.List.Any(f => f.UserId == StaticFunctions.GetUserId() && f.AccessLevel == DB.AccessLevelEnum.Full))
+                            {
+                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addUser">Add User</button>
+                            }
+
+                            @if (User.IsInRole("UserOverride"))
+                            {
+                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#overrideUser">Change User</button>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+            @foreach (var user in controller.Users.List)
+            {
+                <li class="media">
+                    <a href="javascript:;">
+                        <div class="media-left">
+                            <i class="fa fa-user media-object bg-silver-darker"></i>
+                        </div>
+                        <div class="media-body">
+                            <h6 class="media-heading">@user.UserName</h6>
+                            <div class="text-muted f-s-11">@user.LastAccessString</div>
+                        </div>
+                    </a>
+                </li>
+            }
+            <li class="dropdown-footer text-center">
+                <a href="@Url.Action("Index","WebFormUsers", new { Area = "", controllerId = controller.Id })" target="_blank">View all</a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var h = $('#UserAccessList').height();
+            //console.log('Height: ', h)
+            if (h > 415) {
+                $('#UserAccessList').addClass('scrollbar');
+            }
+        });
+        //$('#UserAccessListBtn').click(function () {
+        //    var h = $('#UserAccessList').height();
+        //    //console.log('Height: ', h)
+        //    if (h > 415) {
+        //        $('#UserAccessList').slimScroll({
+        //            height:'415px',
+        //        });
+        //    }
+        //});
+    </script>
+}

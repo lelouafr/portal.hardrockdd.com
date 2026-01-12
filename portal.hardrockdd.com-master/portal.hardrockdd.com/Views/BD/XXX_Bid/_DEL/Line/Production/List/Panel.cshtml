@@ -1,0 +1,97 @@
+﻿@model portal.Models.Views.Bid.BoreLine.PassListViewModel
+@{
+    portal.Code.Data.VP.BidParameter bidParms;
+    using (var db = new portal.Code.Data.VP.VPEntities())
+    {
+        bidParms = db.BDCompanyParms.FirstOrDefault(f => f.Co == Model.Co);
+    }
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div class="panel panel-inverse"
+     id="BidBoreLinePassListViewModel"
+     data-reloadurl="@Url.Action("Table", "BidBoreLinePass", new { co = Model.Co, bidId = Model.BidId, boreId = Model.BoreId })"
+     data-applydefaultprodrateurl="@Url.Action("ApplyStandardProductionRate", "BidBoreLinePass")"
+     data-reloadpanels="BidBoreLineCostItemListViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+        </div>
+        @if (!viewOnly)
+        {
+            <div class="btn-group pull-right pr-2">
+                <button type="button" class="btn btn-success btn-xs">Menu</button>
+                <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:;" onclick="ApplyProductionRates_@(Model.BoreId)(this, @Model.Co, @Model.BidId , @Model.BoreId )">Apply Default Production Rates</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:AddRow_@(Model.BoreId)('@bidParms.PilotPhaseId')">Add Pilot</a></li>
+                    <li><a href="javascript:AddRow_@(Model.BoreId)('@bidParms.ReamPhaseId')">Add Ream Pass</a></li>
+                    <li><a href="javascript:AddRow_@(Model.BoreId)('@bidParms.SwabPhaseId')">Add Swab</a></li>
+                    <li><a href="javascript:AddRow_@(Model.BoreId)('@bidParms.TripInOutPhaseId')">Add Trip in-out</a></li>
+                    <li><a href="javascript:AddRow_@(Model.BoreId)('@bidParms.PullPipePhaseId')">Add Pull Pipe</a></li>
+                </ul>
+            </div>
+        }
+        <h4 class="panel-title">Bore Line Production Rate</h4>
+    </div>
+    <div class="panel-body" id="BoreLinePasses_@(Model.BoreId)">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../BD/Bid/Line/Production/List/Table", Model)
+    </div>
+</div>
+<script>
+
+    function AddRow_@(Model.BoreId)(phaseId) {
+        var table = $('#BoreLinePasses_@(Model.BoreId)').find('table');
+        //var token = $('#BoreLinePasses').find('[name="__RequestVerificationToken"]')
+        var data = table.data('tablekey');
+        var url = $(table).data('urlcreate');
+        data = data + '&phaseId=' + phaseId;
+        //data = '__RequestVerificationToken=' + token.val() + '&' + data ;
+        //console.log(url, data);
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                var panel = $(table).closest('.panel');
+                var reload = $(panel).find('[data-click=panel-reload]');
+                $(reload).click();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+            }
+        });
+    }
+    function ApplyProductionRates_@(Model.BoreId)(elem, Co, BidId, BoreId) {
+        var panel = $(elem).closest('.panel');
+        var url = $(panel).data('applydefaultprodrateurl');
+
+        if (url) {
+            data = 'Co=' + Co;
+            data = data + '&BidId=' + BidId;
+            data = data + '&BoreId=' + BoreId;
+            //console.log('Apply Production Rates for Bore:', url, data);
+
+            dst = $(panel).find('.panel-body');
+
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    dst.html(data);
+                    initPane($(panel).find('.panel-body'));
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //console.log(XMLHttpRequest);
+                }
+            });
+        }
+    }
+</script>

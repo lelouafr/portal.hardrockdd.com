@@ -1,0 +1,71 @@
+﻿@model portal.Areas.HumanResource.Models.Assets.AssetListViewModel
+@{
+    ViewBag.TableRow = "True";
+    ViewBag.DisplayOnly = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Create", "Assets", new { Area = "HumanResource"})"
+       data-urldelete="@Url.Action("Delete", "Assets", new { Area = "HumanResource"})"
+       data-urlselect="@Url.Action("Panel", "Assets", new { Area = "HumanResource"})"
+       data-dstselect="reviewPanel"
+       data-entitykey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="select" style="min-width:75px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssetCategory)</th>
+            <th data-datatable-filter-type="input" style="min-width:125px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssetId)</th>
+            <th data-datatable-filter-type="select" style="min-width:75px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="none"  style="min-width:125px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssetDesc)</th>
+            <th data-datatable-filter-type="multiselect" style="min-width:100px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().Assigned)</th>
+            <th data-datatable-filter-type="input" style="min-width:90px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().Identifier)</th>
+            <th data-datatable-filter-type="input" style="min-width:90px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().Serial)</th>
+            <th data-datatable-filter-type="input" style="min-width:90px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().Phone)</th>
+            <th width="120px">
+                <button class="btn btn-xs btn-success addRowPopUp pull-right" data-toggle="modal" data-target="#addRowPopUp">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("List/_TableRow", item)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        myTable = $('#@tableId').DataTable({
+            autoWidth: true,
+            scrollResize: true,
+            paging: false,
+            autoWidth: false,
+            ordering: true,
+            scrollY: 700,
+            scrollCollapse: true,
+            scrollX: true,
+            order: [
+                [0, "asc"],
+                [1, "asc"]
+            ],
+            fnInitComplete: function (settings, json) {
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                { targets: [8], orderable: false },
+            ],
+            //fnInitComplete: function () {
+            //    var setting = this;
+            //    this.api().columns().every(function () {
+            //        addSearchRow(this, setting);
+            //    });
+            //},
+        });
+    });
+</script>

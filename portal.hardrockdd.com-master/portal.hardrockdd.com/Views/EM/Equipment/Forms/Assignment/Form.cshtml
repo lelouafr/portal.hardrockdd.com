@@ -1,0 +1,93 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentAssignmentViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "formId_" + Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("UpdateAssignment", "EquipmentForm")"
+      data-urlvalidate="@Url.Action("ValidateAssignment", "EquipmentForm")"
+      data-postupdate="PostUpdate@(formId)">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @foreach (var prp in this.ViewData.ModelMetadata.Properties.Where(p => p.TemplateHint == "HiddenInput").Select(s => s.PropertyName))
+    {
+        @Html.Hidden(prp, Model.GetType().GetProperty(prp).GetValue(Model, null), new { @id = Guid.NewGuid() })
+    }
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AssignmentType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ParentEquimentId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AssignedCrewId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Operator)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LocationId, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+
+    $('#@formId').ready(function () {
+        Form().init('#@formId');
+        setTimeout(function () {
+            handleAssignmentView($('#@formId'));
+        }, 100);
+    });
+    function PostUpdate@(formId)(elem) {
+        if ($(elem).attr('name') == "AssignmentType") {
+            handleAssignmentView($('#@formId'));
+        }
+    }
+    function handleAssignmentView(form) {
+        var elem = $(form).find("[name='AssignmentType']");
+        var val = parseInt($(elem).val());
+
+        var parentElem = $(form).find("[name='ParentEquimentId']");
+        var crewElem = $(form).find("[name='AssignedCrewId']");
+        var operatorElem = $(form).find("[name='Operator']");
+
+        $(parentElem).attr("disabled", "");
+        $(crewElem).attr("disabled", "");
+        $(operatorElem).attr("disabled", "");
+        //$(parentElem).prop("disabled", true);
+        //$(crewElem).prop("disabled", true);
+        //$(operatorElem).prop("disabled", true);
+
+        //console.log('assignmenttype: ', val);
+        switch (val) {
+            case 1:
+                //$(parentElem).attr("disabled", "");
+                $(parentElem).removeAttr("disabled");
+                break;
+            case 2:
+                //$(crewElem).attr("disabled", "");
+                $(crewElem).removeAttr("disabled");
+                break;
+            case 3:
+                //$(operatorElem).attr("disabled", "");
+                $(operatorElem).removeAttr("disabled");
+                break;
+            default:
+        }
+        //$(parentElem).selectpicker('destroy');
+        //$(crewElem).selectpicker('destroy');
+        //$(operatorElem).selectpicker('destroy');
+
+        initDropdown($(parentElem), $(parentElem).val());
+        initDropdown($(crewElem), $(crewElem).val());
+        initDropdown($(operatorElem), $(operatorElem).val());
+    }
+</script>

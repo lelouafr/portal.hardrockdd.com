@@ -1,0 +1,29 @@
+﻿
+<div class="modal fade"
+     id="rejectTicket"
+     data-url="@Url.Action("RejectIndex", "DailyTicketForm")">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script>
+    $('#rejectTicket').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url = $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+    $('#rejectTicket').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    })
+</script>

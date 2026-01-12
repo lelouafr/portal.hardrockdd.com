@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.CMSupervisorNeedingApproval > 0 || Model.CMSupervisorPriorNeedingApproval > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-red">
+            
+            <div class="stats-info">
+                <h4>Credit Trans Approvals</h4>
+
+                @if (@Model.CMSupervisorPriorNeedingApproval > 0)
+                {
+                    <p class="f-s-14">
+                        @Model.CMPriorMth.ToString("MMMM") Needing Approval<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:N0}", Model.CMSupervisorPriorNeedingApproval))</span>
+                    </p>
+                }
+                @if (@Model.CMSupervisorNeedingApproval > 0)
+                {
+                    <p class="f-s-14">
+                        @Model.CMMth.ToString("MMMM") Needing Approval<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:N0}", Model.CMSupervisorNeedingApproval))</span>
+                    </p>
+                }
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("Index", "APCreditCardSupervisorTransaction")">Goto Review <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

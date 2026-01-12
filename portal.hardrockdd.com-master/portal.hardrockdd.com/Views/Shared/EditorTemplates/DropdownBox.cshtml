@@ -1,0 +1,146 @@
+﻿@model object
+@{
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var idGuid = "group_" + Guid.NewGuid();
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+
+    var flushCache = bool.TryParse(ViewBag.FlushCache?.ToString(), out bool flushCasheOut) ? flushCasheOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow?.ToString(), out bool tableRowOut) ? tableRowOut : false;
+
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ?
+                            (FieldAttribute)fldAttribute :
+                            new FieldAttribute();
+    var formatString = (ViewData.ModelMetadata).DisplayFormatString;
+    var tableSearch = bool.TryParse(ViewBag.TableSearch?.ToString(), out bool tableSearchOut) ? tableSearchOut : false;
+    var title = this.ViewData.ModelMetadata.DisplayName;
+
+    /**Define Html Attributes**/
+    var dic = new Dictionary<string, object>();
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    dic.Add("data-cacheurl", attributes.CacheUrl);
+    dic.Add("data-propertytitle", title);
+    dic.Add("id", id);
+    dic.Add("name", name);
+    //dic.Add("title", name);
+    dic.Add("data-selectinit", "false");
+    //dic.Add("data-container", "#content");
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+        dic.Add("data-parsley-error-message", name + " is required");
+    }
+    dic.Add("data-flushcache", flushCache);
+    if (viewOnly)
+    {
+        dic.Add("disabled", "");
+    }
+    dic.Add("data-search", tableSearch);
+    dic.Add("data-size", "10");
+    dic.Add("data-live-search", "true");
+    dic.Add("data-style", "btn-white");
+    if (!string.IsNullOrEmpty(attributes.ComboUrl))
+    {
+        dic.Add("data-combourl", attributes.ComboUrl);
+    }
+    if (!string.IsNullOrEmpty(attributes.ComboForeignKeys))
+    {
+        dic.Add("data-combokeys", attributes.ComboForeignKeys);
+    }
+
+    /**Define select list**/
+    var selectList = new List<SelectListItem>();
+    var item = new SelectListItem
+    {
+        Text = "",
+        Value = Model == null ? "" : Model.ToString(),
+        Selected = true
+    };
+    selectList.Add(item);
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+
+@if (attributes.LabelSize != 0 && !tableRow && !tableSearch)
+{
+    @Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+
+}
+@if (displayOnly)
+{
+    <span id="@idGuid">
+        <span Name="@name" id="@id" data-selectinit="false" data-value="@Model" data-combourl="@attributes.ComboUrl" data-combokeys="@attributes.ComboForeignKeys">
+            @Html.DisplayTextFor(m => m)
+        </span>
+    </span>
+}
+else if (tableSearch)
+{
+    <div class="input-group " id="@idGuid">
+        @Html.DropDownListFor(f => f, selectList, null , StaticFunctions.GetHtmlAttributes(new { @class = ("form-control input-xs " + prop) }, dic))
+    </div>
+}
+else
+{
+    <div class="@textSize input-group " id="@idGuid">
+        @Html.DropDownListFor(f => f, selectList, @attributes.Placeholder, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+        @if (!string.IsNullOrEmpty(attributes.SearchUrl) && !viewOnly)
+        {
+            <div class="input-group-append">
+                <button type="button" tabindex="-1" class="btn btn-xs btn-default btnComboSearch" data-propertytitle="@title" data-url="@attributes.SearchUrl" data-fkeys="@attributes.SearchForeignKeys">
+                    <i class="fas fa-xs fa-search"></i>
+                </button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(attributes.EditUrl) && !viewOnly)
+        {
+            <div class="input-group-append">
+                <button type="button" tabindex="-1" class="btn btn-xs btn-success btnComboEdit" data-propertytitle="@title" data-url="@attributes.EditUrl" data-fkeys="@attributes.EditForeignKeys">
+                    <i class="fas fa-xs fa-pencil"></i>
+                </button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(attributes.InfoUrl))
+        {
+            <div class="input-group-append">
+                <button type="button" tabindex="-1" class="btn btn-xs btn-success btnInfo" data-propertytitle="@title" data-urlinfo="@attributes.InfoUrl" data-fkeys="@attributes.InfoForeignKeys">
+                    <i class="fas fa-xs fa-info"></i>
+                </button>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(attributes.AddUrl) && !viewOnly)
+        {
+            <div class="input-group-append">
+                <button type="button" tabindex="-1" class="btn btn-xs btn-primary btnComboAdd" data-propertytitle="@title" data-url="@attributes.AddUrl" data-fkeys="@attributes.AddForeignKeys">
+                    <i class="fas fa-xs fa-plus"></i>
+                </button>
+            </div>
+        }
+        @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+    </div>
+}
+
+@*<script>
+    if (!$.isFunction(window.initDropdown)) {
+        $('#@idGuid').ready(function () {
+            var elem = $('#@idGuid #@id');
+            initDropdown(elem, '@Model');
+        });
+    }
+    else {
+        var elem = $('#@idGuid #@id');
+        initDropdown(elem, '@Model');
+    }
+</script>*@

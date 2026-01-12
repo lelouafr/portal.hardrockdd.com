@@ -1,0 +1,34 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentMeterViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panelId_" + Guid.NewGuid();
+}
+
+
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Meter Readings
+    </div>
+    <div id="@panelId" class="collapse">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    @Html.Partial("../EM/Equipment/Forms/Meter/Form", Model)
+
+                </div>
+                <div class="col-lg-8">
+                    @Html.Partial("../EM/Equipment/Forms/Meter/List/Panel", Model.Logs)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('@panelId').ready(function () {
+        $('#@panelId').on('shown.bs.collapse', function () {
+            $('#@panelId').find('.table.dataTable').each(function () {
+                $(this).DataTable().draw();
+            });
+        })
+    });
+</script>

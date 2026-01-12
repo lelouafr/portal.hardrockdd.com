@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.SeqId, new { displayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Description, new { displayOnly = true })
+    </td>
+    <td class="text-right">
+        @Html.EditorFor(m => m.Quantity, new { displayOnly = true })
+    </td>
+    <td class="text-right">
+        @Html.EditorFor(m => m.UnitCost, new { displayOnly = true })
+    </td>
+    <td class="text-right">
+        @Html.EditorFor(m => m.LineAmount, new { displayOnly = true })
+    </td>
+</tr>

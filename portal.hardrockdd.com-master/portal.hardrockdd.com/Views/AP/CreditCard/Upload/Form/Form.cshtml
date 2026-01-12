@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.AP.CreditCard.Import.ImportFormViewModel
+
+@Html.Partial("../AP/CreditCard/Upload/Form/Buttons", Model)
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../AP/CreditCard/Upload/Form/Info/Panel", Model.Info)
+    </div>
+</div>
+
+@if (Model.Info.Source == "Zion")
+{
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../AP/CreditCard/Upload/Form/Zion/Panel", Model.ZionLines)
+        </div>
+    </div>
+}
+
+@if (Model.Info.Source == "Wex")
+{
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../AP/CreditCard/Upload/Form/Wex/Panel", Model.WexLines)
+        </div>
+    </div>
+}
+

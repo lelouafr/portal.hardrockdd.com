@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.DailyTicket.DailyHolidayEntryListViewModel
+
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+
+<div class="panel panel-inverse"
+        data-reloadurl="@Url.Action("Table", "DailyHolidayEntry", new { dtco = Model.DTCo, ticketId = Model.TicketId, forEdit = !ViewBag.ViewOnly })"        
+       data-sortable-id="DailyHolidayEntryListViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Employees</h4>
+    </div>
+    <div class="panel-body" id="DailyHolidayEntryListViewModel">
+        @Html.Partial("../DT/Type/Holiday/Entry/List/Table", Model)
+    </div>
+</div>

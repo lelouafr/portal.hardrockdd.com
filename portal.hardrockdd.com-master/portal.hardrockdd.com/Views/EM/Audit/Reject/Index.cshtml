@@ -1,0 +1,44 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditRejectViewModel
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../EM/Audit/Reject/Form/Panel", Model)
+    </div>
+</div>
+<hr />
+<div class="pull-right">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <a href="javascript:;"
+       class="btn btn-danger btnReject">Reject</a>
+</div>
+<script>
+    $('.btnReject')
+        .off('click')
+        .on('click', function () {
+            //console.log('clicked');
+            var func = function (button, form) {
+                $(button).SetButtonBusy();
+                data = $(form).SerializeForm();
+                url = $(form).data('urlreject');
+                //console.log(data, url);
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        var auditForm = $(document).find('.EMAuditForm');
+                        var panel = $(auditForm).find('panel-reload');
+                        $('#reject').modal('hide');
+                        $(panel).click();
+                    }
+                    $(button).SetButtonNotBusy();
+                });
+            }
+            var button = this;
+            var modal = $(button).closest('.modal-body');
+            var form = $(modal).find('form');
+
+            $(form).PostValidate(button, function (valid) {
+                if (valid) {
+                    func(button, form);
+                }
+            });
+        });
+</script>

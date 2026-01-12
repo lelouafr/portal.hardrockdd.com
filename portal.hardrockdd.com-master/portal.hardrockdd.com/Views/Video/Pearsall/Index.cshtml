@@ -1,0 +1,28 @@
+﻿
+@section styles {
+    @Styles.Render("~/csspage/inputcontrols")
+
+    <style>
+        .content {
+            padding: 0px !important;
+        }
+
+        .panel-body {
+            padding: 0px !important;
+        }
+    </style>
+}
+<iframe id="preview" src="https://unifi.ui.com/device/baffa644-72b9-4e2e-8dba-4bfef1f1f139/protect/" frameborder="0" style="width: 100%; height:100%;" allowfullscreen>
+</iframe>
+
+@section scripts {
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $(document).ready(function () {
+            var h = $("body").height();
+            h -= $("#header").height();
+            h -= 4;
+            $("#preview").height(h);
+        });
+    </script>
+}

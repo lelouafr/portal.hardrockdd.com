@@ -1,0 +1,74 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateSequenceViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("LocateUpdate", "Locate")"
+      data-urlvalidate="@Url.Action("LocateValidate", "Locate")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MapSetId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LocateId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.BidId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LocateRefId)
+        @Html.EditorFor(m => m.StatusId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.City)
+        @Html.EditorFor(m => m.County)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrossStreet)
+        @Html.EditorFor(m => m.GPSCoords)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.OriginalStartDate, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Owner, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.StartDate)
+        @Html.EditorFor(m => m.ExpDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestBy, new { ViewOnly = true })
+        @Html.EditorFor(m => m.RequestOn, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+
+    $("#@(formId)").on('change', '.GPSCoords, .Description', function () {
+        
+        function loadMap() {
+            var mapId = $("#@(formId)").find('[name="MapSetId"]').val();
+            var data = {
+                mapSetId: mapId
+            };
+            var url = "@(Url.Action("Panel", "Map", new { Area = "Google" }))";
+
+            var settings = {
+                targetId: "locate_map",
+                ajaxUrl: url,
+                ajaxData: data,
+            };
+            handlePartialAjax(settings);
+        }
+
+        setTimeout(function () {
+            Form().isUpdating($("#@(formId)"), loadMap);
+        }, 10);
+
+    });
+
+</script>

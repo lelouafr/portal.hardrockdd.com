@@ -1,0 +1,111 @@
+﻿@model portal.Models.Views.DailyTicket.DailyJobTicketViewModel
+@{ 
+    var id = Guid.NewGuid().ToString().Replace("-","");
+    var formId = string.Format("form_{1}_{0}", Model.DTCo, Model.TicketId);
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("JobTicketForm", "DailyTicketForm", new { dtco = Model.DTCo, ticketId = Model.TicketId })"
+     data-initpane="initPane@(id)"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Info (@Model.TicketId)</h4>
+    </div>
+    <div class="panel-body" id="forminfo">
+        @Html.Partial("../DT/Type/Job/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        setTimeout(function () {
+            handleJobView();
+            handleEmployeeView();
+            handleEquipmentView();
+        }, 500);
+    }
+
+    function handleJobView() {
+        console.log('handleJobView');
+        var $form = $('#@formId');
+        var jobId = $form.find("[name='JobId']").val();
+        var rigId = $form.find("[name='RigId']").val();
+        var panelBody = $form.find('[data-sortable-id=DailyJobTaskListViewModel] .panel-body');
+
+        if (jobId !== null && jobId !== "" && jobId !== "null" &&
+            rigId !== null && rigId !== "" && rigId !== "null") {
+            $(panelBody).show();
+        }
+        else {
+            $(panelBody).hide();
+        }
+    }
+
+    function handleEmployeeView() {
+        console.log('handleEmployeeView');
+        var $form = $('#@formId');
+        var crewId = $form.find("[name='CrewId']").val();
+        var panelBody = $form.find('[data-sortable-id=DailyJobEmployeeListViewModel] .panel-body');
+        if (crewId !== null && crewId !== "" && crewId !== "null") {
+            $(panelBody).show();
+        }
+        else {
+            $(panelBody).hide();
+        }
+    }
+
+    function handleEquipmentView() {
+        console.log('handleEquipmentView');
+        var $form = $('#@formId');
+        var rigId = $form.find("[name='RigId']").val();
+        var panelBody = $form.find('[data-sortable-id=DailyEquipmentListViewModel] .panel-body');
+        if (rigId !== null && rigId !== "" && rigId !== "null") {
+            $(panelBody).show();
+        }
+        else {
+            $(panelBody).hide();
+        }
+    }
+
+    function handleJobChange() {
+        var $form = $('#@formId');
+        var taskListPanelReloadBtn = $form.find('[data-sortable-id=DailyJobTaskListViewModel] [data-click=panel-reload]');
+        var jobProgressPanel = $form.find('.ProductionVarianceListViewModel');
+        taskListPanelReloadBtn.click();
+
+        var jobId = $form.find("[name='JobId']").val();
+        var url = jobProgressPanel.attr("data-reloadurl");
+        var urlIdx = url.search('jobId=');
+        if (urlIdx !== -1) {
+            var newurl = url.substring(0, urlIdx) + "jobId=" + jobId;
+        }
+        else {
+            var newurl = url + "&jobId=" + jobId;
+        }
+        //console.log(url, newurl, urlIdx);
+        jobProgressPanel.attr("data-reloadurl", newurl);
+        jobProgressPanel.find('[data-click=panel-reload]').click();
+
+        handleJobView();
+        //initJobProgressChart(@Model.DTCo, $("[name='JobId']").val());
+    }
+
+    function handleCrewChange() {
+        var $form = $('#@formId');
+        $form.find('[data-sortable-id=DailyJobEmployeeListViewModel] [data-click=panel-reload]').click();
+        handleEmployeeView();
+    }
+
+    function handleRigChange() {
+        var $form = $('#@formId');
+        $form.find('[data-sortable-id=DailyEquipmentListViewModel] [data-click=panel-reload]').click();
+        handleEquipmentView();
+    }
+
+</script>

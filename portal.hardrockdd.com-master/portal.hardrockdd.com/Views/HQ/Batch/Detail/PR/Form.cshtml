@@ -1,0 +1,14 @@
+﻿@model portal.Models.Views.HQ.Batch.PR.PRFormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+@Html.Partial("../HQ/Batch/Buttons/Form", Model.Buttons)
+@if (Model.BatchTransactions != null)
+{
+    @Html.Partial("../HQ/Batch/Detail/PR/Batch/Panel", Model.BatchTransactions)
+}
+@if (Model.PostedTransactions != null)
+{
+    @Html.Partial("../HQ/Batch/Detail/PR/Posted/Panel", Model.PostedTransactions)
+}

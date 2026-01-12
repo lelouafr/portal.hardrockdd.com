@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.PR.Employee.Form.PersonalInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("Update", "HRResourcePersonalInfo")"
+      data-urlvalidate="@Url.Action("Validate", "HRResourcePersonalInfo")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Phone)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Email)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.BirthDate)
+    </div>
+</form>

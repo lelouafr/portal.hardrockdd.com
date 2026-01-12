@@ -1,0 +1,148 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AP.CreditCard.Batch.Lines.BatchTransactionListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataset = new List<dynamic>();
+    var results = Model.List.Select(s => new
+    {
+        s.Co,
+        s.TransId,
+        s.SeqId,
+        TransDate = s.TransDate.ToShortDateString(),
+        s.Employee,
+        s.Merchant,
+        s.LineType,
+        GLAcct = s.GLAcct2,
+        JobEqp = s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Job ? s.Job2 :
+                 s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Equipment ? s.Equipment2 : string.Empty,
+        PhaseCost = s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Job ? s.Phase2 :
+                 s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Equipment ? s.CostCode2 : string.Empty,
+        CostType = s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Job ? s.JCCType2 :
+                 s.LineTypeId == (int)DB.CMCodeLineTypeEnum.Equipment ? s.EMCType2 : string.Empty,
+        s.Description,
+        s.GrossAmt
+
+    })
+        .OrderBy(o => o.Employee)
+        .ThenBy(o => o.TransId)
+        .ToList();
+    var jsonData = JsonConvert.SerializeObject(results, Formatting.Indented);
+
+}
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-dstselectvalidate="false">
+        <thead>
+            <tr>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Employee)</th>
+                <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().TransId)</th>
+                <th data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().TransDate)</th>
+                <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Merchant)</th>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().LineType)</th>
+                <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().GLAcct)</th>
+                <th data-datatable-filter-type="multiselect"><label>Job/Equip</label></th>
+                <th data-datatable-filter-type="multiselect"><label>Phase/Cost Code</label></th>
+                <th data-datatable-filter-type="multiselect"><label>Cost Type</label></th>
+                <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+                <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossAmt)</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        rowH = 25.6;
+        h = tableHeight($('#@tableId'), @(Model.List.Count), rowH);
+        h -= 75;
+        var columns = [
+            {
+                data: function (item) {
+                    return item.Employee;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.TransId;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.TransDate;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.SeqId;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.Merchant;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.LineType;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.GLAcct;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.JobEqp;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.PhaseCost;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.CostType;
+                }
+            },
+            {
+                data: function (item) {
+                    return item.Description;
+                }
+            },
+            {
+                data: function (item) {
+                    return currencyFormat(item.GrossAmt,2);
+                }
+            },
+        ];
+
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: true,
+            autoWidth: true,
+            scrollY: 250,
+            data: data,
+            columns: columns,
+            columnDefs: [
+                { targets: [1, 3], visible: false },
+                { targets: [11], className: 'text-right' },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "Co=" + data.CCCo + "&TransId=" + data.TransId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    });
+</script>

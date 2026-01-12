@@ -1,0 +1,36 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LineTypeId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.JobId, new { DisplayOnly = true })
+        @Html.EditorFor(m => m.EquipmentId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossAmt, new { DisplayOnly = true })
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger btn-xs pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-xs fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>

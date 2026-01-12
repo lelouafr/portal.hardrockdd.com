@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.EM.Equipment.Forms.ServiceHistoryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       style="display:none"
+       data-urlupdate="@Url.Action("EquipmentRequestLineUpdate", "ServiceRequest")"
+       data-urlselect="@Url.Action("EquipmentRequestLinePanel", "ServiceRequest")"
+       data-dstselect="lineReviewPanel"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestByName)</th>
+            <th width="75px">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestDate)</th>
+            <th width="75px">@Html.LabelForRequired(model => model.List.FirstOrDefault().EstServiceDate)</th>
+            <th >@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestComments)</th>
+            <th >@Html.LabelForRequired(model => model.List.FirstOrDefault().CompletedComments)</th>
+            @*<th width="75px">@Html.LabelForRequired(model => model.List.FirstOrDefault().WorkOrderId)</th>*@
+            <th width="35px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Equipment/Forms/ServiceHist/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        var h = 42 * @(Model.List.Count);
+        if (h > 500) {
+            h = 500;
+            var parent = $(table).parent();
+            var contaner = $('<div></div>');
+            $(contaner).css("height", h + "px");
+            $(contaner).css("overflow-y", "scroll");
+            $(contaner).css("display", "block");
+
+            $(contaner).appendTo(parent);
+            $(table).appendTo(contaner);
+        }
+        $(table).show();
+	    Table().init($('#@tableId'));
+    });
+</script>

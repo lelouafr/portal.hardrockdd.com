@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.JC.Job.JobSummaryListViewModel
+<div class="panel panel-inverse"
+     
+     data-reloadurl="@Url.Action("Table","JobSummary")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Jobs</h4>
+    </div>
+    <div class="panel-body" id="JobSummaryListViewModel">
+        @Html.Partial("../JC/Job/Summary/Tree/Table", Model)
+    </div>
+</div>
+
+<script>
+
+</script>

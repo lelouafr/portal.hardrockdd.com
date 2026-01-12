@@ -1,0 +1,91 @@
+﻿@model portal.Models.Views.WA.Applicant.ApplicantListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+
+}
+<table class="table "
+       id="@tableId"
+       data-dataurl="@Url.Action(ViewBag.DataAction, "WebApplication")"
+       data-urlselect="@Url.Action("Applicant", "WebApplication")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicantId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().FirstName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LastName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().City)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().State)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Position)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().AppliedDate)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: h,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "ApplicantId" },
+                { data: "Status" },
+                { data: "FirstName" },
+                { data: "LastName" },
+                { data: "City" },
+                { data: "State" },
+                { data: "Position" },
+                {
+                    data: "AppliedDate",
+                    render: function (data, type) {
+                        return type === 'display' ? moment(data).format('L') : moment(data).format("YYYY-MM-DD") ;
+                    }
+                },
+            ],
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            order: [
+                [5, 'desc']
+            ],
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "ApplicantId=" + data.ApplicantId;
+                $(row).attr('data-rowkey', rowKey);
+            }
+        });
+        $('.dataTables_filter').hide();
+    })
+</script>

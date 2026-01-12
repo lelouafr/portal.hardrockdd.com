@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestStatusLogViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var classStr = "";
+    if (Model.Status == DB.PORequestStatusEnum.Rejected)
+    {
+        classStr = "text-red-darker font-weight-bold";
+    }
+}
+<tr data-index="@Model.LineNum" data-entitykey="@entityKey">
+    <td class="@classStr">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineNum, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.CreatedOn, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.CreatedUser, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+</tr>
+@if (!string.IsNullOrEmpty(Model.Comments))
+{
+    <tr data-index="@Model.LineNum" data-entitykey="@entityKey">
+
+        <td style="border-top-width: 0px; padding-top: 0px;">
+        </td>
+        <td colspan="2" style="border-top-width: 0px; padding-top: 0px;">
+            <p style="margin-bottom: 0px;" class="@classStr">
+                @Model.Comments
+            </p>
+        </td>
+    </tr>
+}

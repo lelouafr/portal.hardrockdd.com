@@ -1,0 +1,35 @@
+﻿@model portal.Models.Views.Web.User.Device.UserDeviceRegistrationViewModel
+
+@{
+    ViewBag.PageTitle = "ACT Function Registration";
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+    //var companyInfo = SystemFunc.GetCompanyInfo();
+    //ViewBag.Title = string.Format("{0} | {1}", ViewBag.PageTitle, companyInfo.CompanyName);
+}
+}
+
+@section styles {
+}
+
+@if (ViewBag.LayOut == null)
+{
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+        <li class="breadcrumb-item active">@ViewBag.PageTitle</li>
+    </ol>
+    <h1 class="page-header">@ViewBag.PageTitle </h1>
+}
+
+<div class="error">
+    <div class="error-content" style="top:0%;">
+        <div class="error-message">Thank you for registering your Excel Addin.</div>
+        <div class="error-desc m-b-30">
+            Please Restart your Excel to use the new Add-In
+        </div>
+    </div>
+</div>
+@section scripts {
+}

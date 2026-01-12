@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.AR.Invoice.InvoiceFormViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Line(s)
+        </div>
+        <div id="@panelId" class="show">
+            <div class="card-body" id="InvoiceLineListViewModel">
+                @Html.Partial("../AR/Invoice/Form/Lines/Table", Model.Lines)
+                <div id="arInvoiceLineForm">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

@@ -1,0 +1,45 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketApprovalViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey"
+        data-reviewurl="@Url.Action("PartialIndex", "DailyTicketForm")">
+        <td data-sort='@Model.WorkDate.Value.ToString("yyyymmdd")'>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(l => l.WorkDate, new { DisplayOnly = true })
+        </td>
+        <td class="hidden-xs hidden-sm f-s-10">
+            @Html.EditorFor(l => l.FormName, new { DisplayOnly = true })
+        </td>
+        <td class="f-s-10 text-wrap"">
+            @Html.EditorFor(l => l.Description, new { DisplayOnly = true })
+        </td>
+        <td class="hidden-xs hidden-sm f-s-10">
+            @Html.EditorFor(l => l.SupervisorUser, new { DisplayOnly = true })
+        </td>
+        @*
+        <td>
+            @Html.EditorFor(l => l.Comments, new { DisplayOnly = true })
+        </td>
+        *@
+        <td>
+            @Html.EditorFor(l => l.CreatedUser, new { DisplayOnly = true }) 
+        </td>
+        <td>
+            <div class="btn-group pull-right ">
+                <button class="btn btn-success approveRow"
+                        data-entitykey="@entityKey"
+                        data-approvalurl="@Url.Action("Approve", "DailyTicketForm")">
+                    <i class="fa fa-thumbs-up"></i>
+                </button>
+                <button class="btn btn-danger rejectRow"
+                        data-entitykey="@entityKey"
+                        data-toggle="modal"
+                        data-target="#rejectTicket">
+                    <i class="fa fa-thumbs-down"></i>
+                </button>
+            </div>
+        </td>
+    </tr>

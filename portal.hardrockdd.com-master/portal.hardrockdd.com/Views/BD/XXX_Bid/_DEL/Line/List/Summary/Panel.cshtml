@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.Bid.BoreLineListViewModel
+
+<div class="panel panel-inverse" 
+     id="BidBoreLineListViewModel"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Bore Line Summary</h4>
+    </div>
+    <div class="panel-body" id="BoreLines">
+        @Html.Partial("../BD/Bid/Line/List/Summary/Table", Model)
+    </div>
+</div>
+<script>
+
+</script>

@@ -1,0 +1,19 @@
+﻿@model  portal.Models.Views.HR.Position.HireTaskViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = "";
+    ViewBag.TableRow = "True";
+
+    rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PositionCodeId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.SeqId)
+    </td>
+    <td> @Html.EditorFor(m => m.TaskId) </td>
+    <td> @Html.EditorFor(m => m.IsRequired) </td>
+</tr>

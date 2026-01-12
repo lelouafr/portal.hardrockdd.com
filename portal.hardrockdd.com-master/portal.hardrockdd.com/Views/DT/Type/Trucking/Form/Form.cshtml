@@ -1,0 +1,53 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTruckTicketViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "form_" + Guid.NewGuid();
+    var id = formId.ToString().Replace("-", "");
+}
+
+@Html.Partial("../DT/Type/Buttons")
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("TruckTicketUpdate", "DailyTicketForm")"
+      data-urlvalidate="@Url.Action("TruckTicketValidate", "DailyTicketForm")"
+      data-postupdate="PostUpdate@(id)">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.EntityName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EntityKeyString, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WorkDate)
+        @Html.EditorFor(m => m.WorkDateDescription)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+
+    function PostUpdate@(id)(elem) {
+        if ($(elem).attr('name') == "CrewId") {
+            handleCrewChange();
+        }
+    }
+</script>
+

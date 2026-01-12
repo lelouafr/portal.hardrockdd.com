@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.DailyTicket.Job.DailyJobPhaseListViewModel
+
+<div class="panel panel-inverse"
+     data-sortable-id="DailyJobTaskListViewModel"
+     data-reloadurl="@Url.Action("DTJobPhaseTable", "DailyTicketForm", new { dtco = Model.DTCo, ticketId = Model.TicketId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Tasks</h4>
+    </div>
+    <div class="panel-body" id="tasks">
+        @Html.Partial("../DT/Type/Job/Phases/List/Table", Model)
+    </div>
+</div>
+
+<script>
+
+    $('#tasks').off("click", ".addPhaseRow")
+        .on("click", ".addPhaseRow", function () {
+            var form = $(this).closest('form');
+            var table = $('#tasks').find('table');
+            var data = form.serialize();
+            var url = $(table).data('urlcreate');
+            var tbody = $('#tasks tbody');
+
+            //console.log(form, table, url, data, tbody);
+
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    tbody.append(data);
+                }
+            });
+        });
+</script>

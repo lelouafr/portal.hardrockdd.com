@@ -1,0 +1,44 @@
+﻿@{
+    var listItemId = 1;
+    var listItemTag = "hr_req";
+}
+
+@if (User.HasAccess("TermRequest") ||
+     User.HasAccess("PositionRequest"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Request(s)</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("TermRequest"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <span>Termination(s)</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("OpenIndex", "TermRequest", routeValues: new { Area = "HumanResource" })">Open Requests</a></li>
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("UserIndex", "TermRequest", routeValues: new { Area = "HumanResource" })">Your Requests</a></li>
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("AllIndex", "TermRequest", routeValues: new { Area = "HumanResource" })">All Requests</a></li>
+                    </ul>
+                </li>
+            }
+            @if (User.HasAccess("PositionRequest"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+                    <a href="javascript:;">
+                        <b class="caret"></b>
+                        <span>Position(s)</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("OpenIndex", "PositionRequest", routeValues: new { Area = "HumanResource" })">Open Requests</a></li>
+                        <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("AllIndex", "PositionRequest", routeValues: new { Area = "HumanResource" })">All Requests</a></li>
+                    </ul>
+                </li>
+            }                
+        </ul>
+    </li>
+}

@@ -1,0 +1,110 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table "
+       id="@tableId"
+       data-urlcreate="@Url.Action("LineAdd", "APCreditCardTransactionCoding")"
+       data-urldelete="@Url.Action("LineDelete", "APCreditCardTransactionCoding")"
+       data-urlupdate="@Url.Action("LineUpdate", "APCreditCardTransactionCoding")"
+       data-urlvalidate="@Url.Action("LineValidate", "APCreditCardTransactionCoding")"
+       @*data-urlselect="@Url.Action("LinePanel", "APCreditCardTransactionCoding")"
+       data-dstselect="codingLinePanel"*@
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="8%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LineTypeId)</th>
+            <th width="35%"><label>Job/Equipment</label></th>
+            <th width="15%"><label>Phase/CostCode</label></th>
+            <th width="15%"><label>Cost Type</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GLAcct)</th>
+            <th width="8%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossAmt)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    @Html.AntiForgeryToken()
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-primary addRow" type="button">
+                            <i class="fa fa-plus"></i>
+                        </button>
+
+                    </div>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../AP/CreditCard/Form/Coding/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<div id="codingLinePanel">
+</div>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init("#@tableId");
+        var table = $('#@tableId');
+        handleTableEvents($(table));
+        $(table).find('tbody>tr').each(function () {
+            $(this).find('[name="LineTypeId"]').each(function () { handleTypeView(this) });
+        });
+    })
+
+    function handleTableEvents(tableElem) {
+        $(tableElem)
+            .on('change', '.LineTypeId', function () {
+                console.log('handleTypeView changed');
+                handleTypeView(this);
+            });
+    }
+
+    function handleTypeView(elem) {
+        var row = $(elem).closest('tr');
+
+        var lineTypeId = $(elem).find('option:selected').val();
+        console.log('lineTypeId', lineTypeId);
+
+        $(row).find('.glGroupAcct').hide();
+        $(row).find('.noType').hide();
+        $(row).find('.jobGroup').hide();
+        $(row).find('.eqpGroup').hide();
+        $(row).find('.glGroup').hide();
+        var glBox = $(row).find('[name = "GLAcct"]');
+        if (lineTypeId == "4") {
+            $(row).find('.glGroupAcct').show();
+            $(row).find('.eqpGroup').show();
+            $(row).find('.eqpGroup').each(function () {
+                $(this).prop("disabled", false);
+            });
+            $(glBox).prop("disabled", true);
+        }
+        else if (lineTypeId == "1") {
+            $(row).find('.glGroupAcct').show();
+            $(row).find('.jobGroup').show();
+            $(row).find('.jobGroup').each(function () {
+                $(this).prop("disabled", false);
+            });
+            $(glBox).prop("disabled", true);
+        }
+        else if (lineTypeId == "3") {
+            $(row).find('.glGroupAcct').show();
+            $(row).find('.glGroup').show();
+            $(glBox).prop("disabled", false);
+        }
+        else if (lineTypeId == "") {
+            $(row).find('.noType').show();
+        }
+        $(glBox).data("comboinit", "false");
+        Combo().init($(glBox));
+
+        //$(glBox).selectpicker('refresh');
+    }
+</script>

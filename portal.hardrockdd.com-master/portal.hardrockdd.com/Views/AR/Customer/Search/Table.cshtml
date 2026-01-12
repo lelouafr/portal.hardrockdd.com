@@ -1,0 +1,55 @@
+﻿@model portal.Models.Views.AR.Customer.CustomerListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlsearchreturn="@Url.Action("SearchReturn","CustomerCombo")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CustGroupId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+            @*<th>@Html.LabelForRequired(model => model.List.FirstOrDefault().DisplayName)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var request in Model.List)
+            {
+                @Html.Partial("../Customer/Search/TableRow", request)
+            }*@
+    </tbody>
+</table>
+<script>
+
+     $(document).ready(function () {
+        h = tableHeight($('#@tableId'), 100, 25.6);
+        myTable = $('#@tableId').DataTable({
+            paging: false,
+            scrollY: 250,
+            ordering: true,
+            @*//data: @Html.Raw(@Model.ListJSON),*@
+            columns: [
+                { data: "CustGroupId" },
+                { data: "CustomerId" },
+                { data: "Name" },
+            columnDefs: [
+                { targets: [0], visible: false }],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "CustGroupId=" + data.CustGroupId + "&CustomerId=" + data.CustomerId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        setTimeout(function () {
+            $('#@tableId').DataTable().columns.adjust().draw();
+        }, 500);
+    });
+</script>

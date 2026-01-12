@@ -1,0 +1,23 @@
+﻿@model portal.Areas.Job.Models.Job.Report.GrossMarginListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+
+}
+<div class="panel panel-inverse"
+     id="@panelId"
+     style="margin-bottom: 0px;"
+     data-reloadurl="@Url.Action("GrossMarginTable", "Job", new { mth = Model.Mth })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-sm btn-icon btn-primary" data-click="panel-excel"><i class="fa fa-file-excel"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Gross Margins</h4>
+    </div>
+    <div class="panel-body"
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("Reports/GM/_Table", Model)
+    </div>
+</div>

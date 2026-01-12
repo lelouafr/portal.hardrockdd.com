@@ -1,0 +1,38 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionFormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-xl-6">
+        @Html.Partial("../AP/CreditCard/Form/Info/Panel", Model.BasicInfo)
+    </div>
+    <div class="col-xl-6">
+        @Html.Partial("../AP/CreditCard/Form/Merchant/Panel", Model.Merchant)
+        <div class="forum">
+            @Html.Partial("../Forum/Panel", Model.Forum)
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../AP/CreditCard/Form/Coding/Panel", Model)
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../AP/CreditCard/Form/Line/Panel", Model)
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../AP/CreditCard/Form/ImageBank/Panel", Model)
+    </div>
+</div>

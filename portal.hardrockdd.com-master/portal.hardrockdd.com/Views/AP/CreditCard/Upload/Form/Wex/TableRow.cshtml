@@ -1,0 +1,75 @@
+﻿@model portal.Models.Views.AP.CreditCard.Import.WexImportViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    ViewBag.DisplayOnly = true;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+    var classStr = (Model.IsError ?? false) == true ? "bg-red-transparent-3" : "";
+}
+<tr data-entitykey="@entityKey" class="@classStr">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.CMCo)
+    </td>
+    <td> @Html.EditorFor(m => m.ImportId) </td>
+    <td> @Html.EditorFor(m => m.ImportLineId) </td>
+    <td> @Html.EditorFor(m => m.TransactionDate) </td>
+    <td> @Html.EditorFor(m => m.TransactionTime) </td>
+    <td> @Html.EditorFor(m => m.PostDate) </td>
+    <td> @Html.EditorFor(m => m.AccountNumber) </td>
+    <td> @Html.EditorFor(m => m.AccountName) </td>
+    <td> @Html.EditorFor(m => m.CardNumber) </td>
+    <td> @Html.EditorFor(m => m.EmbossLine2) </td>
+    <td> @Html.EditorFor(m => m.CustomVehicleAssetId) </td>
+    <td> @Html.EditorFor(m => m.Units) </td>
+    <td> @Html.EditorFor(m => m.UnitofMeasure) </td>
+    <td> @Html.EditorFor(m => m.UnitCost) </td>
+    <td> @Html.EditorFor(m => m.TotalFuelCost) </td>
+    <td> @Html.EditorFor(m => m.ServiceCost) </td>
+    <td> @Html.EditorFor(m => m.OtherCost) </td>
+    <td> @Html.EditorFor(m => m.TotalNonFuelCost) </td>
+    <td> @Html.EditorFor(m => m.GrossCost) </td>
+    <td> @Html.EditorFor(m => m.ExemptTax) </td>
+    <td> @Html.EditorFor(m => m.Discount) </td>
+    <td> @Html.EditorFor(m => m.NetCost) </td>
+    <td> @Html.EditorFor(m => m.ReportedTax) </td>
+    <td> @Html.EditorFor(m => m.Product) </td>
+    <td> @Html.EditorFor(m => m.ProductDescription) </td>
+    <td> @Html.EditorFor(m => m.TransactionDescription) </td>
+    <td> @Html.EditorFor(m => m.MerchantBrand) </td>
+    <td> @Html.EditorFor(m => m.MerchantName) </td>
+    <td> @Html.EditorFor(m => m.MerchantAddress) </td>
+    <td> @Html.EditorFor(m => m.MerchantCity) </td>
+    <td> @Html.EditorFor(m => m.MerchantStateProvince) </td>
+    <td> @Html.EditorFor(m => m.MerchantPostalCode) </td>
+    <td> @Html.EditorFor(m => m.MerchantSiteId) </td>
+    <td> @Html.EditorFor(m => m.CurrentOdometer) </td>
+    <td> @Html.EditorFor(m => m.AdjustedOdometer) </td>
+    <td> @Html.EditorFor(m => m.PreviousOdometer) </td>
+    <td> @Html.EditorFor(m => m.DistanceDriven) </td>
+    <td> @Html.EditorFor(m => m.FuelEconomy) </td>
+    <td> @Html.EditorFor(m => m.CostPerDistance) </td>
+    <td> @Html.EditorFor(m => m.VehicleDescription) </td>
+    <td> @Html.EditorFor(m => m.VIN) </td>
+    <td> @Html.EditorFor(m => m.TankCapacity) </td>
+    <td> @Html.EditorFor(m => m.InServiceDate) </td>
+    <td> @Html.EditorFor(m => m.StartOdometer) </td>
+    <td> @Html.EditorFor(m => m.DriverLastName) </td>
+    <td> @Html.EditorFor(m => m.DriverFirstName) </td>
+    <td> @Html.EditorFor(m => m.DriverMiddleName) </td>
+    <td> @Html.EditorFor(m => m.DriverDepartment) </td>
+    <td> @Html.EditorFor(m => m.PRCo) </td>
+    <td> @Html.EditorFor(m => m.PREmployeeId) </td>
+    <td> @Html.EditorFor(m => m.EmployeeID) </td>
+    <td> @Html.EditorFor(m => m.TransactionTicketNumber) </td>
+    <td> @Html.EditorFor(m => m.CurrencyExchangeRate) </td>
+    <td> @Html.EditorFor(m => m.RebateCode) </td>
+    <td> @Html.EditorFor(m => m.DriverPromptId) </td>
+    <td> @Html.EditorFor(m => m.VehiclePromptId) </td>
+    <td> @Html.EditorFor(m => m.Department) </td>
+    <td> @Html.EditorFor(m => m.TankCapacity2) </td>
+    <td> @Html.EditorFor(m => m.EMCo) </td>
+    <td> @Html.EditorFor(m => m.EMEquipmentId) </td>
+    <td> @Html.EditorFor(m => m.IsError) </td>
+</tr>

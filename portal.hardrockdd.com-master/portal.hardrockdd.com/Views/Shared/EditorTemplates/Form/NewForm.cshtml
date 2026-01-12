@@ -1,0 +1,103 @@
+﻿@model object
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var tableLay = new TableLayoutModel(this);
+    var entityKey = tableLay.TableKey;
+    var formId = "Form_" + Guid.NewGuid();
+}
+<style>
+    .accordion > .card {
+        overflow: unset;
+    }
+
+    .card {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@ViewBag.UpdateUrl"
+      data-urlsave="@ViewBag.SaveUrl"
+      data-urlvalidate="@ViewBag.ValidateUrl"
+      data-urlcreate="@ViewBag.CreateUrl">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @foreach (var prp in this.ViewData.ModelMetadata.Properties.Where(p => p.TemplateHint == "HiddenInput").Select(s => s.PropertyName))
+    {
+        @Html.Hidden(prp, Model.GetType().GetProperty(prp).GetValue(Model, null), new { @id = Guid.NewGuid() })
+    }
+    <div id="@(formId)_accordion" class="accordion">
+        @foreach (var grp in formLayout.FormGroups.ToList())
+        {
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@(formId)_@(grp.FormGroupName)">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> @grp.FormGroupName
+                </div>
+                <div id="@(formId)_@(grp.FormGroupName)" class="show">
+                    <div class="card-body">
+                        @foreach (var grpRow in grp.FormGroupRows)
+                        {
+                            <div class="form-group has-feedback row">
+                                @foreach (var prp in grpRow.Properties)
+                                {
+                                    if (!string.IsNullOrEmpty(prp.Attributes.ForeignKeys))
+                                    {
+                                        var infoData = "";
+                                        var fKeys = prp.Attributes.ForeignKeys.Split(',').ToList();
+                                        foreach (var fk in fKeys)
+                                        {
+                                            infoData += string.Format(AppCultureInfo.CInfo(), "{0}={1}&", fk, Html.Value(fk));
+                                        }
+                                        @Html.Editor(prp.Property, new { InfoUrl = prp.Attributes.InfoUrl, InfoData = infoData })
+                                    }
+                                    else
+                                    {
+                                        @Html.Editor(prp.Property)
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+@if (!viewOnly)
+{
+<script>
+        @*$("#@formId :Input:not(button)").change(function () {
+        var urlAction = $('#@formId').data('urlupdate');
+
+        if (urlAction) {
+            //debugger;
+            var data = $('#@formId').SerializeJson();
+            //console.log(urlAction, data);
+            $('#@formId').attr('data-fieldupdating', "true");
+            $.post(urlAction, data, function (res) {
+                updateElementValues($('#@formId'), res.model);
+                reloadCombos($('#@formId'));
+                $('#@formId').attr('data-fieldupdating', "false");
+            });
+        }
+    });*@
+        $(document).ready(function () {
+            Form().init('#@formId');
+        });
+</script>
+
+}

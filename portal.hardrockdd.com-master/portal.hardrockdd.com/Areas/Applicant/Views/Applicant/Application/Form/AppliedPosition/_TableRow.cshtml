@@ -1,0 +1,42 @@
+﻿@model portal.Areas.Applicant.Models.PositionViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    @*<td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.ApplicantId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ApplicationId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SeqId, new { ViewOnly = true })
+    </td>*@
+    <td>
+        @Html.EditorFor(m => m.PositionCodeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.AppliedDate)
+    </td>
+
+    @if (!viewOnly)
+    {
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.ApplicationId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+            <div class="btn-group pull-right ">
+                <button class="btn btn-danger  delRow"
+                        data-entitykey="@entityKey">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </td>
+
+    }
+</tr>

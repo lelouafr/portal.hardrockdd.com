@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.PR.Employee.Form.PayrollPayInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<div class="row">
+    <div class="col-5">
+        <form class="form-horizontal"
+              id="@formId"
+              data-urlupdate="@Url.Action("Update", "HRResourcePayrollInfo")"
+              data-urlvalidate="@Url.Action("Validate", "HRResourcePayrollInfo")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.EarnCodeId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.PaycomNumber)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.SalaryAmt)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.HrlyRate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.PerDiemRate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.DailyRate)
+            </div>
+        </form>
+    </div>
+    <div class="col-7">
+        @Html.Partial("../HR/Employee/Forms/PayrollInfo/List/Table", Model.SalaryHistory)
+    </div>
+</div>

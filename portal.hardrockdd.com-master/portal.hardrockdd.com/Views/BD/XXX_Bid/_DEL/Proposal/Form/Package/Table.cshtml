@@ -1,0 +1,32 @@
+﻿@*@model  portal.Models.Views.Bid.Wizard.Estimate.PackageListViewModel
+
+
+@foreach (var package in Model.List)
+{
+   
+        var panelId = Guid.NewGuid().ToString().Replace("-", "");
+        panelId = string.Concat(panelId.Where(char.IsLetter));
+
+    <div class="panel panel-inverse"
+         id="PackageListViewModel_@package.PackageId"
+         
+         data-reloadpanels="">
+        <div class="panel-heading">
+            <div class="panel-heading-btn">
+                
+                <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                
+            </div>
+            <h4 class="panel-title">Bid Package (@package.Description)</h4>
+        </div>
+        <div class="panel-body" id="@panelId">
+            @Html.Partial("Package/Scopes/Title/Table", package.Scopes)
+            @Html.Partial("Package/TableRow", package)
+            @Html.Partial("Package/Scopes/Notes/Table", package.Scopes)
+        </div>
+    </div>
+
+}
+<script>
+
+</script>*@

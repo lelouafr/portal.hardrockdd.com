@@ -1,0 +1,85 @@
+﻿@model portal.Models.Views.AP.CreditCard.Administration.FormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+
+}
+<div class="panel panel-inverse"
+     id="@panelId"
+     style="margin-bottom: 0px;"
+     data-reloadurl="@Url.Action("TransTable", "APCreditCardAdministrationTransaction", new { ccco = Model.CCCo, mth = Model.Mth })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Credit Card Transactions</h4>
+    </div>
+    <div class="panel-body"
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("../AP/CreditCard/Administration/List/Table", Model.Transactions)
+    </div>
+</div>
+
+<div class="modal fade"
+     id="imageSelect"
+     data-url="@Url.Action("ImageSelectType", "APCreditCardEmployeeImageBank")">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade"
+     id="imageTransBankModal"
+     data-url="@Url.Action("ImageBankTransModal", "APCreditCardEmployeeImageBank")">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script>
+    $('#imageSelect').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url = $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+
+    $('#imageSelect').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    });
+
+
+    $('#imageTransBankModal').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url = $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+
+    $('#imageTransBankModal').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    });
+
+
+</script>

@@ -1,0 +1,126 @@
+﻿@model portal.Models.Views.HQ.Batch.ActionListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("BatchErrorPanel", "Batch")"
+       data-dstselect="errorReviewPanel"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="" >
+            <th width="45px">@Html.LabelFor(model => model.List.FirstOrDefault().BatchId)</th>
+            <th width="120px">@Html.LabelFor(model => model.List.FirstOrDefault().Title)</th>
+            <th width="45px"><label>Progress</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../HQ/Batch/Action/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+
+
+
+    $('#@tableId').ready(function () {
+	    Table().init($('#@tableId'));
+        $(document).on('click', 'button.btnProcess', function () {
+            var table = $('#@tableId');
+            console.log('I was clicked');
+
+
+            $(table).find('tbody > tr:first').each(function () {
+                var row = $(this);
+                let response = processRow(row);
+            });
+        });
+        $(document).on('click', 'a.btnProcess', function () {
+            var table = $('#@tableId');
+            console.log('I was clicked');
+            var processRow = function (row) {
+                    var ajaxUrl = $(row).data('url');
+                    var ajaxType = $(row).data('ajaxtype');
+                    var dataType = ajaxType == "get" ? "html" : "json";
+                    var processStatusTD = $(row).find('.processStatus')
+                    var rowKey = $(row).data('entitykey');
+                    var token = $(document).find('[name="__RequestVerificationToken"]');
+
+                    var data = {
+                        co: $(row).data('co'),
+                        mth: $(row).data('mth'),
+                        batchId: $(row).data('batchid'),
+                        seqId: $(row).data('seqid'),
+                        __RequestVerificationToken: token.val(),
+                    };
+
+                    var icon = $('<i/>')
+                    $(icon).addClass('fa')
+                    $(icon).addClass('fa-spinner')
+                    $(icon).addClass('fa-spin')
+                    $(processStatusTD).append($(icon));
+
+                    return new Promise((resolve, reject) => {
+                        console.log(ajaxUrl, ajaxType, data, dataType, row);
+                        $.ajax({
+                            type: ajaxType,
+                            dataType: dataType,
+                            url: ajaxUrl,
+                            async: false,
+                            data: data,
+                        }).done(function (res, status, xhr) {
+                            console.log(ajaxUrl, ajaxType, data, dataType, row);
+                            var nextRow = $(row).next('tr');
+                            var icon = $('<i></i>');
+                            $(icon).addClass('fa');
+                            if (dataType === "html") {
+                                if (res !== "") {
+                                    var elm = $(res);
+                                    $(elm).insertAfter(row);
+                                }
+
+                                $(icon).addClass('fa-check-circle');
+                                $(icon).addClass('text-green');
+                                nextRow = $(row).next('tr');
+                            }
+                            else {
+                                if (res.success === "false") {
+                                    $(row).removeClass('active');
+                                    $(row).click();
+                                    $(icon).addClass('text-danger');
+                                    $(icon).addClass('fa-times');
+
+                                    nextRow = undefined;
+                                }
+                                else if (res.success === "true") {
+                                    $(icon).addClass('fa-check-circle');
+                                    $(icon).addClass('text-green');
+                                    //updateElementValues($(row), res.model);
+                                }
+
+                            }
+                            $(processStatusTD).html($(icon));
+                            if (nextRow !== undefined) {
+                                processRow(nextRow);
+                            }
+                        }).fail(function (err) {
+                            console.log('FAILED', err);
+                        });
+                    });
+
+                };
+
+            $(table).find('tbody > tr:first').each(function () {
+                var row = $(this);
+                let response = processRow(row);
+            });
+        });
+    });
+
+</script>

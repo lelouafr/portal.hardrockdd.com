@@ -1,0 +1,55 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APPostedTransListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.ViewOnly = true;
+    ViewBag.DisplayOnly = true;
+}
+
+<table class="table"
+       style="display:none"
+       id="@tableId"
+       data-urlselect="@Url.Action("APPostedTransactionPanel", "Batch"), @Url.Action("APPostedLineListPanel", "Batch")"
+       data-dstselect="transform, APLinePanel"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="7%" data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().APTransId)</th>
+            <th width="30%" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().VendorId)</th>
+            <th width="15%" data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().APReference)</th>
+            <th width="25%" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="10%" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().InvoiceDate)</th>
+            <th width="10%" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().DueDate)</th>
+            <th width="10%" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Amount)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../HQ/Batch/Detail/AP/Posted/Transaction/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+$('#@tableId').ready(function () {
+    var table = $('#@tableId');
+    var h = 42 * @(Model.List.Count);
+    if (h > 500) {
+        h = 500;
+        var parent = $(table).parent();
+        var contaner = $('<div></div>');
+        $(contaner).css("height", h + "px");
+        $(contaner).css("overflow-y", "scroll");
+        $(contaner).css("display", "block");
+
+        $(contaner).appendTo(parent);
+        $(table).appendTo(contaner);
+    }
+    $(table).show();
+    Table().init($('#@tableId'));
+    Table().selectFirstRow($('#@tableId'));
+});
+</script>

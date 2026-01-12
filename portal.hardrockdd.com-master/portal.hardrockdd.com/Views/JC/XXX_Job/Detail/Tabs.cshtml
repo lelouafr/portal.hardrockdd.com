@@ -1,0 +1,65 @@
+﻿@model portal.Models.Views.JC.Job.JobDetailViewModel
+<ul class="nav nav-tabs nav-tabs-inverse">
+    <li class="nav-item">
+        <a href="#default-tab-1" data-toggle="tab" class="nav-link active">
+            <span class="d-sm-none">Job Info</span>
+            <span class="d-sm-block d-none">Job Info</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="#default-tab-2" data-toggle="tab" class="nav-link">
+            <span class="d-sm-none">Bid Info</span>
+            <span class="d-sm-block d-none">Bid Info</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="#default-tab-3" data-toggle="tab" class="nav-link">
+            <span class="d-sm-none">Tickets</span>
+            <span class="d-sm-block d-none">Daily Tickets</span>
+        </a>
+    </li>
+</ul>
+<!-- end nav-tabs -->
+<!-- begin tab-content -->
+<div class="tab-content">
+    <!-- begin tab-pane -->
+    <div class="tab-pane fade active show" id="default-tab-1">
+        <div class="row">
+            <div class="col-lg-6">
+                @Html.Partial("../JC/Job/Info/Panel", Model.JobSummary)
+
+            </div>
+            <div class="col-lg-6">
+                @Html.Partial("../JC/Job/ProductionBgtVsAct/Panel", Model.Production)
+                @Html.Partial("../JC/Job/ActBgt/Panel", Model.JobSummary)
+            </div>
+        </div>
+    </div>
+    <!-- end tab-pane -->
+    <!-- begin tab-pane -->
+    <div class="tab-pane fade" id="default-tab-2">
+        @Html.Partial("../JC/Job/Bid/Panel", Model)
+    </div>
+    <!-- end tab-pane -->
+    <!-- begin tab-pane -->
+    <div class="tab-pane fade" id="default-tab-3">
+        <div class="row">
+            <div class="col-xl-5">
+                @Html.Partial("../DT/Summary/List/Panel", Model.Tickets)
+            </div>
+            <div class="col-xl-7">
+                <div class="ticketPanel" id="ticketPanel">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end tab-pane -->
+</div>
+<!-- end tab-content -->
+
+<script>
+    $(document).ready(function () {
+        //        initPanels();
+    });
+
+</script>

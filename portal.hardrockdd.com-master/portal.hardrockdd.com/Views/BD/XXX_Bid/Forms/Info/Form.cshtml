@@ -1,0 +1,84 @@
+﻿@model portal.Models.Views.Bid.Forms.Header.BidInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<div class="row">
+    <div class="col-lg-8">
+        <form class="form-horizontal"
+              id="@formId"
+              data-entitykey="@entityKey"
+              data-urlupdate="@Url.Action("InfoUpdate", "BidForm")"
+              data-urlvalidate="@Url.Action("InfoValidate", "BidForm")">
+            @Html.AntiForgeryToken()
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+            @Html.HiddenFor(m => m.DelayDeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.MobePrice, new { @id = Guid.NewGuid() })
+
+            @foreach (var prp in this.ViewData.ModelMetadata.Properties.Where(p => p.TemplateHint == "HiddenInput").Select(s => s.PropertyName))
+            {
+                @Html.Hidden(prp, Model.GetType().GetProperty(prp).GetValue(Model, null), new { @id = Guid.NewGuid() })
+            }
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Status, new { ViewOnly = true })
+                @Html.EditorFor(m => m.BidDate, new { ViewOnly = true })
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.DueDate)
+                @Html.EditorFor(m => m.StartDate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.BidType)
+            </div>
+            @if (Model.BidType == DB.BidTypeEnum.QuickBid)
+            {
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.CustomerId)
+                    @Html.EditorFor(m => m.ContactId)
+                </div>
+            }
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.FirmNumber)
+                @Html.EditorFor(m => m.DivisionId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Location)
+                @Html.EditorFor(m => m.StateCodeId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.ProjectManagerId)
+                @Html.EditorFor(m => m.IndustryId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Description)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Comments)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.CreatedUserName, new { ViewOnly = true })
+            </div>
+        </form>
+    </div>
+    @if (Model.BidType != DB.BidTypeEnum.QuickBid)
+    {
+        <div class="col-lg-4">
+            @Html.Partial("../BD/Bid/Forms/Info/Customer/Panel", Model.Customers)
+        </div>
+    }
+</div>
+
+
+<script>
+    $('#@formId').on('change', '.BidType', function () {
+        lockFieldSet($('#@formId'));
+        setTimeout(function () { location.reload(); }, 250);
+    });
+</script>

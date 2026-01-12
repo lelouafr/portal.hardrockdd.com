@@ -1,0 +1,14 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.PriceFormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div id="@panelId" class="row">
+    <div class="col-lg-5">
+        @Html.Partial("Forms/Package/Price/Form/_Panel", Model.PriceDetails)
+        @Html.Partial("Forms/Package/CostSummary/BoreCost/_Panel", Model.CostSummary)
+    </div>
+    <div class="col-lg-7">
+        @Html.Partial("Forms/Package/CostSummary/Cost/_Panel", Model.CostSummary)
+    </div>
+</div>

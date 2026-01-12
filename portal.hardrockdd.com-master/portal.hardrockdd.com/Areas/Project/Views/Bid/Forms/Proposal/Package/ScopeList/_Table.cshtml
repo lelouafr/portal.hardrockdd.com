@@ -1,0 +1,41 @@
+﻿@model  portal.Areas.Project.Models.Bid.Proposal.PackageScopeListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageProposalScopeListAdd", "Bid")"
+       data-urldelete="@Url.Action("PackageProposalScopeListDelete", "Bid")"
+       data-urlupdate="@Url.Action("PackageProposalScopeUpdate", "Bid")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="25%">@Html.LabelFor(model => model.List.FirstOrDefault().Title)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Notes)</th>
+            @if (!viewOnly)
+            {
+                <td width="35px">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </td>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Proposal/Package/ScopeList/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>

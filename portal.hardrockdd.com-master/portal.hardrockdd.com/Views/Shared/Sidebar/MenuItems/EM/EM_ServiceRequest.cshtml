@@ -1,0 +1,32 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em_servicerequest";
+}
+
+@if (User.HasAccess("ServiceRequest", "ServiceEquipmentRequestListIndex") ||
+    User.HasAccess("ServiceRequest", "ServiceRequestUserListIndex") ||
+    User.HasAccess("ServiceRequest", "ServiceEquipmentAllListIndex"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Request</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("ServiceRequest", "ServiceEquipmentRequestListIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceEquipmentRequestListIndex", "ServiceRequest", routeValues: new { Area = "" })">Equipment(s) with Request</a></li>
+            }
+            @if (User.HasAccess("ServiceRequest", "ServiceRequestUserListIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceRequestUserListIndex", "ServiceRequest", routeValues: new { Area = "" })">Your Request(s)</a></li>
+            }
+            @if (User.HasAccess("ServiceRequest", "ServiceEquipmentAllListIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceEquipmentAllListIndex", "ServiceRequest", routeValues: new { Area = "" })">All Request</a></li>
+            }
+
+        </ul>
+    </li>
+}

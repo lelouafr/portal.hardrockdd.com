@@ -1,0 +1,11 @@
+﻿@model  portal.Models.Views.Attachment.AttachmentListViewModel
+
+@{ 
+    
+    ViewBag.TableRow = "True";
+
+}
+@foreach (var obj in Model.List)
+{
+    @Html.Partial("../Attachment/TableRow", obj)
+}

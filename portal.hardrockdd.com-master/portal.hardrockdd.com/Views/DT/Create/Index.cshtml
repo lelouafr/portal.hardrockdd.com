@@ -1,0 +1,54 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketCreateViewModel
+@{
+    var formId = "createDailyTicket";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<div class="form-horizontal validationContaner"
+        id="@formId"
+     data-urlcreate="@Url.Action("Create","DailyTicketForm")">
+    <fieldset>
+        <legend>Create New Ticket</legend>
+        @Html.EditorForModel("Form/FormList", new { viewOnly = "False",
+       tableRow = "False" ,
+       ValidateUrl = @Url.Action("ValidateCreate", "DailyTicketForm"),
+       //EndDate = DateTime.Now.AddDays(1),
+       StartDate = DateTime.Now.AddDays(-30)
+    })
+    </fieldset>
+    <hr />
+    <div class="pull-right">
+        <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+        <button type="button" class="btn btn-success btnCreate">Create</button>
+    </div>
+</div>
+
+<script>
+    $('#@formId').ready(function () {
+
+    })
+    $('.btnCreate').on('click', function () {
+        var func = function (form, button) {
+            data = $(form).find('form').serialize();
+            url = $(form).data('urlcreate');
+            console.log(data, url);
+            $(button).SetButtonBusy();
+            $.post(url, data, function (res) {
+
+                $(button).SetButtonBusy();
+                if (res.success === "true") {
+                    window.location.href = res.url;
+                }
+            });
+        }
+        var form = $('#@formId');
+        var button = this;
+        $(button).SetButtonBusy();
+        $(form).PostValidate(button, function (valid) {
+            if (valid) {
+                $(button).SetButtonBusy();
+                func(form, button);
+            }
+        });
+    });
+</script>

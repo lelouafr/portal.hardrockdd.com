@@ -1,0 +1,18 @@
+﻿@model portal.Areas.HumanResource.Models.Assets.AssetViewModel
+@{
+    var panelid = "panelId_" + Guid.NewGuid().ToString().Replace(" - ", "");
+    var panelBodyId = "panelBodyId_" + Guid.NewGuid();
+}
+
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Form", "Assets", new { Area = "HR", HRCo = Model.HRCo, AssetId = Model.AssetId})">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Asset @Model.AssetId</h4>
+    </div>
+    <div class="panel-body" id="@panelBodyId">
+        @Html.Partial("Form/_Form", Model)
+    </div>
+</div>

@@ -1,0 +1,40 @@
+﻿@model  portal.Models.Views.Bid.Forms.Bore.BoreLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td style="border-top-width: 0px; padding-top:0px; ">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreTypeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Footage, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PipeSize, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Status, new { @id = Guid.NewGuid() })
+            
+        @*@Html.HiddenFor(m => m.GroundDensityId, new { @id = Guid.NewGuid() })*@
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px; ">
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px; ">
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px; ">
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px; ">
+        @Html.EditorFor(m => m.RigCategoryId)
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px; ">
+        @Html.EditorFor(m => m.CrewCount)
+    </td>
+    @if (!viewOnly)
+    {
+        <td style="border-top-width: 0px; padding-top:0px; ">
+        </td>
+    }
+</tr>

@@ -1,0 +1,69 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestRejectViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="model-title">Reject PO Request</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+    </div>
+    <div class="modal-body">
+        @Html.EditorForModel("Form/FormList", new
+            {
+                viewOnly = "False",
+                tableRow = "False",
+                ValidateUrl = @Url.Action("Validate", "PORequestReject"),
+                SubmitUrl = @Url.Action("Reject", "PORequest")
+            })
+    </div>
+    <div class="modal-footer">
+        <div class="pull-right">
+            <button class="btn btn-primary pr-20 cancelReject">
+                <i class="fa fa-ban"> Cancel</i>
+            </button>
+            <button class="btn btn-danger rejectBtn"
+                    data-poco="@Model.POCo"
+                    data-requestid="@Model.RequestId">
+                Reject Request
+                <i class="fa fa-thumbs-down"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.rejectBtn').on('click', function () {
+        var func = function (modelBody, button) {
+            $(button).SetButtonBusy();
+            data = $(modelBody).find('form').serialize();
+            url = $(modelBody).find('form').data('urlsubmit');
+            //console.log(url, data);
+            $.post(url, data, function (res) {
+                if (res.success === "true") {
+                    var model = res.model;
+                    var poco = model.POCo;
+                    var requestId = model.RequestId;
+                    var rowKey = "POCo=" + poco + "&requestId=" + requestId + "";
+                    var rowElem = $('tr[data-entitykey="' + rowKey + '"]');
+                    rowElem.remove();
+                    $('#rejectTicket').modal('hide');
+                    ReloadElement(button);
+                }
+                $(button).SetButtonNotBusy();
+            });
+        }
+        var button = this;
+        var panel = $(this).closest('.modal-content').find('.modal-body');
+        $(panel).PostValidate(button, function (valid) {
+            if (valid) {
+                func(panel, button);
+            }
+        });        
+    });
+    $("button.cancelReject").click(function () {
+        $('#rejectTicket').modal('hide');
+    });
+</script>

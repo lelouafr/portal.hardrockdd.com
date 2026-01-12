@@ -1,0 +1,8 @@
+﻿@model portal.Models.Views.JC.Job.Forms.JobFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+
+@Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })

@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.SM.Request.Forms.FormViewModel
+@{
+    
+    var formId = "form_" + Guid.NewGuid();
+}
+<div id="@formId">
+    <div class="row">
+        <div class="col-xl-6">
+            @Html.Partial("../SM/Request/Forms/Info/Panel", Model.Info)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            @Html.Partial("../SM/Request/Equipment/Form/List/Panel", Model.EquipmentLines)
+        </div>
+    </div>
+</div>

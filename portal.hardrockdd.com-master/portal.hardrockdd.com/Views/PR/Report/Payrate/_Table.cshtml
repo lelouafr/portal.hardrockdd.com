@@ -1,0 +1,105 @@
+﻿@model portal.Models.Views.PR.Report.PayrateListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+
+}
+
+@Html.Partial("../HR/Employee/Forms/Termination/Modal")
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-dataurl="@Url.Action("Data", ViewBag.DataController)"
+       data-reloadurl="@Url.Action("Table", ViewBag.DataController)"
+       data-urlselect="@Url.Action("Panel", "HRResourceForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().PRCo)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusString)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Division)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Position)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().HourlyRate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().SalaryRate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().PerDiemRate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().DailyRate)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+        //if (h <= 400) {
+        //    h = 400;
+        //}
+        var table = $('#@tableId').DataTable({
+            dom: 'Bfrtip',
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "PRCo" },
+                { data: "StatusString" },
+                { data: "EmployeeId" },
+                { data: "Name" },
+                { data: "Division" },
+                { data: "Position" },
+                { data: "HourlyRate" },
+                { data: "SalaryRate" },
+                { data: "PerDiemRate" },
+                { data: "DailyRate" },
+            ],
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+                var dtButtons = $(panel).find('.dt-buttons');
+                var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+                $(dtButtons).hide();
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "PRCo=" + data.PRCo + "&employeeId=" + data.EmployeeId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+
+        $(panel).find('[data-click="panel-excel"]').on('click', function () {
+            var panel = $("#@tableId").closest('.panel').first();
+            var dtButtons = $(panel).find('.dt-buttons');
+            var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+            console.log('clicked', dtExcelBtn);
+            $(dtExcelBtn).click();
+        });
+    })
+</script>

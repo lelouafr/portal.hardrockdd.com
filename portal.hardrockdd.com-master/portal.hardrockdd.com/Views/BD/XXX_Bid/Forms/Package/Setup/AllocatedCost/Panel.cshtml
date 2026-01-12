@@ -1,0 +1,24 @@
+﻿@model  portal.Models.Views.Bid.Forms.Package.Setup.AllocatedCostListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = "panel_body_" + Guid.NewGuid();
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("PackageAllocatedCostListTable", "BidForm", new { bdco = Model.BDCo, bidId = Model.BidId, packageId = Model.PackageId })"
+     id="@(panelId)"
+     data-key="@tableKey">
+    <div class="panel-heading pointer-cursor" data-target="#@(panelBodyId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Allocated Cost Items
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/AllocatedCost/Table", Model)
+    </div>
+</div>

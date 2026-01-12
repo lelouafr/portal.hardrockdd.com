@@ -1,0 +1,47 @@
+﻿@model  portal.Areas.Project.Models.Bid.Package.AllocatedCostListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageAllocatedCostListAdd", "Bid")"
+       data-urldelete="@Url.Action("PackageAllocatedCostListDelete", "Bid")"
+       data-urlupdate="@Url.Action("PackageAllocatedCostListUpdate", "Bid")"
+       data-urlvalidate="@Url.Action("PackageAllocatedCostListValidate", "Bid")"
+       data-urlselect=""
+       data-dstselect=""
+       data-dstselectvalidate=""
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().AllocationType)</th>
+            <th width="35%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetCodeId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Package/DefaultSetup/AllocatedCost/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>

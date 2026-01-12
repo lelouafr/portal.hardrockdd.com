@@ -1,0 +1,104 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.JC.Job.Cost.JobCostListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+    var costList = Model.List.GroupBy(g => new { g.CostTypeID, g.CostTypeDesc }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "1.{0}", s.Key.CostTypeID),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.CostTypeDesc),
+        description = s.Key.CostTypeDesc,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.ActualCost)),
+    });
+
+    var phaseList = Model.List.GroupBy(g => new { g.CostTypeID, g.CostTypeDesc, g.PhaseId, g.PhaseDescription }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "2.{0}.{1}", s.Key.CostTypeID, s.Key.PhaseId),
+        parent = string.Format(AppCultureInfo.CInfo(), "1.{0}", s.Key.CostTypeID),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.PhaseDescription),
+        description = s.Key.PhaseDescription,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.ActualCost)),
+    });
+    var totalList = Model.List.GroupBy(g => new { g.JobId }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "t.{0}", s.Key.JobId),
+        parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "Total"),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.ActualCost)),
+    });
+    dataSet.AddRange(costList);
+    dataSet.AddRange(phaseList);
+    dataSet.AddRange(totalList);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+@*<button class="btn btn-xs btn-primary apview" type="button" data-co="1" data-mth="1" data-aptransid="1"><i class="fas fa-eye"></i></button>*@
+<div id="treeGrid_@tableId"
+     style="width:100%"
+     data-invoiceurl="@Url.Action("PopupForm", "ARInvoice")"
+     class="dhtmlx_treegrid f-w-500">
+</div>
+<script>
+    $("#treeGrid_@tableId").ready(function () {
+        var data = @Html.Raw(jsonData);
+        //$(document).ready(function () {
+        h = @((costList.Count()  * 24) + (24 * 2));
+        if (h < 250) {
+            h = 250;
+        }
+        $("#treeGrid_@tableId").height(h);
+        //console.log(data);
+        var treeGrid = new dhx.TreeGrid("treeGrid_@tableId", {
+                selection: "row",
+                rowHeight: 24,
+                headerRowHeight: 15,
+                data: data,
+                sortable: false,
+                //autoWidth: true,
+                columns: [
+                    {
+                        id: "name",
+                        adjust: "data",
+                        type: "string",
+                        autoWidth: true,
+                        minWidth: 200,
+                        header: [
+
+                            { text: "Cost Type", align: "left" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = "";
+                            if (row.$level == 0 || row.$level == 1) {
+                                result = "f-w-700";
+                            }
+                            if (row.name === "Total") {
+                                result = "f-w-700 f-s-14";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "amount",
+                        adjust: "data",
+                        type: "number",
+                        autoWidth: true,
+                        minWidth: 75,
+                        header: [
+
+                            { text: "Cost" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    }],
+            });
+        treeGrid.collapseAll();
+    });
+</script>

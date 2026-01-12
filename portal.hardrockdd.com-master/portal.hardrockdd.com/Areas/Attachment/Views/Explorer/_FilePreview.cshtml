@@ -1,0 +1,10 @@
+﻿@model portal.Areas.Attachment.Models.ExplorerListViewModel
+@{
+    var panelId = string.Format("previewPanel_{0}_{1}", Model.UniqueAttchId.ToString().Replace('-', '_'), Model.FolderId);
+}
+<div class="row" style="overflow:visible;">
+    <div class="col-lg-12 p-1">
+        <div id="@panelId" style="padding: 0px;">
+        </div>
+    </div>
+</div>

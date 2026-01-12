@@ -1,0 +1,107 @@
+﻿@model portal.Models.Views.Bid.BidPackageProductionRateListViewModel
+@{
+    portal.Code.Data.VP.BidParameter bidParms;
+    using (var db = new portal.Code.Data.VP.VPEntities())
+    {
+        bidParms = db.BDCompanyParms.FirstOrDefault(f => f.Co == Model.Co);
+    }
+    var guid = string.Format("guid_{0}", Guid.NewGuid());
+    var id = guid.ToString().Replace("-", "");
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div class="panel panel-inverse"
+     id="BidPackageProductionRateListViewModel"
+     data-reloadurl="@Url.Action("Table", "BidPackageProductionRate", new { co = Model.Co, bidId = Model.BidId, packageId = Model.PackageId })"
+     data-defaulturl="@Url.Action("ApplyDefault", "BidPackageProductionRate")"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+        </div>
+        @if (!viewOnly)
+        {
+            <div class="btn-group pull-right pr-2">
+                <button type="button" class="btn btn-success btn-xs">Menu</button>
+                <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:;" onclick="ApplyProductionRates_@(id)(this, @Model.Co, @Model.BidId , @Model.PackageId )">Apply Default Production Rates</a></li>
+                    @*<li class="divider"></li>
+                    <li><a href="javascript:AddRow('@bidParms.PilotPhaseId')">Add Pilot</a></li>
+                    <li><a href="javascript:AddRow('@bidParms.ReamPhaseId')">Add Ream Pass</a></li>
+                    <li><a href="javascript:AddRow('@bidParms.SwabPhaseId')">Add Swab</a></li>
+                    <li><a href="javascript:AddRow('@bidParms.TripInOutPhaseId')">Add Trip in-out</a></li>
+                    <li><a href="javascript:AddRow('@bidParms.PullPipePhaseId')">Add Pull Pipe</a></li>*@
+                </ul>
+            </div>
+        }
+        <h4 class="panel-title">Bore Line Production Rate</h4>
+    </div>
+    <div class="panel-body" id="BidPackageProductionRate">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../BD/Bid/Package/Production/List/Table", Model)
+    </div>
+</div>
+<script>
+
+    function AddRow(phaseId) {
+        var table = $('#BidPackageProductionRate').find('table');
+        var data = table.data('tablekey');
+        var url = $(table).data('urlcreate');
+        data = data + '&phaseId=' + phaseId;
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                var panel = $(table).closest('.panel');
+                var reload = $(panel).find('[data-click=panel-reload]');
+                $(reload).click();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+            }
+        });
+    }
+
+    function ApplyProductionRates_@(id)(elem, Co, BidId, PackageId) {
+        //console.log('Called');
+        var panel = $(elem).closest('.panel');
+        var url = $(panel).data('defaulturl');
+        var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+        $(panel).addClass('panel-loading');
+        $(panel).find('.panel-body').prepend(spinnerHtml);
+
+        if (url) {
+            var token = $(panel).find('[name="__RequestVerificationToken"]');
+            data = 'Co=' + Co;
+            data = data + '&BidId=' + BidId;
+            data = data + '&PackageId=' + PackageId;
+            if (token.length != 0) {
+                data += '&__RequestVerificationToken=' + token.val();
+            }
+            //console.log('Apply ProductionRates:', url, data);
+
+            dst = $(panel).find('.panel-body');
+
+            $.ajax({
+                type: "Post",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    //ReloadLinkedPanel(panel);
+                    $(panel).removeClass('panel-loading');
+                    $(panel).find('.panel-loader').remove();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //console.log(XMLHttpRequest);
+                }
+            });
+        }
+    }
+</script>

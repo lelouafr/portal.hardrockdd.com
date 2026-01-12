@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.EM.WorkOrder.Item.WorkOrderItemListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panelId_" + Guid.NewGuid();
+}
+
+@if (Model != null && Model.List != null)
+{
+    <div class="table-responsive">
+        @Html.Partial("../EM/WorkOrder/Forms/Items/Table", Model)
+    </div>
+}
+else
+{
+    <p class="text-muted">No items added yet.</p>
+}

@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Web.ErrorLogListViewModel
+<div class="panel panel-inverse"
+     
+     data-reloadurl="@Url.Action("Table", ViewBag.Controller, new { Area = "", status = Model.Status})">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Log</h4>
+    </div>
+    <div class="panel-body" id="ErrorLogListViewModel">
+        @Html.Partial("../Administration/ErrorLog/Table", Model)
+    </div>
+</div>

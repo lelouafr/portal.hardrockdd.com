@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APBatchTransViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.ViewOnly = true;
+    ViewBag.DisplayOnly = true;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.BatchSeq)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.VendorDescription)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.APReference)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.InvoiceDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DueDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Amount, new { ViewOnly = true })
+    </td>
+    <td>
+        <button class="btn  btn-xs btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa  fa-xs fa-trash"></i>
+        </button>
+    </td>
+</tr>

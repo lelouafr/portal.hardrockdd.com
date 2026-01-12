@@ -1,0 +1,67 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.WizardFormViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+    var key = string.Format("APCo{0}&DocId={1}", Model.APCo, Model.DocId);
+}
+
+<div id="@formId" class="jumbotron m-b-0 text-center">
+    <p>
+        <div>
+            @foreach (var action in Model.WizardActions)
+            {
+                <button type="button" class="btn btn-lg @action.ButtonClass btnBidAction" data-gotostatusid="@((int)action.GotoStatusId)" data-redirectaction="@action.ActionRedirect" data-entitykey="@key" data-key="@formLayout.TableKey">@action.Title</button>
+            }
+        </div>
+    </p>
+</div>
+
+<script>
+    $('#@formId').ready(function () {
+        $('#@(formId)').on('click', 'button.btnBidAction', function () {
+            @*var data = $(this).data('key');
+            var gotoStatusId = $(this).data('gotostatusid');
+            var redirectAction = $(this).data('redirectaction');
+
+            data += "&status=" + gotoStatusId;
+            data += "&ActionRedirect=" + redirectAction;
+            url += "?" + data;
+
+            location.href = url;*@
+
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = "@Url.Action("UpdateStatus", "Document")";
+                var token = $(document).find('[name="__RequestVerificationToken"]');
+
+                var key = $(button).data('entitykey');
+                var data = $(button).data('key');
+                var gotoStatusId = $(button).data('gotostatusid');
+                data += "&status=" + gotoStatusId;
+                data += "&__RequestVerificationToken=" + token.val();
+
+                console.log(url, data);
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        //ReloadPanel("form_@(Model.DocId))");
+
+                        $(document).find("[data-entitykey='" + key + "']").each(function () {
+                            $(this).hide();
+                        });
+                        $('#form_@(Model.DocId)').closest('.panel-body').html('');
+                    }
+                    else {
+                        var panel = $(button).closest(".panel");
+                        SetValidationErrorForObject($(panel), res.errorModel);
+                    }
+                    $(button).SetButtonNotBusy();
+                });
+            }
+            func(button);
+        });
+
+    });
+</script>

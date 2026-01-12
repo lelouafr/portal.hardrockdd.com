@@ -1,0 +1,20 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateSequenceListViewModel
+@{
+    var panelId = string.Format("panel_locateseq_{0}", Model.LocateId);
+}
+
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("LocateSequenceTable", "Locate", new { locateId = Model.LocateId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Sequence(s)
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("Form/Sequence/_Table", Model)
+    </div>
+</div>

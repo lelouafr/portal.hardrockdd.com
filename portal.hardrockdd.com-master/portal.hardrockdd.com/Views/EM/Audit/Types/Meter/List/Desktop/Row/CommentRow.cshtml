@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditMeterLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var rowId = string.Format("row_{0}", Guid.NewGuid());
+    var colSpan = viewOnly ? "4" : "5";
+    ViewBag.TableRow = "True";
+}
+<tr class="commentRow"
+    id="@("commentRow_" + Model.SeqId.ToString())"
+    style="@(!String.IsNullOrEmpty(Model.Comments) ? "display: normal;" : "display: none;")"
+    data-entitykey="@entityKey">
+
+    <td colspan="@colSpan" style="border-top-width: 0px; padding-top: 0px;">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EntityName, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EntityKeyString, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.AuditId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ActionId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ToCrewId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ToEmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ToLocationId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ToJobId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Completed, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.MeterTypeId, new { ViewOnly = true })
+        @Html.HiddenFor(m => m.StatusId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.AuditTypeId, new { @id = Guid.NewGuid() })
+
+        @Html.HiddenFor(m => m.LicensePlateNo, new { ViewOnly = true })
+        @Html.HiddenFor(m => m.OdoReading)
+        @Html.HiddenFor(m => m.HourReading)
+        <div class="form-group has-feedback row" style="margin-bottom: 0px;">
+            @Html.EditorFor(m => m.Comments, new { tableRow = "False" })
+        </div>
+    </td>
+</tr>

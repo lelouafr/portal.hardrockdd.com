@@ -1,0 +1,214 @@
+﻿@model portal.Models.Views.AP.Document.ActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var unSubmitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : false;
+}
+<div class="row"
+     data-apco="@Model.APCo"
+     data-docid="@Model.DocId">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            @if (Model.CanFile)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "APDocument")"
+                        data-apco="@Model.APCo"
+                        data-docid="@Model.DocId"
+                        data-status="@((int)DB.APDocumentStatusEnum.Filed)"
+                        data-validate="true">
+                    <i class="fa fa-save"></i> Filed
+                </button>
+            }
+            @if (Model.CanReFile)
+            {
+                <button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "APDocument")"
+                        data-apco="@Model.APCo"
+                        data-docid="@Model.DocId"
+                        data-status="@((int)DB.APDocumentStatusEnum.Filed)"
+                        data-validate="false">
+                    <i class="fa fa-save"></i> Send Back to File
+                </button>
+            }
+            @if (Model.CanForward)
+            {
+                <button type="button" class="btn btn-warning btnReqAction"
+                        data-url="@Url.Action("RequestInfoStatus","APDocument")"
+                        data-apco="@Model.APCo"
+                        data-docid="@Model.DocId"
+                        data-status="@((int)DB.APDocumentStatusEnum.RequestedInfo)"
+                        data-validate="false"
+                        data-toggle="modal"
+                        data-target="#requestInfoModel">
+                    <i class="far fa-info-circle"></i> Request Info 1
+                </button>
+            }
+            @if (Model.CanFile || Model.CanProcess)
+            {
+                <button type="button" class="btn btn-danger btnAction"
+                        data-url="@Url.Action("UpdateStatus", "APDocument")"
+                        data-apco="@Model.APCo"
+                        data-docid="@Model.DocId"
+                        data-status="@((int)DB.APDocumentStatusEnum.Duplicate)">
+                    <i class="far fa-file-times"></i> Mark as duplicate
+                </button>
+            }
+            @if (Model.CanProcess)
+            {
+                <button type="button" class="btn btn-danger btnAction"
+                        data-url="@Url.Action("UpdateStatus", "APDocument")"
+                        data-apco="@Model.APCo"
+                        data-docid="@Model.DocId"
+                        data-status="@((int)DB.APDocumentStatusEnum.Canceled)">
+                    <i class="far fa-file-times"></i> Remove
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        $("#requestInfoModel")
+            .off("show.bs.modal")
+            .on("show.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            var model = this;
+            var button = $(event.relatedTarget);
+            var url = $(button).data('url');
+            var data = {
+                apco: $(button).data("apco"),
+                docId: $(button).data("docid"),
+            };
+            console.log(button, url, data);
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (res) {
+                    $(model).find(".modal-body").html(res);
+                    console.log('Model', $(model));
+                    Form().init($(model));
+                },
+                error: function (res) {
+                    //console.log(res);
+                }
+            });
+        });
+        $("#requestInfoModel")
+            .off("hide.bs.modal")
+            .on("hide.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            $(this).find(".modal-body").html("");
+        });
+        $(document)
+            .off('click', 'button.btnAction')
+            .on('click', 'button.btnAction', function () {
+                UpdateDocStatus(this);
+            });
+        $(document)
+            .off('click', 'button.btnReqAction')
+            .on('click', 'button.btnReqAction', function () {
+                RequestDocInfo(this);
+            });
+    });
+
+    function RequestDocInfo(button) {
+
+    }
+
+    function UpdateDocStatus(button) {
+        console.log('button', button);
+
+        var row = $(button).closest('.row');
+        var url = $(button).data('url');
+        var validate = $(button).data('validate');
+        var apco = $(button).data('apco');
+        var docId = $(button).data('docid');
+        var form = $(button).closest('.panel').find('form');
+        $(button).SetButtonBusy();
+        var res = true;
+        if (validate) {
+            res = $(form).parsley().validate();
+        }
+        if (res === false) {
+            $(button).SetButtonNotBusy();
+        }
+
+        if (res && url) {
+            var token = $(row).find('[name="__RequestVerificationToken"]');
+            var data = {
+                __RequestVerificationToken: token.val(),
+                apco: $(button).data("apco"),
+                docId: $(button).data("docid"),
+                status: $(button).data("status")
+            };
+            //console.log(url, data);
+            $.post(url, data, function (res) {
+                if (res.success === "true") {
+                    var rowKey = "APCo=" + apco + '&DocId=' + docId;
+                    $(document).find("[data-entitykey='" + rowKey + "']").each(function () {
+                        //$(this).hide();
+                    });
+                    console.log(res);
+                    if (res.isInWorkFlow) {
+                        ReloadElement($(button));
+                    }
+                    else {
+                        $('#reviewPanel').html('');
+                    }
+
+                }
+                else {
+                    $(button).SetButtonNotBusy();
+                }
+            });
+        }
+        else {
+            //window.location.href = document.referrer;
+        }
+    }
+
+    function ReloadElement(elem) {
+        var url = "@Url.Action("Form", "APDocument")";
+        var dstId = "reviewPanel";
+        var data = {
+            apco: $(elem).data("apco"),
+            docId:  $(elem).data("docid"),
+        };
+        var dst = $('#' + dstId);
+        //console.log(url, data, dst);
+        var index = 0;
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {
+                //console.log(url, data, dst);
+                var divId = dstId + '_' + index ;
+                var html = '<div id="' + divId + '">\r\n';
+                html += res;
+                html += '\r\n</div>';
+
+                if (index === 0)
+                    dst.html(html);
+                else
+                    dst.append(html);
+
+                var panel = $('#' + divId).find('.panel-body');
+                $(dst).removeClass('panel-loading');
+                $(dst).find('.panel-loader').remove();
+                $('html, body').animate({
+                    scrollTop: $(dst).offset().top - 150
+                }, 500)
+            }
+        });
+    }
+</script>

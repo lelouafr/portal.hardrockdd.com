@@ -1,0 +1,57 @@
+﻿@model portal.Models.Views.Equipment.Service.Forms.EquipmentLinkListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       style="display:none"
+       data-urlcreate="@Url.Action("ServiceItemEquipmentAdd", "EquipmentService")"
+       data-urldelete="@Url.Action("ServiceItemEquipmentDelete", "EquipmentService")"
+       data-urlupdate="@Url.Action("ServiceItemEquipmentUpdate", "EquipmentService")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().LastServiceDate)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DateIntervalTypeId)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DateInterval)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().HourInterval)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().OdoInterval)</th>
+            <th width="35px">
+                <button class="btn btn-sm btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Service/Forms/Equipment/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        var h = 42 * @(Model.List.Count);
+        if (h > 500) {
+            h = 500;
+            var parent = $(table).parent();
+            var contaner = $('<div></div>');
+            $(contaner).css("height", h + "px");
+            $(contaner).css("overflow-y", "scroll");
+            $(contaner).css("display", "block");
+
+            $(contaner).appendTo(parent);
+            $(table).appendTo(contaner);
+        }
+        $(table).show();
+        Table().init($('#@tableId'));
+
+    });
+</script>

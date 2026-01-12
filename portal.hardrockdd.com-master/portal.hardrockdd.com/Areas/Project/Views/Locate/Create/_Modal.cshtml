@@ -1,0 +1,44 @@
+﻿@*<div class="modal fade" id="newLocateRequest">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style=" padding: 0px 0px 5px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $().on("show.bs.modal", function (event) {
+            if (event.target == this) {
+
+                console.log("newLocateRequest.show.bs.modal 123", event, this);
+                var button = $(event.relatedTarget);
+                var bdco = $(button).data("bdco");
+                var bidId = $(button).data("bidId");
+                $(button).SetButtonBusy();
+               
+                var url = "@Url.Action("Create", "Locate", new { Area = "Project" })";
+                if (bdco !== undefined && bidId !== undefined) {
+
+                    url = url + "?bdco=" + bdco;
+                    url = url + "?bidId=" + bidId;
+                }
+                else {
+
+                }
+                console.log(url);
+                $(this).find(".modal-body").load(url);
+                $(button).SetButtonNotBusy();
+            }
+        });
+        $().on("hide.bs.modal", function (event) {
+            if (event.target == this) {
+                var button = $(event.relatedTarget);
+                console.log("newLocateRequest.hide.bs.modal", event, this);
+            
+                // Place the returned HTML into the selected element
+                $(this).find(".modal-body").html("");
+            }
+        });
+    });
+</script>*@

@@ -1,0 +1,45 @@
+﻿@model string
+@{
+    var dic = new Dictionary<string, object>();
+    var idGuid = "group_" + Guid.NewGuid();
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var required = this.ViewData.ModelMetadata.IsRequired ? "required" : "";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow, out bool tableRowOut) ? tableRowOut : false;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ? (FieldAttribute)fldAttribute : new FieldAttribute();
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+
+    dic.Add("id", id);
+    dic.Add("Name", name);
+}
+
+@if (attributes.LabelSize != 0 && !tableRow)
+{
+    @Html.LabelForRequired(m => m, new { @class = @labelSize + " control-label text-lg-right col-form-label" })
+}
+<div class="@textSize input-group" style="margin-top: 5px;">
+    @foreach (KeyValuePair<string, string> opt in attributes.OptionLists)
+    {
+        dic["id"] = string.Concat(id, opt.Key);
+        <div class="form-check form-check-inline">
+            @Html.RadioButtonFor(m => m, opt.Key, StaticFunctions.GetHtmlAttributes(new { @class = ("form-check-input " + prop) }, dic))
+            @Html.Label(opt.Key.ToString(), opt.Value, new { @class = "form-check-label" })
+        </div>
+    }
+    @Html.ValidationMessageFor(m => m, "", new { @class = "text-danger" })
+</div>

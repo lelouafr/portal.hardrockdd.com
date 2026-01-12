@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.Bid.Forms.Proposal.FormViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="row" id="@panelId">
+    <div class="col-lg-6" id="form_@panelId">
+        @Html.Partial("../BD/Bid/Forms/Proposal/Bid/Header/Panel", Model.Bid)
+        @Html.Partial("../BD/Bid/Forms/Proposal/Package/PanelList", Model.Packages)
+        @Html.Partial("../BD/Bid/Forms/Proposal/Bid/ScopeList/Panel", Model.Bid.Clarifications)
+        @Html.Partial("../BD/Bid/Forms/Proposal/Bid/ScopeList/Panel", Model.Bid.ScopeofWork)
+        @Html.Partial("../BD/Bid/Forms/Proposal/Bid/ScopeList/Panel", Model.Bid.OutofScope)
+    </div>
+    <div class="col-lg-6" id="pdf_@panelId">
+        @Html.Partial("../BD/Bid/Forms/Proposal/Customer/Panel", Model.Customers)
+        <div id="pdfPreView_@(Model.BidId)">
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#@panelId').ready(function () {
+        var elemform = $('#form_@panelId');
+        var elem = $('#pdf_@panelId');
+        initPanels($('#@panelId'));
+        var iframeElem = $(elem).find('iframe');
+
+        h = (elemform).height();
+        $(iframeElem).css("height", h + "px");
+        $(elem).show();
+        @*$('#form_@panelId').on('change', ':Input', function () {
+            var uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+            iframeElem = $(elem).find('iframe');
+            var url = $(iframeElem).attr('src');
+            url = url.substring(0, url.indexOf("guid"));
+            url = url + "guid=" + uniqueId;
+            console.log('Something changed', url);
+            $(iframeElem).attr('src', '');
+            $(iframeElem).attr('src', url);
+        })*@
+    });
+</script>

@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.Equipment.Location.EquipmentLocationListViewModel
+@section styles {
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+@Html.Partial("../EM/Location/Summary/PartialIndex", Model)
+
+
+@section scripts {
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/fc-3.3.1/r-2.2.6/rg-1.1.2/datatables.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+
+}

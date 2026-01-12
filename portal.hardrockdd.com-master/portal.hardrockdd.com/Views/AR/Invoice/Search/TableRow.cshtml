@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Vendor.VendorViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(l => l.VendorId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Name, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.SortName, new { DisplayOnly = true })
+    </td>
+    @*<td>
+        @Html.EditorFor(l => l.DisplayName, new { DisplayOnly = true })
+    </td>*@
+</tr>

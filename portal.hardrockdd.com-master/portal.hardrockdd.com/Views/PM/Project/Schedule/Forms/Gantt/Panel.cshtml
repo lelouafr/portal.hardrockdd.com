@@ -1,0 +1,118 @@
+﻿@model portal.Models.Views.PM.Project.Schedule.FormViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var timeline = "JobGantt_";// + formId.ToString().Replace("-", "");
+    var panel = "panel_" + formId.ToString().Replace("-", "");
+}
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Job Crew Assignment Tree
+        </div>
+    </div>
+    <div class="panel-body" id="@panel">
+        <div id="@timeline" class="dhx_cal_container" style='width:100%; height:100%; height:600px;'
+             data-urlupdate="@Url.Action("GanttUpdate", "PMProjectScheduleForm")"
+             data-dataurl="@Url.Action("GanttData", "PMProjectScheduleForm", new {bdco = Model.BDCo, projectId = Model.JobId, jcco = Model.JCCo, packageId = Model.PackageId, bidId = Model.BidId })">
+            <div class="dhx_cal_navline">
+                <div class="dhx_cal_prev_button">&nbsp;</div>
+                <div class="dhx_cal_next_button">&nbsp;</div>
+                <div class="dhx_cal_today_button"></div>
+                <div class="dhx_cal_date"></div>
+                <div class="dhx_cal_tab" name="timeline_tab" style="display:none"></div>
+            </div>
+            <div class="dhx_cal_header">
+            </div>
+            <div class="dhx_cal_data">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#@panel").ready(function () {
+        var url = $('#@timeline').data("dataurl");
+
+        // scale settings
+        gantt.config.scales = [
+            { unit: "month", step: 1, format: "%M %Y" },
+            { unit: "day", step: 1, format: "%d, %l" },
+            { unit: "hour", step: 1, format: "%H" },
+        ];
+        gantt.config.scale_height = 20 * 3;
+        gantt.config.min_column_width = 18;
+        gantt.ignore_time = function (date) {
+            return !gantt.isWorkTime(date, "hour");
+        };
+
+
+        // work time and duration
+        gantt.config.duration_unit = "minute";
+        gantt.config.work_time = true;
+        gantt.config.time_step = 15;
+        gantt.config.round_dnd_dates = false;
+        gantt.config.open_tree_initially = true;
+
+        // formatting durations
+        var dayFormatter = gantt.ext.formatters.durationFormatter({
+            enter: "day",
+            store: "minute",
+            format: "day",
+            hoursPerDay: 24,
+            hoursPerWeek: 168,
+            daysPerMonth: 30,
+            short: false
+        });
+        var hourFormatter = gantt.ext.formatters.durationFormatter({
+            enter: "hour",
+            store: "minute",
+            format: "hour",
+            short: true
+        });
+        var autoFormatter = gantt.ext.formatters.durationFormatter({
+            enter: "day",
+            store: "minute",
+            format: "auto"
+        });
+
+        var textEditor = { type: "text", map_to: "text" };
+        var dateEditor = { type: "date", map_to: "start_date", min: new Date(2018, 0, 1), max: new Date(2019, 0, 1) };
+        var durationEditor = { type: "duration", map_to: "duration", formatter: autoFormatter, min: 0, max: 1000 };
+        var dayDurationEditor = { type: "duration", map_to: "duration", formatter: dayFormatter, min: 0, max: 1000 };
+        var hourDurationEditor = { type: "duration", map_to: "duration", formatter: hourFormatter, min: 0, max: 1000 };
+
+        gantt.config.columns = [
+            { name: "text", tree: true, width: 170, resize: true, editor: textEditor },
+            { name: "start_date", align: "center", resize: true, editor: dateEditor },
+            {
+                name: "duration", label: "Duration", resize: true, align: "center", template: function (task) {
+                    return autoFormatter.format(task.duration);
+                }, editor: durationEditor, width: 100
+            },
+            {
+                name: "dayDuration", label: "Duration (days)", resize: true, align: "center", template: function (task) {
+                    return dayFormatter.format(task.duration);
+                }, editor: dayDurationEditor, width: 100
+            },
+            {
+                name: "hourDuration", label: "Duration (hours)", resize: true, align: "center", template: function (task) {
+                    return hourFormatter.format(task.duration);
+                }, editor: hourDurationEditor, width: 100
+            },
+            { name: "add", width: 44 }
+        ];
+        gantt.config.lightbox.sections = [
+            { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
+            { name: "time", type: "duration", map_to: "auto", formatter: autoFormatter }
+        ];
+
+        gantt.clearAll();
+        gantt.init("@timeline");
+        gantt.load(url, "json");
+    });
+</script>

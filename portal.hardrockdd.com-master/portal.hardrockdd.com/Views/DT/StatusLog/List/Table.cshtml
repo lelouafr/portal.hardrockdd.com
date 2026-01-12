@@ -1,0 +1,41 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyStatusLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var guid = tableId.ToString().Replace("-", "");
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div id="div_@guid">
+    <table class="table"
+           id="@tableId"
+           @*
+           data-urlcreate="@Url.Action("Add", "DailyStatusLog")"
+       data-urldelete="@Url.Action("Delete", "DailyStatusLog")"
+       data-urlupdate="@Url.Action("Update", "DailyStatusLog")"
+       data-urlvalidate="@Url.Action("Validate", "DailyStatusLog")"
+           *@
+           data-tablekey="@tableKey">
+        <thead>
+            <tr>
+                <th width="25%">@Html.LabelForRequired(model => model.StatusLogs.FirstOrDefault().CreatedOn)</th>
+                <th width="50%">@Html.LabelForRequired(model => model.StatusLogs.FirstOrDefault().CreatedUser)</th>
+                <th width="25%">@Html.LabelForRequired(model => model.StatusLogs.FirstOrDefault().Status)</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model.StatusLogs.OrderByDescending(o => o.CreatedOn).ToList())
+            {
+                @Html.Partial("../DT/StatusLog/List/TableRow", obj)
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $("#div_@guid").ready(function () {
+        Table().init($('#@tableId'));
+        $('#div_@guid').slimScroll({ height: '225px' });
+    });
+</script>

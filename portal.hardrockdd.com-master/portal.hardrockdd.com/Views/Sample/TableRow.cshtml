@@ -1,0 +1,25 @@
+﻿@model portal.Models.SampleViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.Id, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SomeDateTime, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SomeString)
+    </td>
+    <td>
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

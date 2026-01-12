@@ -1,0 +1,227 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.ImageBankListViewModel
+<style>
+    .thumb-img-container {
+        position: relative;
+        display: inline-block; /* added */
+        overflow: hidden; /* added */
+    }
+
+    .thumb-img-container .tagged {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 15px;
+        color: green;
+    }
+
+    .thumb-img-container img {
+        width: 100%;
+    }
+
+    .thumb-img-container:hover button {
+        opacity: 1; /* added */
+    }
+
+    .thumb-img-container button {
+        position: absolute;
+        opacity: 0;
+        top: 100%;
+        left: 100%;
+        transform: translate(-100%, -100%);
+        -ms-transform: translate(-100%, -100%);
+        text-align: center;
+    }
+</style>
+
+@if (Model.List.Count > 0)
+{
+    <div class="row">
+        <div class="col-xl-9 d-none d-xl-block">
+            <div class="filePreview" id="filePreview">
+            </div>
+        </div>
+        <div class="col-xl-3 col-12">
+                <div class="accordion"  id="fileList">
+                    @{ 
+                        var mthCnt = 0;
+                    }
+                    @foreach (var mth in Model.List.GroupBy(g => g.Mth).Select(s => new { Mth = s.Key, Id = s.Key.ToString("MMMM"), List = s }).OrderByDescending(o => o.Mth).ToList())
+                    {
+
+                        <!-- begin card -->
+                        <div class="card" style="overflow:visible;">
+                            <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@mth.Id">
+                                @mth.Mth.ToString("MMMM") @mth.Mth.ToString("yyyy")
+                            </div>
+                            <div id="@mth.Id" class="@(Model.Mth == mth.Mth ? "show" : "collapse")">
+                                <div class="card-body">
+                                    @foreach (var item in mth.List)
+                                    {
+                                        @Html.Partial("../AP/CreditCard/Form/ImageBank/List/ThumbnailPreview", item)
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card -->
+                        
+                        mthCnt++;
+                    }
+                </div>
+        </div>
+    </div>
+
+    <script>
+        $('#fileList').ready(function () {
+            var isModal = $('#fileList').closest('.modal').length != 0;
+            var isLandScape = true;
+            if (window.innerHeight > window.innerWidth) {
+                var isLandScape = false;
+            }
+            var height = $(window).height();
+            var scrollh = 450
+            if (isModal && height < 450) {
+                var modalElem = $('#fileList').closest('.modal');
+                height = $(modalElem).height();
+            }
+            $('#fileList').find('.thumb-img-container').each(function () {
+                var isTagged = $(this).data('istagged') === "True";
+                var isTaggedCurrentTrans = $(this).data('istaggedcurrenttrans') === "True";
+
+                if (isTaggedCurrentTrans) {
+                    $(this).find('.btnUnlinkImage').show();
+                }
+                else if (!isTagged){
+                    $(this).find('.btnDeleteImage').show();
+                }
+                if (!isLandScape) {
+                    $(this).find('img').css("max-height", 550);
+                }
+            });
+            $('[data-toggle="tooltip"]').tooltip();
+            if (height < 450) {
+                scrollh = height - 50;
+            }
+            $('#fileList').slimScroll({
+                height: scrollh + 'px',
+                alwaysVisible: true
+            });
+
+            $('#fileList').on('click', '.btnDeleteImage', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                //console.log('Delete Clicked');
+                var dst = $(this).closest('.thumb-img-container');
+                var url = $(dst).data('deleteattachmenturl');
+                var data = {
+                    ccco: $(dst).data('ccco'),
+                    employeeId: $(dst).data('employeeid'),
+                    mth: $(dst).data('mth'),
+                    imageId: $(dst).data('imageid'),
+                };
+                //console.log(url, data);
+                $.ajax({
+                    type: "Post",
+                    dataType: "json",
+                    url: url,
+                    data: data,
+                    success: function (data) {
+                        if ($(dst).hasClass('border-info')) {
+                            $('#filePreview').html('');
+                        }
+                        $(dst).parent().remove();
+                        $(document).find('.tooltip').remove();
+                    }
+                });
+                return false;
+            });
+
+            $('#fileList').on('click', '.btnUnlinkImage', function (e) {
+                var button = this;
+                var dst = $(this).closest('.thumb-img-container');
+                var url = $(dst).data('unlinkattachmenturl');
+                var data = {
+                    ccco: $(dst).data('ccco'),
+                    employeeId: $(dst).data('employeeid'),
+                    mth: $(dst).data('mth'),
+                    imageId: $(dst).data('imageid'),
+                    transId: $(dst).data('transid'),
+                };
+                //console.log(url, data);
+                $.ajax({
+                    type: "Post",
+                    dataType: "json",
+                    url: url,
+                    data: data,
+                    success: function (data) {
+                        var isTagged = $(this).data('istagged');
+                        if (!isTagged) {
+                            $(dst).find('.btnDeleteImage').show();
+                        }
+                        $(button).remove();
+                        $(document).find('.tooltip').remove();
+                    }
+                });
+                return false;
+            });
+
+            $('#fileList').on('click', '.fileObject:not([type=button])', function () {
+                var dst = $('#filePreview');
+                if (!$(this).hasClass('border-info') && dst.html() != '') {
+                    var url = $(this).data('attachmenturl');
+                    var data = {
+                        ccco: $(this).data('ccco'),
+                        employeeId: $(this).data('employeeid'),
+                        mth: $(this).data('mth'),
+                        imageId: $(this).data('imageid'),
+                    };
+
+                    //console.log(url, data);
+                    $('#fileList').find('.fileObject').each(function () {
+                        $(this).addClass('border-dark');
+                        $(this).removeClass('border-info');
+                    });
+                    $(this).removeClass('border-dark');
+                    $(this).addClass('border-info');
+                    //dst.html('');
+                    $.ajax({
+                        type: "Get",
+                        dataType: "html",
+                        url: url,
+                        data: data,
+                        success: function (data) {
+                            dst.html(data);
+                        }
+                    });
+                }
+            });
+
+
+            setTimeout(function () {
+                var fileObjects = $('.fileObject');
+                $('.fileObject').each(function () {
+                    var $img = $(this).find('img');
+                    console.log('img src', $img.attr("data-imgsrc"));
+                    $img.attr("src", $img.attr("data-imgsrc"));
+                });
+                $('.fileObject').first().click();
+            }, 10);
+        });
+    </script>
+}
+else
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="filePreview" id="filePreview">
+                <div class="error">
+                    <div class="" style="padding-top:0px">
+                        <div class="">No Documents Attached</div>
+                        <div>
+                            <p>Please attach documents to through either the Drop files here or from your device.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

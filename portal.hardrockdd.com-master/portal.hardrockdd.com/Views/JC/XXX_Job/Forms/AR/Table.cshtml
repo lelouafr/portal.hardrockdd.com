@@ -1,0 +1,209 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AR.Invoice.InvoiceListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+    var mthList = Model.List.GroupBy(g => new { g.MthDate }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "m.{0}.{1}", s.Key.MthDate.Year, s.Key.MthDate.Month),
+        //parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.MthDate.ToShortDateString()),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.Amount ?? 0)),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.PaidAmount ?? 0)),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C2}", (s.Sum(sum => sum.Amount) ?? 0) - (s.Sum(sum => sum.PaidAmount) ?? 0))
+    });
+    var headerList = Model.List.Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "h.{0}.{1}.{2}", s.MthDate.Year, s.MthDate.Month, s.ARTransId),
+        parent = string.Format(AppCultureInfo.CInfo(), "m.{0}.{1}", s.MthDate.Year, s.MthDate.Month),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.CustRef),
+        description = s.JobDescription,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Amount),
+        paid = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.PaidAmount),
+        balance = string.Format(AppCultureInfo.CInfo(), "{0:C2}", (s.Amount ?? 0) - (s.PaidAmount ?? 0)),
+        mth = s.Mth,
+        arTransId = s.ARTransId,
+        arco = s.ARCo,
+        jcco = s.JCCo
+    });
+    //var transList = new List<dynamic>();
+    //foreach (var trans in Model.List)
+    //{
+    //    var tmp = trans.Lines.List.Select(s => new
+    //    {
+    //        id = string.Format(AppCultureInfo.CInfo(), "t.{0}.{1}", s.APTransId, s.LineId),
+    //        parent = string.Format(AppCultureInfo.CInfo(), "h.{0}.{1}.{2}", s.MthDate.Year, s.MthDate.Month, s.APTransId),
+    //        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.LineId),
+    //        description = s.Description,
+    //        apRef = s.APRef,
+    //        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.GrossAmt ?? 0)
+    //    });
+    //    transList.AddRange(tmp);
+    //};
+
+
+    dataSet.AddRange(mthList);
+    dataSet.AddRange(headerList);
+    //dataSet.AddRange(transList);
+
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+@*<button class="btn btn-xs btn-primary apview" type="button" data-co="1" data-mth="1" data-aptransid="1"><i class="fas fa-eye"></i></button>*@
+<div id="treeGrid_@tableId" 
+     style="width:100%"
+     data-invoiceurl="@Url.Action("PopupForm", "ARInvoice")"
+     class="dhtmlx_treegrid f-w-500">
+</div>
+<script>
+    $("#treeGrid_@tableId").ready(function () {
+        var data = @Html.Raw(jsonData);
+        //$(document).ready(function () {
+        h = @((dataSet.Count()  * 23) + (20 *2));
+        if (h >= (10 * 50 + (40))) {
+            h = (10 * 50) + (40);
+        }
+        if (h < 300) {
+            h = 300;
+        }
+        $("#treeGrid_@tableId").height(h);
+        //console.log(data);
+        var treeGrid = new dhx.TreeGrid("treeGrid_@tableId", {
+                selection: "row",
+                rowHeight: 24,
+                headerRowHeight: 15,
+                data: data,
+                sortable: false,
+                autoWidth: true,
+                columns: [
+                    {
+                        id: "name",
+                        adjust: "data",
+                        type: "string",
+                        minWidth: 120,
+                        header: [
+                            
+                            { text: "Reference", align: "center" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = "";
+                            if (row.$level == 0 || row.$level == 1) {
+                                result = "f-w-700";
+                            }
+                            if (row.name === "Total") {
+                                result = "f-w-700 f-s-14";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "amount",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Amount" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "paid",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Paid" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "balance",
+                        adjust: "data",
+                        type: "number",
+                        minWidth: 100,
+                        header: [
+                            { text: "Balance" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    },
+                    {
+                        id: "btn",
+                        adjust: "data",
+                        type: "number",
+                        width: 50,
+                        minWidth: 50,
+                        htmlEnable: true,
+                        template: function (tet, row, col) {
+                            var btn = '';
+                            if (row.$level == 1) {
+                                //console.log(row);
+                                btn += '<button class="btn btn-xs btn-primary btnPopup" data-url="@Url.Action("PopupForm", "ARInvoice")" type="button" data-arco="' + row.arco + '" data-mth="' + row.mth + '" data-artransid="' + row.arTransId + '"><i class="fas fa-eye"></i></button>';
+                            }
+                            return btn;
+                        },
+                        header: [
+                            { text: "" },
+                        ],
+                        mark: function (cell, data, row, col) {
+                            var result = " "
+                            if (row.$level == 0 || row.$level == 1) {
+                                result += "f-w-700 ";
+                            }
+                            if (row.name === "Total") {
+                                result += "f-s-14 ";
+                            }
+                            return result;
+                        },
+                    }]
+
+        });
+        //collapseAll();
+            //setTimeout(function () {
+            //    treegrid.expandAll();
+            //    //treegrid.collapseAll();
+            //}, 500);
+
+
+        //});
+        treeGrid.collapseAll();
+        //function expandAll() {
+        //    treeGrid.expandAll();
+        //}
+
+        //function collapseAll() {
+        //    treeGrid.data.forEach(function (d) {
+        //        if (d.$level != 0) {
+        //            treeGrid.collapse(d.id);
+        //        }
+        //    });
+        //    treeGrid.collapseAll();
+        //}
+    });
+</script>

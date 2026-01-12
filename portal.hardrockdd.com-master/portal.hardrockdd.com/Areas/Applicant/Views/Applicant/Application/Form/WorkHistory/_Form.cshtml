@@ -1,0 +1,91 @@
+﻿@model portal.Areas.Applicant.Models.WorkHistoryViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("WorkHistoryUpdate", "Applican")"
+      data-urlvalidate="@Url.Action("WorkHistoryValidate", "Applican")">
+    
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ApplicationId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#employmentinfo_@(Model.SeqId)">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Employer
+        </div>
+        <div id="employmentinfo_@(Model.SeqId)" class="show">
+            <div class="card-body">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.Employer)
+                    @Html.EditorFor(m => m.SupervisorName)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.Position)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.WorkFromDate)
+                    @Html.EditorFor(m => m.WorkToDate)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#contactinfo_@(Model.SeqId)">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Employer Location
+        </div>
+        <div id="contactinfo_@(Model.SeqId)" class="show">
+            <div class="card-body">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.WorkPhone)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.AddressStreet)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.AddressCity)
+                    @Html.EditorFor(m => m.AddressState)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.AddressZip)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#addinfo_@(Model.SeqId)">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Additional Details
+        </div>
+        <div id="addinfo_@(Model.SeqId)" class="show">
+            <div class="card-body">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.JobDuties)
+                    @Html.EditorFor(m => m.ReasonForLeaving)
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (!viewOnly)
+    {
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-danger pull-right delRow" type="button"
+                        data-entitykey="@entityKey">
+                    <i class="fa fa-trash"></i>
+                    Remove #@(Model.SeqId)
+                </button>
+
+            </div>
+        </div>
+    }
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

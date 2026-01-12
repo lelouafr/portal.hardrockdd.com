@@ -1,0 +1,12 @@
+﻿@model portal.Models.Views.PhaseMaster.PhaseMasterViewModel
+
+<div class="col-lg-12">
+    <fieldset>
+        <legend>Customer info</legend>
+        @Html.EditorForModel("Form/Form", new
+        {
+            CreateUrl = @Url.Action("Create", "PhaseMaster"),
+            ValidateUrl = @Url.Action("Validate", "PhaseMaster")
+        })
+    </fieldset>
+</div>

@@ -1,0 +1,44 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketListSummaryViewModel
+
+<div class="panel panel-inverse"
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table", ViewBag.Controller, new { timeSelection = Model.TimeSelection })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Tickets</h4>
+    </div>
+    <div class="panel-body" id="DailyTicketApproval">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../DT/Summary/List/Table", Model)
+    </div>
+</div>
+<div class="modal fade"
+     id="rejectTicket"
+     data-url="@Url.Action("RejectIndex", "DailyTicketForm")">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script>
+    $('#rejectTicket').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url = $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+    $('#rejectTicket').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    })
+</script>

@@ -1,0 +1,100 @@
+﻿@model portal.Models.Views.EM.Audit.Report.AuditSubmissionReportListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+<div class="row">
+    <div class="col-xl-9">
+        <table class="table">
+            <tr>
+                <td width="@(100/7)%" class="text-center" style='background:#FFA500'><label>New</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#94ff00'><label>Started</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#FFFF00'><label>Submitted</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#90EE90'><label>Approved</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#ADD8E6'><label>Processed</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#FA8072'><label>Rejected</label></td>
+                <td width="@(100/7)%" class="text-center" style='background:#d04949'><label>Canceled</label></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("EquipmentAuditList", "EMAuditForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false">
+    <thead>
+        <tr>
+            <th width="25%"><label>Crew/Employee</label></th>
+            @foreach (var date in Model.Dates)
+            {
+                <th width="@(75/7)%"><label>@date.DayOfWeek.ToString()</label></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var crew in Model.List)
+        {
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "prco={0}&crewId={1}&employeeId={2}&weekId={3}", crew.PRCo, crew.CrewId, crew.EmployeeId, crew.WeekId);
+            <tr data-entitykey="@entityKey">
+                <td>
+                    @Html.HiddenFor(m => crew.PRCo, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => crew.WeekId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => crew.CrewId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => crew.Crew, new { DisplayOnly = true })
+                    @Html.EditorFor(m => crew.Employee, new { DisplayOnly = true })
+
+                </td>
+                @foreach (var day in crew.DayList)
+                {
+                    <td style="padding-left:1px; padding-right:1px">
+                        <table class="table-borderless table-condensed">
+                            @foreach (var item in day.List)
+                            {
+                                string colorCode = "";
+                                switch (item.StatusId)
+                                {
+                                    case DB.EMAuditStatusEnum.New:
+                                        colorCode = "#FFA500";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Started:
+                                        colorCode = "#94ff00";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Submitted:
+                                        colorCode = "#FFFF00";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Approved:
+                                        colorCode = "#90EE90";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Processed:
+                                        colorCode = "#ADD8E6";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Rejected:
+                                        colorCode = "#FA8072";
+                                        break;
+                                    case DB.EMAuditStatusEnum.Canceled:
+                                        colorCode = "#d04949";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                <tr>
+                                    <td width="@(75/7)%" bgcolor="@colorCode" class="no-padding f-s-10">
+                                        @(item.StatusIdString)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

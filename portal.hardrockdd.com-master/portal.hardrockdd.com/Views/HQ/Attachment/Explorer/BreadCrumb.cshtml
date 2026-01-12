@@ -1,0 +1,100 @@
+﻿@model portal.Models.Views.HQ.Attachment.FileExplorerListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var breadCrumbId = panelId.Replace('-', '_');
+    var tableId = string.Format("table_{0}_{1}", Model.UniqueAttchId, Model.FolderId);
+}
+<style>
+    .btn {
+        white-space: normal;
+    }
+</style>
+<div class="row">
+    <div class="col-6">
+        <ol class="breadcrumb border border rounded p-r-2 p-l-5 m-b-4">
+            @foreach (var folder in Model.ParentFolders)
+            {
+                var isActive = folder.FolderId == Model.ParentFolders.LastOrDefault().FolderId;
+
+                <li class="breadcrumb-item f-w-600 f-s-14 @breadCrumbId @(isActive? "active" : "")"
+                    data-folderurl="@Url.Action("FileExplorerFolder", "FileExplorer")"
+                    data-uniqueaatchid="@folder.UniqueAttchId"
+                    data-folderid="@folder.FolderId"
+                    data-viewtype="@folder.ViewType">
+                    @if (isActive)
+                    {
+                        @folder.Title
+                    }
+                    else
+                    {
+                        <a href="javascript:;">@folder.Title</a>
+
+                    }
+                </li>
+            }
+        </ol>
+
+    </div>
+    <div class="col-6">
+        <div class="btn-group pull-right">
+
+            <button class="btn btn-primary uploadBtn" data-addrowlocation="top">
+                <i class="far fa-upload  pr-1"></i> <span >Upload</span>
+            </button>
+
+            <button class="btn btn-success addRow " data-addrowlocation="top">
+                <i class="far fa-folder-plus  pr-1"></i> <span >New Folder</span>
+            </button>
+
+            <button class="btn btn-white downloadBtn">
+                <i class="far fa-folder-download  pr-1"></i> <span >Download</span>
+            </button>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $('.@(breadCrumbId)').on('click', function () {
+
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+
+
+        var folderId = $(this).data('folderid');
+        var uniqueId = $(this).data('uniqueaatchid');
+        var viewType = $(this).data('viewtype');
+        var url = $(this).data('folderurl');
+        var dst = $('#panel_' + uniqueId);
+        var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+
+
+        $(dst).addClass('panel-loading');
+        $(dst).append(spinnerHtml);
+        var data = {};
+        data.uniqueAttchID = uniqueId;
+        data.folderId = folderId;
+        data.viewType = viewType;
+        $(panelBody).data('folderid', data.folderId);
+        $(panelBody).attr('data-folderid', data.folderId);
+
+        loadFolder(dst, data, url);
+    });
+
+    function loadFolder(dst, data, url) {
+
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                $(dst).empty();
+                $(dst).append(data);
+                handleTableAutoUpdate($(dst));
+            }
+        });
+    }
+</script>

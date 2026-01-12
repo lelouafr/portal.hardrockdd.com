@@ -1,0 +1,59 @@
+﻿@model portal.Areas.HumanResource.Models.Position.TaskListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+    //ViewBag.
+}
+
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("Panel", "HRTask")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().TaskId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().TaskTypeId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignedTo)</th>
+            <th>
+                <button class="btn btn-sm btn-success btnAdd pull-right">
+                    <i class='fas fa-plus'></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Position/List/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            columnDefs: [
+                { targets: [0], visible: true },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+    })
+</script>

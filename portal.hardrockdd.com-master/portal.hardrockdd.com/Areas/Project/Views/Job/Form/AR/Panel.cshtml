@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.AR.Invoice.InvoiceListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("JobARInvoiceTable", "JobForm", new { jcco = Model.JCCo, jobId = Model.JobId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> AR Invoices
+        </div>
+    </div>
+    <div class="panel-body collapse" id="@panelId">
+        @Html.Partial("../JC/Job/Forms/AR/Table", Model)
+    </div>
+</div>

@@ -1,0 +1,49 @@
+﻿@model  portal.Models.Views.Purchase.Order.PurchaseOrderItemListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("FormPanel", "POItem")"
+       data-urlcreate="@Url.Action("Add", "POItem")"
+       data-urldelete="@Url.Action("Delete", "POItem")"
+       data-urlupdate="@Url.Action("Update", "POItem")"
+       data-urlvalidate="@Url.Action("Validate", "POItem")"
+       data-dstselect="poLinePanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="5%"><label>#</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ItemTypeId)</th>
+            <th width="50%"><label>Job/Equipment</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            @if (!viewOnly)
+            {
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../PO/PurchaseOrder/Form/Items/List/TableRow", request)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    });
+</script>

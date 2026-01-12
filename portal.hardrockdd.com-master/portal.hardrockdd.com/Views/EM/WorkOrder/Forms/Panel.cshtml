@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.EM.WorkOrder.Forms.FormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="row">
+    <div class="col-xl-8">
+        <div class="panel panel-inverse"
+             data-reloadurl="@Url.Action("WorkOrderForm", "EMWorkOrder", new { emco = Model.EMCo, workOrderId = Model.WorkOrderId })">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                </div>
+                <h4 class="panel-title">Work Order (@Model.WorkOrderId)</h4>
+            </div>
+            <div class="panel-body" id="@panelId">
+                @Html.Partial("../EM/WorkOrder/Forms/Info/Panel", Model.Info)
+            </div>
+        </div>
+
+        <!-- Work Order Items -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <div class="panel-heading-btn">
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                </div>
+                <h4 class="panel-title">Work Order Items</h4>
+            </div>
+            <div class="panel-body">
+                @Html.Partial("../EM/WorkOrder/Forms/Items/Panel", Model.Items)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <!-- Actions Panel -->
+        <div class="panel panel-inverse">
+            <div class="panel-heading">
+                <h4 class="panel-title">Actions</h4>
+            </div>
+            <div class="panel-body">
+                @Html.Partial("../EM/WorkOrder/Forms/Actions", Model)
+            </div>
+        </div>
+    </div>
+</div>

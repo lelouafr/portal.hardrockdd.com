@@ -1,0 +1,25 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "pm_locateimport";
+}
+
+@if (User.HasAccess("Locate"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Import(s)</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Locate", "LocateImportIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("LocateImportIndex", "Locate", new { Area = "Project"})">Locate(s)</a></li>
+            }
+            @if (User.HasAccess("Locate", "LocateImportIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("RequestImportIndex", "Locate", new { Area = "Project"})">Request(s)</a></li>
+            }
+        </ul>
+    </li>
+}

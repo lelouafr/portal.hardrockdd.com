@@ -1,0 +1,45 @@
+﻿@model portal.Models.Views.EM.WorkOrder.Item.WorkOrderItemListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+    var firstItem = Model?.List?.FirstOrDefault() ?? new portal.Models.Views.EM.WorkOrder.Item.WorkOrderItemViewModel();
+}
+
+<table class="table table-striped"
+       id="@tableId"
+       data-urlcreate="@Url.Action("ItemAdd", "EMWorkOrder")"
+       data-urldelete="@Url.Action("ItemDelete", "EMWorkOrder")"
+       data-urlupdate="@Url.Action("ItemUpdate", "EMWorkOrder")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="60px">Item #</th>
+            <th width="200px">Equipment</th>
+            <th>Description</th>
+            <th width="100px">Date Due</th>
+            <th width="100px">Completed</th>
+            <th width="35px">
+                <button class="btn btn-sm btn-primary addRow pull-right" type="button">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model?.List != null)
+        {
+            foreach (var item in Model.List)
+            {
+                @Html.Partial("../EM/WorkOrder/Forms/Items/TableRow", item)
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        Table().init($('#@tableId'));
+    });
+</script>

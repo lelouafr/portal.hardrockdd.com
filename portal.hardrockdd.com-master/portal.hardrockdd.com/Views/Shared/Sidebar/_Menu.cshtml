@@ -1,0 +1,44 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+}
+<ul class="nav">
+    <li id="menu_li_main_@(listItemId++)" class="nav-header">Navigation</li>
+    @*@Html.Partial("../Shared/Sidebar/MenuItems/PR/DT")*@
+    @Html.Partial("../Shared/Sidebar/MenuItems/DT")
+    @Html.Partial("../Shared/Sidebar/MenuItems/EP")
+    @Html.Partial("../Shared/Sidebar/MenuItems/HR/HR")
+    @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM")
+    @Html.Partial("../Shared/Sidebar/MenuItems/SF/SF")
+    @Html.Partial("../Shared/Sidebar/MenuItems/AR")
+    @Html.Partial("../Shared/Sidebar/MenuItems/AP/AP")
+    @Html.Partial("../Shared/Sidebar/MenuItems/PO/PO")
+    @*@Html.Partial("../Shared/Sidebar/MenuItems/JC")*@
+    @Html.Partial("../Shared/Sidebar/MenuItems/PM/PM")
+    @*@Html.Partial("../Shared/Sidebar/MenuItems/BD")*@
+    @Html.Partial("../Shared/Sidebar/MenuItems/PR")
+    @Html.Partial("../Shared/Sidebar/MenuItems/VD")
+    @Html.Partial("../Shared/Sidebar/MenuItems/RT")
+    @Html.Partial("../Shared/Sidebar/MenuItems/HQ")
+    @Html.Partial("../Shared/Sidebar/MenuItems/GL")
+    @Html.Partial("../Shared/Sidebar/MenuItems/AD/AD")
+    <li id="menu_li_main_@(listItemId++)"><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+</ul>
+<script>
+    $(document).ready(function () {
+        var liList = lscache.get("Menu_ListItems");
+        if (liList != null) {
+            var li = $('#' + liList)
+            li.addClass('active');
+            $(li).parentsUntil('.nav').addClass('active')
+        }
+    });
+    $(document).on('click', 'li', function () {
+        var id = $(this).attr('id');
+        if (!$(this).hasClass('has-sub')) {
+            lscache.set("Menu_ListItems", id);
+        }
+    });
+
+
+</script>

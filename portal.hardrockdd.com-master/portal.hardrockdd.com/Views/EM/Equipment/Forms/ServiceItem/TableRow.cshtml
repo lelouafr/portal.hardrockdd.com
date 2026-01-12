@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentServiceItemViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LinkId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.ServiceItemId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LastServiceDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DateIntervalTypeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DateInterval)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.HourInterval)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.OdoInterval)
+    </td>
+    <td>
+        <button class="btn btn-sm btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

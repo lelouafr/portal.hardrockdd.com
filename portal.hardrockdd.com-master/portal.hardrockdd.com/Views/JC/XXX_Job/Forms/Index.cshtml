@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.JC.Job.Forms.JobFormViewModel
+@{
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    <link href="~/Content/assets/plugins/dhtmlx/suite/custom.css" rel="stylesheet" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+@Html.Partial("../JC/Job/Forms/Panel", Model)
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx/suite/suite.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $(document).ready(function () {
+            initPanels();
+        });
+    </script>
+}
+
+

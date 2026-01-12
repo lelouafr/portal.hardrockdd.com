@@ -1,0 +1,13 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.PackageListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var reviewPanelId = string.Format("packagesetup_{0}_bores", Model.BidId);
+}
+<div id="@panelId" class="row">
+    <div class="col-xl-7">
+        @Html.Partial("Forms/Package/Setup/List/_Panel", Model)
+    </div>
+    <div class="col-xl-5" id="@reviewPanelId">
+
+    </div>
+</div>

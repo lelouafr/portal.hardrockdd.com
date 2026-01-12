@@ -1,0 +1,23 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em_parameter";
+}
+
+@if (User.HasAccess("EquipmentParameter") ||
+    User.HasAccess("EquipmentLocation") ||
+    User.HasAccess("EquipmentCategory"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Administration</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EquipmentParameter", routeValues: new { Area = "" })">Parameters</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EquipmentLocation", routeValues: new { Area = "" })">Locations</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EquipmentCategory", routeValues: new { Area = "" })">Categories</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceItemIndex", "EquipmentService", routeValues: new { Area = "" })">Service Items</a></li>
+        </ul>
+    </li>
+}

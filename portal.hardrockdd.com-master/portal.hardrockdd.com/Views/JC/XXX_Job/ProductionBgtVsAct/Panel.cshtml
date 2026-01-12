@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.JC.Job.JobProductionBgtVsActListViewModel
+<div class="panel panel-inverse"
+     data-sortable-id="JobProductionBgtVsActListViewModel"
+     data-reloadurl="@Url.Action("ProductionActVsBgt", "Job", new { jcco = Model.JCCo, jobId = Model.JobId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Production Budget Vs Actual</h4>
+    </div>
+    <div class="panel-body" id="JobProductionBgtVsActListViewModel">
+        @Html.Partial("../JC/Job/ProductionBgtVsAct/Table", Model)
+    </div>
+</div>
+
+<script>
+
+</script>

@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditMeterFormViewModel
+
+
+<div class="panel panel-inverse"
+     data-sortable-id="EquipmentAuditLineListViewModel"
+     data-reloadurl="@Url.Action("Table", "EMAuditMeterForm", new { emco = Model.EMCo, auditId = Model.AuditId})">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Equipment List (@Model.AuditId)</h4>
+    </div>
+    <div class="panel-body-before">
+        @Html.Partial("../EM/Audit/Types/Meter/Buttons", Model.Action)
+        <div class="row justify-content-md-center">
+            <div class=" col-xl-8 ">
+                <div class="form-group has-feedback" style="margin:0px;">
+                    <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body" id="EquipmentAuditLineListViewModel">
+        @Html.Partial("../EM/Audit/Types/Meter/List/Table", Model.Lines)
+    </div>
+</div>

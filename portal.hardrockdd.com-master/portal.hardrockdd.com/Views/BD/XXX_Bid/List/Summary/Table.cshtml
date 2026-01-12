@@ -1,0 +1,208 @@
+﻿@model List<portal.Models.Views.Bid.BidTrackerViewModel>
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+   
+}
+<table class="table"
+       id="@tableId"
+       data-dataurl="@Url.Action("Data","BidTracker")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().BDCo)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.FirstOrDefault().BidId)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().BidDate)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().StartDate)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.FirstOrDefault().FirmName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.FirstOrDefault().Division)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.FirstOrDefault().PipeSize)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.FirstOrDefault().Footage)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().DirtRevenue)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().RockRevenue)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().AssigedTo)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.FirstOrDefault().CreatedUser)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.FirstOrDefault().SearchString)</th>
+            <th data-datatable-filter-type="none"></th>
+            <th data-datatable-filter-type="none">
+                <a class='btn btn-success pull-right' href='@Url.Action("Create", "BidForm")' ><i class='fas fa-plus'></i></a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var item in Model)
+        {
+            @Html.Partial("../BD/Bid/List/Summary/TableRow", item)
+        }*@
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        var itemCnt = @(Model.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4);
+        h -= 75;
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: true,
+            lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]],
+            pageLength: 25,
+            ordering: true,
+            processing: true,
+            scrollY: h,
+            scrollX: true,
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                "url": $('#@tableId').data('dataurl'),
+                "type": "GET",
+                "datatype": "json",
+            },
+            order: [
+                [1, "desc"]
+            ],
+            columns: [
+                { data: "BDCo", visible: false },
+                { data: "BidId" },
+                { data: "StatusString" },
+                {
+                    data: "BidDate",
+                    render: function (data, type) {
+                        //console.log(type, data);
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    data: "StartDate",
+                    render: function (data, type) {
+                        //console.log(type, data);
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "FirmName" },
+                { data: "Description" },
+                { data: "Division" },
+                { data: "PipeSize", render: $.fn.dataTable.render.number(',', '.', 2, '') },
+                { data: "Footage", render: $.fn.dataTable.render.number(',', '.', 0, '') },
+                { data: "DirtRevenue", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "RockRevenue", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "AssigedTo" },
+                { data: "CreatedUser" },
+                { data: "SearchString", visible: false },
+                { data: "BDCo", orderable: false },
+                { data: "BDCo", orderable: false },
+            ],
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+            columnDefs: [
+                {
+                    targets: [2],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="label ' + rowData.StatusClass + '">' + cellData + '</span>');
+                    }
+                },
+                {
+                    targets: [8, 9, 10, 11],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="pull-right">' + $(cell).html() + '</span>');
+                    }
+                },
+                {
+                    targets: [12],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="f-s-8">' + $(cell).html() + '</span>');
+                    }
+                },
+                {
+                    targets: [15],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).empty();
+                        if (rowData.CanAwarded) {
+                            var data = "?bdco=" + rowData.BDCo + "&BidId=" + rowData.BidId + "";
+
+                            var thumbsdownData = data + "&gotoStatusId=" + "@((int)DB.BidStatusEnum.NotAwarded)" + '&ActionRedirect=Reload';
+                            var urlThumbsDown = "@Url.Action("UpdateBidStatus", "BidForm")";
+                            var buttonThumbsDown = $('<button type="button" class="btn btn-danger btnstatus"><i class="fas fa-thumbs-down"></i></button>');
+                            $(buttonThumbsDown).data("bdco", rowData.BDCo);
+                            $(buttonThumbsDown).data("bidid", rowData.BidId);
+                            $(buttonThumbsDown).data("url", urlThumbsDown);
+                            $(buttonThumbsDown).data("gotostatusid", "@((int)DB.BidStatusEnum.NotAwarded)");
+                            $(buttonThumbsDown).data("actionredirect", "Reload");
+
+
+                            var urlThumbsUp = "@Url.Action("UpdateBidStatus", "BidForm")";
+                            var thumbsUpData = data + "&gotoStatusId=" + "@((int)DB.BidStatusEnum.PendingAward)" + '&ActionRedirect=Reload';
+                            var buttonThumbsUp = $('<a class="btn btn-primary btnstatus" target="_blank"><i class="fas fa-thumbs-up" ></i></a>');
+                            $(buttonThumbsUp).data("bdco", rowData.BDCo);
+                            $(buttonThumbsUp).data("bidid", rowData.BidId);
+                            $(buttonThumbsUp).data("url", urlThumbsDown + thumbsUpData);
+                            $(buttonThumbsUp).attr("href", urlThumbsDown + thumbsUpData);
+                            $(buttonThumbsUp).data("gotostatusid", "@((int)DB.BidStatusEnum.PendingAward)");
+                            $(buttonThumbsUp).data("actionredirect", "Reload");
+
+                            var btnGrp = $('<div class="btn-group pull-right "></div>')
+                            btnGrp.append(buttonThumbsDown);
+                            btnGrp.append(buttonThumbsUp);
+                            $(cell).append(btnGrp);
+                        }
+                    }
+                },
+                {
+                    targets: [16],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        var url = "../Bid/Wizard/" + rowData.BidId + "-" + rowData.BDCo;
+                        $(cell).html('<div class="btn-group pull-right "><a class="btn btn-success" href="' + url + '" target="_blank"><i class="fas fa-pencil"></i></a></div>');
+                    }
+                },
+
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "bdco=" + data.BDCo + "&bidId=" + data.BidId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        $('#@tableId')
+            .off('click', 'button.btnstatus')
+            .on('click', 'button.btnstatus', function () {
+            var btnGroup = $(this).closest('.btn-group');
+            var row = $(this).closest('.row');
+            var url = $(this).data('url');
+            var button = this;
+            $(button).Busy();
+            //console.log('button clicked', button);
+            if (url) {
+                var token = $(document).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    bdco: $(this).data("bdco"),
+                    bidId: $(this).data("bidid"),
+                    gotoStatusId: $(this).data("gotostatusid"),
+                    ActionRedirect: $(this).data("actionredirect")
+                };
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    data: data,
+                    success: function() {
+                        btnGroup.hide();
+                    }
+                });
+            }
+        });
+    });
+</script>

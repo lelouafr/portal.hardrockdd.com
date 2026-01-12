@@ -1,0 +1,49 @@
+﻿@model portal.Models.Views.AP.CreditCard.Import.ZionImportViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    ViewBag.DisplayOnly = true;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+    var classStr = (Model.IsError ?? false) == true ? "bg-red-transparent-3" : "";
+}
+<tr data-entitykey="@entityKey" class="@classStr">
+    <td data-order="@Model.ImportLineId">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ImportId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Model.ImportLineId
+    </td>
+    <td> @Html.EditorFor(m => m.TransactionReference) </td>
+    <td> @Html.EditorFor(m => m.TransactionDescription) </td>
+    <td> @Html.EditorFor(m => m.PREmployeeId) </td>
+    <td> @Html.EditorFor(m => m.CardEmployeeId) </td>
+    <td> @Html.EditorFor(m => m.EmployeeFirstName) </td>
+    <td> @Html.EditorFor(m => m.EmployeeLastName) </td>
+    <td> @Html.EditorFor(m => m.EmployeeEmail) </td>
+    <td> @Html.EditorFor(m => m.TransLineNumber) </td>
+    <td> @Html.EditorFor(m => m.TransPostDate) </td>
+    <td> @Html.EditorFor(m => m.TransDate) </td>
+    <td> @Html.EditorFor(m => m.TransBillingAmount) </td>
+    <td> @Html.EditorFor(m => m.TransLineAmount) </td>
+    <td> @Html.EditorFor(m => m.TransLineTaxAmount) </td>
+    <td> @Html.EditorFor(m => m.MerchantId) </td>
+    <td> @Html.EditorFor(m => m.MerchantName) </td>
+    <td> @Html.EditorFor(m => m.MerchantAddress) </td>
+    <td> @Html.EditorFor(m => m.MerchantCity) </td>
+    <td> @Html.EditorFor(m => m.MerchantState) </td>
+    <td> @Html.EditorFor(m => m.MerchantZip) </td>
+    <td> @Html.EditorFor(m => m.MerchantCountry) </td>
+    <td> @Html.EditorFor(m => m.MerchantCategoryCode) </td>
+    <td> @Html.EditorFor(m => m.MerchantCategoryCodeDescription)</td>
+    <td> @Html.EditorFor(m => m.MerchantCategoryGroup) </td>
+    <td> @Html.EditorFor(m => m.MerchantCategoryGroupDescription) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemDescription) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemTotal) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemProductCode) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemQuantity) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemUnitofMeasure) </td>
+    <td> @Html.EditorFor(m => m.TransactionLineItemUnitPrice) </td>
+    <td> @Html.EditorFor(m => m.IsError) </td>
+</tr>

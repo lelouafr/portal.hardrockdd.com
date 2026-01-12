@@ -1,0 +1,117 @@
+﻿@model DB.Infrastructure.EmailModels.BidEmailViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Bid Submitted";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>Bid has been Canceled</h4>
+                                    <p class="m-b-5">Please click the following link to review the bid</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <p>@Model.Comments</p>
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("Index","BidForm", new { Area = "",bdco = Model.BDCo, bidId = Model.BidId })">
+                                        https://@(Request.Url.Authority)@Url.Action("Index", "BidForm", new { Area = "", bdco = Model.BDCo, bidId = Model.BidId })
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    <h4>Bid submitted by @StaticFunctions.GetCurrentEmployee().FullName</h4>
+                                    <table class="row">
+                                        <tr>
+                                            <th class="small-2 large-2 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Package</b></p>
+                                            </th>
+                                            <th class="small-6 large-6 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Crossing</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Footage</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns last" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Size</b></p>
+                                            </th>
+                                        </tr>
+                                        @foreach (var package in Model.Packages.List)
+                                        {
+
+                                            <tr>
+                                                <td class="text-center" style="border-top: .5px solid;">
+                                                    <b>@package.Description</b>
+                                                </td>
+                                                <td style="border-top: .5px solid;"></td>
+                                                <td style="border-top: .5px solid;"></td>
+                                                <td style="border-top: .5px solid;"></td>
+                                            </tr>
+                                            foreach (var line in package.Bores.List)
+                                            {
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        @line.Description
+                                                    </td>
+                                                    <td>
+                                                        @(line.Footage?.ToString("N0"))
+                                                    </td>
+                                                    <td>
+                                                        @(line.PipeSize?.ToString("N2"))"
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            <tr>
+                                                <td style="border-top: .5px solid;"></td>
+                                                <td style="border-top: .5px solid;"><b>Total:</b></td>
+                                                <td style="border-top: .5px solid;"><b>@((package.Bores.List.Sum(s => s.Footage))?.ToString("N0"))</b></td>
+                                                <td style="border-top: .5px solid;"></td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

@@ -1,0 +1,27 @@
+﻿@model  portal.Areas.HumanResource.Models.Resource.Form.EmploymentHistoryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    ViewBag.DisplayOnly = true;
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ResourceId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.SeqId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DateChanged)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Type)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.HistoryCode)
+    </td>
+</tr>

@@ -1,0 +1,48 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.Line.FormViewModel
+@{
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+    var btnId = "button_" + Model.Info.EquipmentId.ToString();
+
+}
+
+<div class="row" id="@formId">
+    <div class="col-lg-12 m-b-10">
+        <div class="">
+            @foreach (var action in Model.WorkFlowActions)
+            {
+                <button type="button" class="btn @action.ButtonClass @btnId" data-gotostatusid="@((int)action.GotoStatusId)" data-redirectaction="@action.ActionRedirect" data-key="@formLayout.TableKey">@action.Title</button>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $('#@formId').ready(function () {
+        $('#@(formId)').on('click', 'button.@btnId', function () {
+            var button = this;
+            $(button).Busy();
+            var gotoStatusId = $(this).data('gotostatusid');
+            var redirectAction = $(this).data('redirectaction');
+            var dst = $(this).closest("#lineReviewPanel");
+            var data = Object.fromEntries(new URLSearchParams($(this).data('key')));
+
+            var url = "@Url.Action("EquipmentRequestLineUpdateStatus", "ServiceRequest")";
+            var token = $(document).find('[name="__RequestVerificationToken"]');
+            
+            data.gotoStatusId = gotoStatusId;
+            data.redirectAction = redirectAction;
+            data.__RequestVerificationToken = token.val();
+
+            console.log(url, data);
+            $.post(url, data, function (res) {
+                $(button).NotBusy();
+                if (res.success === "true") {
+                    $(dst).find('.panel [data-click="panel-reload"]').click();
+                }
+            });
+        });
+
+    });
+</script>

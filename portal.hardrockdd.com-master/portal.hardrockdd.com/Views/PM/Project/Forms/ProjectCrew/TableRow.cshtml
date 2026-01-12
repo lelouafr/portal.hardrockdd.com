@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.PM.Project.Form.ProjectCrewViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey  = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ProjectId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.CrewId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.StartDate)
+    </td>
+    <td>
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

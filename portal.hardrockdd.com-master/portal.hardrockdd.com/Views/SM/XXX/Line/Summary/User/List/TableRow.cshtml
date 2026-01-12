@@ -1,0 +1,32 @@
+﻿@model portal.Models.Views.SM.Request.Summary.ServiceRequestLineViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+}
+
+<tr data-entitykey="@entityKey">
+
+    <td>
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.EMCo, new { ViewOnly = true })
+        @Html.EditorFor(m => m.EquipmentId, new { ViewOnly = true })
+        @Html.EditorFor(m => m.EmployeeId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Model.RequestType
+    </td>
+    <td>
+        @Model.EquipmentName
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </td>
+    <td>
+        @Model.Status.DisplayName()
+    </td>
+</tr>

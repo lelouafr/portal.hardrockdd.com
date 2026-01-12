@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.EM.WorkOrder.WorkOrderViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+    var detailUrl = Url.Action("Index", "EMWorkOrder", new { emco = Model.EMCo, workOrderId = Model.WorkOrderId });
+}
+
+<tr data-entitykey="@entityKey" style="cursor: pointer;" onclick="window.location='@detailUrl'">
+    <td>
+        @Model.EMCo
+    </td>
+    <td>
+        <a href="@detailUrl">@Model.WorkOrderId</a>
+    </td>
+    <td>
+        @Model.EquipmentId
+    </td>
+    <td>
+        @Model.EquipmentName
+    </td>
+    <td class="text-right">
+        @(Model.DateSched == null ? "" : Model.DateSched.Value.ToShortDateString())
+    </td>
+    <td class="text-right">
+        @Model.DateCreated.ToShortDateString()
+    </td>
+</tr>

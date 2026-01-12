@@ -1,0 +1,81 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.InfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+@if (Model.ProfileAttachmentId != null)
+{
+    <img src="@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = Model.ProfileAttachmentId })"
+         class=""
+         alt=""
+         style="margin-left: auto; margin-right: auto; max-height: 250px; height: 100%;">
+}
+else
+{
+    <div id="attachmentDropzone_@(id)"
+         class="dropzone needsclick"
+         method="post"
+         enctype="multipart/_Form-data"
+         data-hrco="@Model.HRCo"
+         data-employeeid="@Model.ResourceId"
+         style="left:50%; top:50%; padding:0; width: 100%;  height:100%;">
+        <div class="dz-default dz-message" data-dz-message="">
+            <span>Add Employee Picture Here </span>
+            <br />
+            <span class="small">(Click to upload) </span>
+        </div>
+        @Html.AntiForgeryToken()
+    </div>
+    <script>
+    $(document).ready(function () {
+        $("#attachmentDropzone_@(id)").dropzone({
+            url: "@Url.Action("UploadProfilePicture", "Resource", new { Area= "HumanResource" })",
+            uploadMultiple: false,
+            parallelUploads: 1,
+            timeout: 360000,
+            maxFilesize: 15, // MB
+            init: function () {
+                dpzMultipleFiles = this;
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+                this.on('success', function (file, json) {
+                    console.log("success:", file);
+                    //var table = $('#TableCreditImportListViewModel');
+                    //_Table.ReloadPanel();
+                });
+                this.on('resetFiles', function() {
+                    dpzMultipleFiles.removeAllFiles();
+                    //var table = $('#TableCreditImportListViewModel');
+                    //$(table).ReloadPanel();
+
+                }); 
+
+                this.on("sending", function(file, xhr, data) {
+                    data.append("HRCo", $("#attachmentDropzone_@(id)").data('hrco'));
+                    data.append("EmployeeId", $("#attachmentDropzone_@(id)").data('employeeid'));
+                    data.append("__RequestVerificationToken", $("#attachmentDropzone_@(id)").find('[name="__RequestVerificationToken"]').val());
+                    console.log("sending:", data);
+                });
+
+                this.on('queuecomplete', function (data) {
+                    console.log("queuecomplete:", data);
+                   // dpzMultipleFiles.emit("resetFiles");
+                })
+
+                this.on("addedfile", function (file) {
+                    console.log("addedfile", file);
+                    //file.name = CreateGuid() + file.name;
+                });
+
+                this.on('drop', function (file) {  });
+                this.on("maxfilesexceeded", function (file) { });
+            }
+        });
+    });
+    </script>
+
+}

@@ -1,0 +1,37 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.ProductionRateViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PassId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.PhaseId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.BoreSize)
+    </td>
+    <td >
+        @Html.EditorFor(m => m.CalcType, new { @class= "bg-blue-transparent-5" })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DirtProductionValue)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RockProductionValue)
+    </td>
+    <td>
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

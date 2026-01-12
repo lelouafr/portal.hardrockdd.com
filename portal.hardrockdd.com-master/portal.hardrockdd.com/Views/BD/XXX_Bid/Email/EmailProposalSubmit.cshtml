@@ -1,0 +1,115 @@
+﻿@model DB.Infrastructure.EmailModels.BidEmailViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Bid Proposal";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>Bid has been submitted for proposal.</h4>
+                                    <p class="m-b-5">Please click the following link to review the bid</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <p>@Model.Comments</p>
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("Index","BidForm", new { Area = "",bdco = Model.BDCo, bidId = Model.BidId })">
+                                        https://@(Request.Url.Authority)@Url.Action("Index", "BidForm", new { Area = "", bdco = Model.BDCo, bidId = Model.BidId })
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    <h4>Bid submitted by @StaticFunctions.GetCurrentEmployee().FullName</h4>
+                                    <table class="row">
+                                        <tr>
+                                            <th class="small-2 large-2 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Line #</b></p>
+                                            </th>
+                                            <th class="small-6 large-6 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Crossing</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Footage</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns last" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Size</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns last" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Dirt Fee</b></p>
+                                            </th>
+                                            <th class="small-2 large-2 columns last" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Rock Fee</b></p>
+                                            </th>
+                                        </tr>
+                                        @foreach (var package in Model.Packages.List)
+                                        {
+                                            var bores = package.CostList.List.GroupBy(g => new { g.BoreId, g.Description, g.Footage, g.PipeSize })
+                                                                    .Select(s => new
+                                                                    {
+                                                                        BoreId = s.Key.BoreId,
+                                                                        Crossing = s.Key.Description,
+                                                                        Footage = (double)s.Key.Footage,
+                                                                        PipeSize = (double)s.Key.PipeSize,
+                                                                        DirtCost = (double)Math.Round(s.Where(f => f.GroundDensityType == "Dirt").Sum(sum => sum.ExtCost), 2),
+                                                                        RockCost = (double)Math.Round(s.Where(f => f.GroundDensityType == "Rock").Sum(sum => sum.ExtCost), 2),
+                                                                        Details = s
+                                                                    }).ToList();
+
+                                            foreach (var bore in bores)
+                                            {
+                                                <tr>
+                                                    <td>@bore.BoreId</td>
+                                                    <td>@bore.Crossing</td>
+                                                    <td>@(bore.Footage.ToString("N0"))</td>
+                                                    <td>@(bore.PipeSize.ToString("N2"))"</td>
+                                                    <td>@string.Format(AppCultureInfo.CInfo(), "{0:C0}", @package.Price.DirtLFPrice) </td>
+                                                    <td>@string.Format(AppCultureInfo.CInfo(), "{0:C0}", @package.Price.RockLFPrice)</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

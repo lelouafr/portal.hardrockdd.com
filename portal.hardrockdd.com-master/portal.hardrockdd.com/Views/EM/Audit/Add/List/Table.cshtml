@@ -1,0 +1,46 @@
+﻿@model  portal.Models.Views.Equipment.EquipmentListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table "
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            <tr>
+                <td>@item.EquipmentId</td>
+                <td>@item.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var model = $('#@tableId').closest('.modal-body');
+        var panel = $(model).find('.panel-body');
+        h = $(panel).height();
+        h -= 100;
+        //console.log(panel, h);
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            scrollY: 250,
+            autoWidth: true,
+            ordering: false,
+            searching: false,
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    })
+</script>

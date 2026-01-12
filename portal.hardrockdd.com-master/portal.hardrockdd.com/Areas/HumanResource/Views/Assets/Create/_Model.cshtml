@@ -1,0 +1,23 @@
+﻿@model portal.Areas.HumanResource.Models.Assets.CreateViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+
+<div class="modal-header">
+    <h4 class="model-title">Create New Asset</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+<div id="addModelBody" class="modal-body validationContaner">
+    @Html.Partial("Create/_Form", Model)
+</div>
+<div class="modal-footer">
+    <div class="pull-right">
+        <button class="btn btn-warning pr-20 cancelBtn" data-dismiss="modal">
+            <i class="fa fa-ban"> </i> Cancel
+        </button>
+        <button class="btn btn-success create">
+            <i class="fa fa-plus"> </i> Create
+        </button>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentAssignmentLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+
+<table class="table"
+       id="@tableId">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LoggedBy)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LogDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignmentType)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().FromId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ToId)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Equipment/Forms/Assignment/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var recCnt = @(Model.List.Count);
+        var x = 0;
+        if (recCnt > 15) {
+            x = 150;
+        }
+        else {
+            x = null;
+        }
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollY: x,
+            bInfo: false,
+            order: [[0, "desc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+
+
+    });
+</script>

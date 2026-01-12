@@ -1,0 +1,55 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.TransactionListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("Panel", "APCreditCardTransaction")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th></th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TransDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Merchant)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TransAmt)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PictureStatusId)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../AP/CreditCard/Employee/List/Mobile/TableRow", request)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {;
+        //var h = tableHeight($("#@tableId"), @(Model.List.Count),30.4);
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: false,
+            ordering: true,
+            scrollY: 250,
+            order: [
+                [1, "asc"]
+            ],
+            columnDefs: [
+                { targets: [5], orderable: false },
+                { targets: [0], visible: false },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+</script>

@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APBatchLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.ViewOnly = true;
+    ViewBag.DisplayOnly = true;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchSeq, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TaxGroupId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.APLineId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LineTypeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.JobName)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.EquipmentName)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossAmt)
+    </td>
+</tr>

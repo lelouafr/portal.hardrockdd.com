@@ -1,0 +1,134 @@
+﻿@model portal.Models.Views.HQ.Batch.BatchListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<p>hello</p>
+<div class="row tableFilter">
+    <div class="col-12">
+        <form class="form-horizontal" id="BatchListViewModelMthSelect">
+            <div class="form-group has-feedback row">
+                @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+                @Html.EditorFor(m => m.Mth, new { ViewOnly = false })
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table "
+       id="@tableId"
+       data-dataurl="@Url.Action("BatchListData", "Batch")"
+       data-mth="@Model.Mth"
+       data-source="@Model.Source"
+       data-urlselect="@Url.Action("BatchDetailPanel", "Batch")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Co)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().BatchId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().DateCreated)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().Source)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().CreatedBy)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().InUseBy)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().DatePosted)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var obj in Model.List)
+            {
+                @Html.Partial("../HQ/Batch/TableRow", obj)
+            }*@
+
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#BatchListViewModelMthSelect'));
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) -20;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.mth = $('#@tableId').data('mth');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "Co" },
+                { data: "BatchId" },
+                {
+                    data: "DateCreated",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return '';
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "StatusStr" },
+                { data: "Source" },
+                { data: "CreatedBy" },
+                { data: "InUseBy" },
+                {
+                    data: "DatePosted",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return '';
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+            ],
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "co=" + data.Co + "&mth=" + moment(data.Mth).format('L') + "&batchId=" + data.BatchId;
+                $(row).attr('data-entitykey', rowKey);
+            },
+            fnDrawCallback: function (settings) {
+                console.log('drawCallback');
+                Table().initInputPlugins($(tableElem));
+                Table().setTableHeight($(tableElem).closest('.dataTables_wrapper'));
+            },
+            //setTableHeight
+        });
+    })
+    $(document).on('change', '[name="Mth"]', function () {
+        var table = $('#@tableId');
+        $(table).data('mth', $(this).val());
+        $('#@tableId').DataTable().ajax.reload(function () {
+            console.log('datatable', $('#@tableId').DataTable());
+            var dt = $('#@tableId').DataTable();
+            var setting = dt.settings();
+            dt.columns().every(function () {
+                rebuildSearchRow(this, setting);
+            });
+            Table().init($(table));
+            Table().setTableHeight($(table).closest('.dataTables_wrapper'));
+        });
+
+    })
+</script>

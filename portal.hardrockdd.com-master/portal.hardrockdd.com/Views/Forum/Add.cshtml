@@ -1,0 +1,53 @@
+﻿@model portal.Models.Views.Forums.ForumLineViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var viewOnly = false;// bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.ViewOnly = false;
+}
+<div class="card card-forum">
+    <div class="card-body p-3">
+        <form id="@formId"
+              data-urlcreate="@Url.Action("Add", "Forum", new { Area = ""})">
+            @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.ForumId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(f => f.HtmlComment)
+            <div class="m-t-10">
+                <button type="button" class="btn btn-dark btnCreate">Post Comment <i class="fa fa-paper-plane"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+    $('.btnCreate').on('click', function () {
+        var url = $('#@formId').data('urlcreate');
+        var form = $('#@formId');
+        var data = $(form).SerializeJson();
+        //console.log(url, form, data);
+
+        var form = $(this).closest('form');
+        var panel = $(form).closest('.panel');
+
+        var data = $(form).SerializeJson();
+        var url = $(form).data('urlcreate');
+
+        var ul = $(panel).find('.forum-list')
+
+        //console.log('Comment added', form, panel, url, data);
+        $.ajax({
+            type: "Get",
+            dataType: "json",
+            url: url,
+            data: data,
+            success: function (data) {
+                ul.prepend(data);
+                ($form).find('.HtmlComment').data("wysihtml5").editor.clear();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+                ul.append(XMLHttpRequest.responseText);
+            }
+        });
+    });
+</script>

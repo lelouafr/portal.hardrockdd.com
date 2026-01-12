@@ -1,0 +1,23 @@
+﻿
+@model portal.Areas.Payroll.Models.Ticket.Employee.TicketViewModel
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = string.Format("infopanel_{0}_{1}", Model.DTCo, Model.TicketId);
+}
+
+<div id="@panelId"
+     class="panel panel-default"
+     data-reloadurl="@Url.Action("EmployeeInfoForm", "Ticket", new { dtco = Model.DTCo, ticketId = Model.TicketId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Info
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("Form/Employee/Info/_Form", Model)
+    </div>
+</div>

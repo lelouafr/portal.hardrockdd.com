@@ -1,0 +1,45 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.PayInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<div class="row">
+    <div class="col-5">
+        <form class="form-horizontal"
+              id="@formId"
+              data-entitykey="@entityKey"
+              data-urlupdate="@Url.Action("PayInfoUpdate", "Resource")"
+              data-urlvalidate="@Url.Action("PayInfoValidate", "Resource")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.EarnCodeId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.PaycomNumber)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.SalaryAmt)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.HrlyRate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.PerDiemRate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.DailyRate)
+            </div>
+        </form>
+    </div>
+    <div class="col-7">
+        @Html.Partial("Forms/PayrollInfo/List/_Table", Model.SalaryHistory)
+    </div>
+</div>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.Line.InfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "form_" + Guid.NewGuid();
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("RequestLineInfoUpdate", "ServiceRequest")"
+      data-urlvalidate="@Url.Action("RequestLineInfoValidate", "ServiceRequest")">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestType, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Status, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestByName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EstServiceDate)
+        @Html.EditorFor(m => m.ActServiceDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestComments, new { ViewOnly = true })
+        @Html.EditorFor(m => m.CompletedComments)
+    </div>
+</form>

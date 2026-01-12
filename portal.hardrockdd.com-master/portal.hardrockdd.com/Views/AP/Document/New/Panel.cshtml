@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.AP.Document.vDocumentListViewModel
+
+<div class="panel panel-inverse"
+     id="DocumentListViewModelPanel"
+     data-reloadurl="@Url.Action("Table","APDocument", new { status = (int)Model.Status })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">AP Documents</h4>
+    </div>
+    <div class="panel-body" id="DocumentListViewModelBody">
+        @Html.Partial("../AP/Document/New/Table", Model)
+    </div>
+</div>

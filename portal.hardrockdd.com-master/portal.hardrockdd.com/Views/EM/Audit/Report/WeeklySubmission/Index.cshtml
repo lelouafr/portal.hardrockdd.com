@@ -1,0 +1,80 @@
+﻿@model portal.Models.Views.EM.Audit.Report.AuditWeeklyReportListViewModel
+
+@{
+    ViewBag.Title = "Weekly Audit Submissions";
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<div class="row">
+    <div class="col-xl-5">
+        <form class="form-horizontal">
+            <div class="form-group has-feedback row">
+                <h5 class="page-header">@ViewBag.Title </h5>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-5">
+        <div class="row">
+            <div class="col-xl-12" id="weekPanel">
+                @Html.Partial("../EM/Audit/Report/WeeklySubmission/List/Panel", Model)
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-7">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $(document).ready(function () {
+            $('.form-horizontal').on('change', '[name="WeekId"]', function () {
+                console.log('Week Changed');
+                var data = $(this).closest('form').SerializeJson();
+                var weekId = $(this).val();
+                $('#weekPanel').find('.panel').each(function () {
+                    var url = $(this).data('tablereloadurl');
+
+                    /*Rebuild reload url */
+                    var urlRoute = "";
+                    $.each(data, function (key, value) {
+                        if (urlRoute !== "") {
+                            urlRoute += "&"
+                        }
+                        urlRoute += key + "=" + value;
+                    });
+                    var newURL = url + "?" + urlRoute;
+                    $(this).data('reloadurl', newURL);
+
+                    dst = $(this).find('.panel-body');
+                    $.ajax({
+                        type: "get",
+                        url: url,
+                        data: data,
+                        success: function (res) {
+                            //var html = '<div id="ticketPanel" class="ticketPanel">' + res + '</div >';
+                            dst.html(res);
+                            Table().init(dst);
+                        }
+                    });
+                })
+            })
+        });
+    </script>
+}

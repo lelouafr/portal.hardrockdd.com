@@ -1,0 +1,37 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.FormViewModel
+
+
+@switch (Model.FormType)
+{
+    case DTFormEnum.JobFieldTicket:
+        @Html.Partial("Form/Job/_Form", Model.JobForm)
+        break;
+    case DTFormEnum.ProjectManager:
+        break;
+    case DTFormEnum.TruckingTicket:
+        @Html.Partial("Form/Truck/_Form", Model.TruckForm)
+        break;
+    case DTFormEnum.EmployeeDetailTicket:
+        break;
+    case DTFormEnum.EmployeeTicket:
+        @Html.Partial("Form/Employee/_Form", Model.EmployeeForm)
+        break;
+    case DTFormEnum.ShopTicket:
+        @Html.Partial("Form/Shop/_Form", Model.ShopForm)
+        break;
+    case DTFormEnum.SubContractorTicket:
+        break;
+    case DTFormEnum.CrewTicket:
+        @Html.Partial("Form/Crew/_Form", Model.CrewForm)
+        break;
+    case DTFormEnum.TimeOff:
+        @Html.Partial("Form/TimeOff/_Form", Model.TimeOffForm)
+        break;
+    case DTFormEnum.PayrollEntriesTicket:
+        break;
+    case DTFormEnum.HolidayTicket:
+        @Html.Partial("Form/Holiday/_Form", Model.HolidayForm)
+        break;
+    default:
+        break;
+}

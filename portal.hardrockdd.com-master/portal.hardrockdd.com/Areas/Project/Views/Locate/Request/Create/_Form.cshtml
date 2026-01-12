@@ -1,0 +1,51 @@
+﻿@model portal.Areas.Project.Models.Locate.CreateRequestViewModel
+
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-url="@Url.Action("Create", "Locate")"
+      data-urlupdate="@Url.Action("CreateUpdate", "Locate")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.OldBidId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestedOn, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestedName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedBy, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedOn, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Comments, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.BidId)
+        @Html.EditorFor(m => m.AnticipatedStartDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LocateType)
+        @Html.EditorFor(m => m.StateId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.GPS)
+        @Html.EditorFor(m => m.PiggyBackLocateId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestedBy)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        Form().init($('#@formId'));
+    });
+</script>

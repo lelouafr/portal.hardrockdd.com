@@ -1,0 +1,60 @@
+﻿@model portal.Models.Views.Equipment.EquipmentListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../EM/Equipment/Summary/BasicList/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        $('#@tableId thead tr:eq(1) th').each(function (i) {
+            if ($(this).find('option').length > 0) {
+                $(this).find('option:selected').removeAttr("selected");
+            }
+            $(':Input', this).on('keyup change', function () {
+                var value = this.value;
+                if (table.column(i).search() !== value) {
+                    table
+                        .column(i)
+                        .search("^" + value, true, false, true)
+                        .draw();
+                }
+            });
+        });
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: true,
+            pageLength: 10,
+            autoWidth:true,
+            ordering: true,
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    })
+
+</script>

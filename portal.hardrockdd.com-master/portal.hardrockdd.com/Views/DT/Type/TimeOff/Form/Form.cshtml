@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.DailyTicket.DailyEmployeeTimeOffTicketViewModel
+@{
+
+    var viewOnlyData = ViewData["ViewOnly"] ?? ViewBag.ViewOnly;
+    var viewOnly = bool.TryParse(viewOnlyData?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+
+    var unSumbitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+}
+@Html.Partial("../DT/Type/Buttons")
+<div class="row">
+    <div class="col-lg-12">
+        @Html.EditorForModel("Form/FormList", new {
+                       UpdateUrl = @Url.Action("Update", "DailyEmployeeTimeOffTicket"),
+                       ValidateUrl = @Url.Action("Validate", "DailyEmployeeTimeOffTicket")
+                   })
+    </div>
+</div>

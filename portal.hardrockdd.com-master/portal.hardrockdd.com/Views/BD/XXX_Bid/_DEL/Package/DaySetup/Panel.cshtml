@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Bid.BidPackageDaySetupViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Form", "BidPackageDaySetup", new { co = Model.Co, bidId = Model.BidId, packageId = Model.PackageId })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Day Setup for Calculations</h4>
+    </div>
+    <div class="panel-body" id="BidPackageDaySetupViewModel">
+        @Html.Partial("../BD/Bid/Package/DaySetup/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+    });
+</script>

@@ -1,0 +1,37 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateViewModel
+
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var classStr = "";
+}
+
+<tr data-entitykey="@entityKey">
+    <td class="@classStr">
+        @Html.EditorFor(m => m.LocateId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.LocateRefId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Description, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.StartDate, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.ExpDate, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.GPSCoords, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.LocateId, new { @id = Guid.NewGuid() })
+        <button class="btn btn-xs btn-danger pull-right delRow" data-entitykey="@entityKey "><i class="fa fa-trash"></i></button>
+    </td>
+</tr>

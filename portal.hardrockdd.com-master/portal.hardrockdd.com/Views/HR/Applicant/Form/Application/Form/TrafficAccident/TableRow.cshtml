@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.WA.Application.TrafficAccidentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.ApplicantId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ApplicationId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SeqId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.IncidentDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.AtFaultTypeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CitationIssued)
+    </td>
+</tr>

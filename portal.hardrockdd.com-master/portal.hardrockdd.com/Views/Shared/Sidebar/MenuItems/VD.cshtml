@@ -1,0 +1,19 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+}
+@if (User.HasAccess("Video"))
+{
+    <li id="menu_li_vd_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-video"></i>
+            <span>Hardrock Surveillance</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_vd_@(listItemId++)"><a href="@Url.Action("Pearsall", "Video", routeValues: new { Area = "" })" target="_blank">Pearsall</a></li>
+            <li id="menu_li_vd_@(listItemId++)"><a href="@Url.Action("Monahans", "Video", routeValues: new { Area = "" })" target="_blank">Monahans</a></li>
+            <li id="menu_li_vd_@(listItemId++)"><a href="@Url.Action("SaShop", "Video", routeValues: new { Area = "" })" target="_blank">Elmendorf Shop</a></li>
+        </ul>
+    </li>
+}

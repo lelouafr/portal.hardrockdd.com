@@ -1,0 +1,95 @@
+﻿@model portal.Models.Views.AP.Vendor.VendorListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+
+<div id="@tableId"
+    data-reloadurl="@Url.Action("Table", "Vendor")"
+    data-urlselect="@Url.Action("XForm", "Vendor")"
+    data-dstselect="reviewPanel"
+    data-dstselectvalidate="false"
+    data-tablekey="@tableKey"
+     class="">
+</div>
+<script>
+    $("#@tableId").ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 24);
+        h += 75;
+        $("#@tableId").css("height", h);
+
+        var columnsOpt = [
+            {
+                id: "VendorId",
+                type: "string",
+                header: [
+                    { text: "Id", },
+                    { content: "inputFilter", }
+                ],
+                mark: function (cell, data, row, col) {
+                    var result = " "
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        result += "f-w-700 ";
+                    }
+                    return result;
+                }
+            },
+            {
+                id: "Name",
+                type: "string",
+                header: [
+                    { text: "Name", },
+                    { content: "inputFilter", }
+                ],
+                mark: function (cell, data, row, col) {
+                    var result = " "
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        result += "f-w-700 ";
+                    }
+                    return result;
+                }
+            },
+            {
+                id: "Active",
+                type: "string",
+                header: [
+                    { text: "Active", },
+                    { content: "inputFilter", }
+                ],
+                mark: function (cell, data, row, col) {
+                    var result = " "
+                    if (row.$level == 0 || row.$level == 1 || row.$level == 2) {
+                        result += "f-w-700 ";
+                    }
+                    return result;
+                }
+            },
+            
+        ]
+        var treegrid = new dhx.TreeGrid("@tableId", {
+            selection: "row",
+            rowHeight: 24,
+            autoWidth: true,
+            columns: columnsOpt,
+        });
+        treegrid.data.load('/Vendor/xdata').then(function () {
+            collapseTree(treegrid);
+            handleDHTMLXTableEvents(treegrid);
+            treegrid.paint();
+        });
+
+        function collapseTree(treeGrid, parentId) {
+            if (parentId == undefined) {
+                parentId = treeGrid.data.getRoot();
+            }
+            treeGrid.data.eachChild(parentId, function (_a) {
+                if (_a.parent == parentId && treeGrid.data.haveItems(_a.id)) {
+                    collapseTree(treeGrid, _a.id);
+                    treeGrid.collapse(_a.id);
+                }
+            });
+        }
+    });
+</script>

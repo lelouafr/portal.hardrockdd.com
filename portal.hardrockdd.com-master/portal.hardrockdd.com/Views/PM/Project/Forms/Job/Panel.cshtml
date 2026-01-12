@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Jobs
+        </div>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PM/Project/Forms/Job/Table", Model)
+    </div>
+</div>

@@ -1,0 +1,58 @@
+﻿@*@model portal.Models.Views.DailyTicket.Form.JobTicketFormViewModel
+@{
+    var charId = Guid.NewGuid();
+ }
+
+<div class="panel panel-inverse" >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            
+        </div>
+        <h4 class="panel-title">Job Progress Chart</h4>
+    </div>
+    <div class="panel-body" id="@charId">
+        <div id="mychart" style="height: 250px;"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        initJobProgressChart(@Model.Ticket.JCCo,"@Model.Ticket.JobId");
+    });
+
+    function initJobProgressChart(jcco, jobId) {
+        //console.log('Build Chart');
+        $('#mychart').html("");
+        if (jobId !=="" && jobId !== null) {
+            data = {
+                jcco: jcco,
+                jobId: jobId
+            };
+            if ($('#mychart').length != 0) {                
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: "@Url.Action("JobProgressChart","Dashboard")",
+                    data: data,
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        var chartdata = JSON.parse(data['jsonchartdata']);
+                        var xkey = data['xkey']
+                        var ykeys = JSON.parse(data['ykeys']);
+                        new Morris.Line({
+                            element: 'mychart',
+                            data: chartdata,
+                            xkey: xkey,
+                            ykeys: ykeys,
+                            labels: ykeys,
+                            parseTime: false,
+                            xLabelAngle: 45
+                        });
+                    }
+                });
+            }
+
+        }
+    }
+</script>*@

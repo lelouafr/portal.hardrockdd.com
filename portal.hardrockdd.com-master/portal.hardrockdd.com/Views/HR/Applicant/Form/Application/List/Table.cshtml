@@ -1,0 +1,56 @@
+﻿@model portal.Models.Views.WA.Application.ApplicationListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+
+}
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("ApplicationPanel", "WebApplication")"
+       data-dstselect="applicationReviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicantId)</th>
+            <th data-datatable-filter-type="none" style="max-width: 35px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicationId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicationDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../HR/Applicant/Form/Application/List/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            bInfo: false,
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            initComplete: function (settings, json) {
+               // console.log("Table init complete", $('#@tableId'));
+                var firstRow = $('#@tableId').find('tbody').find('tr:first');
+                //console.log("Table init first Row", $(firstRow));
+                setTimeout(function () { $(firstRow).click(); }, 100);
+                
+            },
+
+        });
+        $('.dataTables_filter').hide();
+    })
+</script>

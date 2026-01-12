@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "translines";
+    var statusclass = "";
+    statusclass = "fa-circle text-blue  mr-2 f-s-8";
+}
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa @statusclass"></i> Transaction Lines
+        </div>
+        <div id="@panelId" class="collapse">
+            <div class="card-body">
+                @Html.Partial("../AP/CreditCard/Form/Line/List/Table", Model.Lines)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

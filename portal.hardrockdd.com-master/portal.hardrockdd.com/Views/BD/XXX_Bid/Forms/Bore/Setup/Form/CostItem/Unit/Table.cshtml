@@ -1,0 +1,40 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.CostItemListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("BoreCostItemUpdate", "BidForm")"
+       data-urlvalidate="@Url.Action("BoreCostItemValidate", "BidForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="33%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetCodeId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Multiplier)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtUnits)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockUnits)</th>
+            <th width="12%">@Html.LabelForRequired(model => model.List.FirstOrDefault().UM)</th>
+        </tr>
+    </thead>
+    <tbody>
+    <tbody>
+        @foreach (var obj in Model.List.GroupBy(f => f.CostType).Select(s => new { CostType = s.Key, DirtCost = s.Sum(sum => sum.DirtCost), RockCost = s.Sum(sum => sum.RockCost), s }).ToList())
+        {
+            <tr>
+                <td colspan="6">
+                    <b>@obj.CostType</b>
+                </td>
+            </tr>
+            foreach (var subModel in obj.s)
+            {
+                @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/CostItem/Unit/TableRow", subModel)
+            }
+        }
+    </tbody>
+</table>

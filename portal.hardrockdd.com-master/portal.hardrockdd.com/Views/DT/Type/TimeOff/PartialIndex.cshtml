@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.DailyTicket.Form.EmployeeTimeOffTicketFormViewModel
+@{
+    ViewBag.Title = "Time Off Log";
+    ViewBag.PanelTitle = Model.Ticket.EmployeeName;
+}
+
+<div class="row">
+    <div class="col-xl-12" id="infoPanel">
+    </div>
+</div>
+<div class="row validationContaner">
+    <div class="col-xl-9">
+        @Html.Partial("../DT/Type/TimeOff/Form/Panel", Model.Ticket)
+    </div>
+    <div class="col-xl-3">
+        @Html.Partial("../DT/StatusLog/List/Panel", Model.StatusLogs)
+    </div>
+</div>
+<div class="row validationContaner">
+    <div class="col-xl-12">
+        @Html.Partial("../DT/Type/TimeOff/Entry/List/Panel", Model.Entries)
+    </div>
+</div>

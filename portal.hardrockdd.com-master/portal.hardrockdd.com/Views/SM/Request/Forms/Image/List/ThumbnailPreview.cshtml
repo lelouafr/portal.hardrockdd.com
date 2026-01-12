@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.ImageBankViewModel
+
+<div class="file col-12">
+    <div class="thumb-img-container delete fileObject border-dark b-3"
+         data-deleteattachmenturl="@Url.Action("DeleteImage", "APCreditCardEmployeeImageBank")"
+         data-unlinkattachmenturl="@Url.Action("UnTagImage", "APCreditCardEmployeeImageBank")"
+         data-attachmenturl="@Url.Action("FilePreview", "APCreditCardEmployeeImageBank")"
+         data-attachmentid="@Model.AttachmentId"
+         data-co="@Model.CCCo"
+         data-mth="@Model.Mth"
+         data-prco="@Model.PRCo"
+         data-employeeid="@Model.EmployeeId"
+         data-transid="@Model.TransId"
+         data-istagged="@Model.IsTagged"
+         data-istaggedcurrenttrans="@Model.IsTaggedCurrentTrans"
+         data-imageid="@Model.ImageId">
+        <div>@Model.ImageName</div>
+        @if (Model.IsTagged)
+        {
+            <span class="fa fa-check-circle tagged"></span>
+        }
+        @{
+            var attachmentId = 0;
+            if ((Model.ThumbAttachmentId ?? Model.AttachmentId) != null)
+            {
+                attachmentId = (int)(Model.ThumbAttachmentId ?? Model.AttachmentId);
+            }
+            var url = Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = attachmentId });
+
+        }
+        <img src="@url"
+             alt=""
+             style="padding:0; max-height: 250px;">
+        <button class="btn btn-sm btn-warning btnUnlinkImage" 
+                type="button" 
+                data-toggle="tooltip" 
+                data-placement="left" 
+                title="Unlink Image"
+                style="display:none;">
+            <span><i class="fas fa-unlink"></i></span>
+        </button>
+        <button class="btn btn-sm btn-danger btnDeleteImage" 
+                type="button" 
+                data-toggle="tooltip" 
+                data-placement="left" 
+                title="Remove Document"
+                style="display:none;">
+            <span class="fa fa-trash"></span>
+        </button>
+       
+    </div>
+</div>

@@ -1,0 +1,93 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.Line.InfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "form_" + Guid.NewGuid();
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("EquipmentRequestLineInfoUpdate", "ServiceRequest")"
+      data-urlvalidate="@Url.Action("EquipmentRequestLineInfoValidate", "ServiceRequest")">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EstServiceDate, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestType, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Status, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ActServiceDate, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestByName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ServiceStatus)
+    </div>
+    @*<div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.EstServiceDate)
+            @Html.EditorFor(m => m.ActServiceDate)
+        </div>*@
+    @if (Model.EMMeterType == EMMeterTypeEnum.Hours)
+    {
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.EMHourReading)
+            @Html.HiddenFor(m => m.EMOdoReading, new { @id = Guid.NewGuid() })
+        </div>
+    }
+    else if (Model.EMMeterType == EMMeterTypeEnum.Odometer)
+    {
+        <div class="form-group has-feedback row">
+            @Html.HiddenFor(m => m.EMHourReading, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.EMOdoReading)
+        </div>
+    }
+    else if (Model.EMMeterType == EMMeterTypeEnum.Both)
+    {
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.EMHourReading)
+            @Html.EditorFor(m => m.EMOdoReading)
+        </div>
+    }
+    else if (Model.EMMeterType == EMMeterTypeEnum.None)
+    {
+        <div class="form-group has-feedback row">
+            @Html.HiddenFor(m => m.EMHourReading, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EMOdoReading, new { @id = Guid.NewGuid() })
+        </div>
+    }
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestComments, new { ViewOnly = true })
+        @Html.EditorFor(m => m.CompletedComments)
+    </div>
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#WO_@(formId)">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Assignment Info
+        </div>
+        <div id="WO_@(formId)" class="show">
+            <div class="card-body">
+                <div class="form-group has-feedback row">
+                    @Html.HiddenFor(m => m.ShopGroupId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => m.ShopId)
+                    @Html.EditorFor(m => m.AsignedEmployeeId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.EstServiceDate)
+                    @Html.EditorFor(m => m.EstHours)
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

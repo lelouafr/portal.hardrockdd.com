@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.Equipment.EquipmentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.EditorFor(m => m.EMCo, new { ViewOnly = true, DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.EquipmentId, new { ViewOnly = true, DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Description, new { ViewOnly = true, DisplayOnly = true })
+        </td>
+        <td>
+            @Model.Status.ToString()
+        </td>
+    </tr>

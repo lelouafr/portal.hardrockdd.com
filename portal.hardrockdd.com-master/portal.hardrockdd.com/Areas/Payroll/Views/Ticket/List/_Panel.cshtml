@@ -1,0 +1,51 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.TicketListViewModel
+
+
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div id="@panelId"
+     class="panel panel-default"
+     data-reloadurl="@Url.Action("Table", ViewBag.Controller, new { timeSelection = Model.TimeSelection })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Tickets
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("List/_Table", Model)
+    </div>
+</div>
+@*<div class="modal fade"
+         id="rejectTicket"
+         data-url="@Url.Action("RejectIndex", "DailyTicketForm")">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>*@
+@*<script>
+        $('#rejectTicket').on('show.bs.modal', function (event) {
+            var dst = $(this).find(".modal-content");
+            var url = $(this).data("url");
+            var data = $(event.relatedTarget).data("entitykey");
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    dst.html(data);
+                }
+            });
+        });
+        $('#rejectTicket').on('hidden.bs.modal', function () {
+            var dst = $(this).find(".modal-content");
+            dst.html('');
+        })
+    </script>*@

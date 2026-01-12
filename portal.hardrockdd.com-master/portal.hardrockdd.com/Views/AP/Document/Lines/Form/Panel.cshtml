@@ -1,0 +1,136 @@
+﻿@model portal.Models.Views.AP.Document.DocumentSeqLineViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div class="panel panel-inverse"
+     style="margin-bottom: 0px;"
+     data-sortable-id="DocumentSeqLineViewModel"
+     id="DocumentSeqLineViewModel"
+     data-reloadurl="@Url.Action("LineFrom", "APDocument", new { apco = Model.APCo, docId = Model.DocId, seqId = 1, lineId = Model.LineId })"
+     data-initpane="initPane@(id)">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>            
+        </div>
+        <h4 class="panel-title">AP Item #@Model.LineId Details</h4>
+    </div>
+    <div class="panel-body" 
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("../AP/Document/Lines/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        setTimeout(function () {
+            $('#@panelId').find('form').each(function () {
+                handleTypeView(this);
+                handleCalcView(this);
+                handleTaxView(this);
+            });
+        }, 0);
+    }
+
+    function handleTaxView(form) {
+        var elem = $(form).find("[name='TaxTypeId']");
+        var val = $(elem).val();
+        var tax = $(form).find('.taxFieldSet');
+        var taxAmount = $(form).find('.TaxAmount');
+        var taxRate = $(form).find('.TaxRate');
+        var taxType = $(form).find('.TaxTypeId');
+        var taxCode = $(form).find('.TaxCodeId');
+        var lineTypeId = $(form).find("[name='LineTypeId']").val();
+
+        $(form).find('.taxGroup').hide();
+        if (lineTypeId !== "6") {
+            $(taxType).removeAttr("disabled");
+        }
+        if (val != "0") {
+            $(form).find('.taxGroup').show();
+        }
+        //$(taxAmount).attr("disabled", true);
+        $(taxRate).attr("disabled", true);
+
+    }
+
+    function handleCalcView(form) {
+        var elem = $(form).find("[name='CalcType']");
+        var val = $(elem).val();
+
+        $(form).find('.unitGroup').hide();
+        $(form).find('.unitCostGroup').hide();
+        if (val == "1") {
+            $(form).find('.unitGroup').show();
+            $(form).find('.unitCostGroup').show();
+        }
+    }
+
+    function handleTypeView(form) {
+        var elem = $(form).find("[name='LineTypeId']");
+        var calcType = $(form).find("[name='CalcType']")
+        var taxType = $(form).find("[name='TaxTypeId']");
+        var um = $(form).find("[name='UM']");
+
+        var lineTypeId = parseInt($(elem).val());
+        console.log('handleTypeView, lineTypeId:', lineTypeId);
+
+        $(form).find(":disabled").removeAttr("disabled");
+
+        $(calcType).removeAttr("disabled");
+        $(taxType).removeAttr("disabled");
+        $(um).removeAttr("disabled");
+
+        $(form).find('.jobGroup').hide();
+        $(form).find('.eqpGroup').hide();
+        $(form).find('.poGroup').hide();
+        $(form).find('.glGroup').hide();
+
+        if (lineTypeId == 4) {
+            $(form).find('.eqpGroup').show();
+            $(form).find('.jobGroup').each(function () {
+                $(this).removeAttr("disabled");
+            });
+        }
+        else if (lineTypeId == 1) {
+            $(form).find('.jobGroup').show();
+            $(form).find('.jobGroup').each(function () {
+                $(this).removeAttr("disabled");
+            });
+        }
+        else if (lineTypeId == 3) {
+            $(form).find('.glGroup').show();
+        }
+        else if (lineTypeId == 6) {
+            $(form).find('.poGroup').show();
+            var elem = $(form).find("[name='POItemTypeId']");
+            var itemTypeId =  $(elem).val();
+
+            $(calcType).attr("disabled","");
+            $(taxType).attr("disabled", "");
+            $(um).attr("disabled", "");
+
+            if (itemTypeId == "4" || itemTypeId == "Equipment") {
+                $(form).find('.eqpGroup').show();
+                $(form).find('.eqpGroup').attr("disabled", true);
+            }
+            else if (itemTypeId == "1" || itemTypeId == "Job") {
+                $(form).find('.jobGroup').show();
+                $(form).find('.jobGroup').attr("disabled", true);
+            }
+            else if (itemTypeId == "3" || itemTypeId == "Expense") {
+                $(form).find('.glGroup').show();
+                $(form).find('.glGroup').attr("disabled", true);
+            }
+        }
+
+        handleCalcView(form);
+        handleTaxView(form);
+
+    }
+</script>

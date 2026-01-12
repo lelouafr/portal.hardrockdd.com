@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentServiceItemListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("EquipmentServiceItemAdd", "EquipmentForm")"
+       data-urldelete="@Url.Action("EquipmentServiceItemDelete", "EquipmentForm")"
+       data-urlupdate="@Url.Action("EquipmentServiceItemUpdate", "EquipmentForm")"
+       data-urlvalidate="@Url.Action("EquipmentServiceItemValidate", "EquipmentForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ServiceItemId)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().LastServiceDate)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DateIntervalTypeId)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().DateInterval)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().HourInterval)</th>
+            <th width="100px">@Html.LabelForRequired(model => model.List.FirstOrDefault().OdoInterval)</th>
+            <th width="35px">
+                <button class="btn btn-sm btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Equipment/Forms/ServiceItem/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+	    Table().init($('#@tableId'));
+    });
+</script>

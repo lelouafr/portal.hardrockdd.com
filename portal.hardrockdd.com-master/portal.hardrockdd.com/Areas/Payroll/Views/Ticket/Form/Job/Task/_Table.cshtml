@@ -1,0 +1,50 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Job.JobPhaseListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<div class="row">
+    <div class=" col-12">
+        @*@Html.Partial("Form/Job/Task/_AddTask", Model.AddTask)*@
+    </div>
+</div>
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("JobPhaseAdd", "Ticket")"
+       data-urldelete="@Url.Action("JobPhaseDelete", "Ticket")"
+       data-urlupdate="@Url.Action("JobPhaseUpdate", "Ticket")"
+       data-urlvalidate="@Url.Action("JobPhaseValidate", "Ticket")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="45%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Costs.FirstOrDefault().Value)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Costs.FirstOrDefault().UnitofMeasure)</th>
+            @if (!viewOnly)
+            {
+                <th colspan="3">
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var phase in Model.List)
+        {
+            @Html.Partial("Form/Job/Task/_TablePhaseRow", phase)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        commentElem.show();
+        $(this).hide();
+    });
+
+</script>

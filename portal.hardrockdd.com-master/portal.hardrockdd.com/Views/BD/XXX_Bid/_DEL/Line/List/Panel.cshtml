@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.Bid.BoreLineListViewModel
+
+<div class="panel panel-inverse" 
+     id="BidBoreLineListViewModel"
+     data-reloadurl="@Url.Action("Table", "BidBoreLine", new { co = Model.Co, bidId = Model.BidId, packageId = Model.PackageId })"
+     data-reloadpanels="BidBoreLinePassListViewModel,BidBoreLineCostItemListViewModel"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Bore Lines</h4>
+    </div>
+    <div class="panel-body" id="BoreLines">
+        @Html.Partial("../BD/Bid/Line/List/Table", Model)
+    </div>
+</div>
+<script>
+
+</script>

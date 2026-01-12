@@ -1,0 +1,23 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "hr_app";
+}
+
+
+@if (User.HasAccess("Applicant"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub ">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Application(s)</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Applicant", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("OpenIndex", "Applicant", routeValues: new { Area = "Applicant" })">Open Applications</a></li>
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Applicant", routeValues: new { Area = "Applicant" })">All Applications</a></li>
+            }
+        </ul>
+    </li>
+}

@@ -1,0 +1,72 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentRequestInfoViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlsubmit="@Url.Action("RequestInfoModel","Document")">
+    <fieldset>
+        <legend>Request Additional Info</legend>
+    </fieldset>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.SendTo, new { FlushCache = true })
+    </div>
+</form>
+<hr />
+<div class="pull-right">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <a href="javascript:;"
+       class="btn btn-success btnRequeastInfo">Request Info</a>
+</div>
+
+
+<script>
+    $('.btnRequeastInfo').on('click', function () {
+        console.log('btnRequeastInfo: ');
+        var func = function (button, form) {
+            $(button).SetButtonBusy();
+            data = $(form).SerializeForm();
+            url = $(form).data('urlsubmit');
+
+            $.post(url, data, function (res) {
+                if (res.success === "true") {
+                    var rowKey = "APCo=" + data.APCo + '&DocId=' + data.DocId;
+                    $(document).find("[data-entitykey='" + rowKey + "']").each(function () {
+                        $(this).hide();
+                    });
+                    $('#reviewPanel').html('');
+                    $('#requestInfoModel').modal('hide');
+                }
+                else {
+                    $(button).SetButtonNotBusy();
+                }
+            });
+        }
+
+        var button = this;
+        var modal = $(button).closest('.modal-body');
+        var form = $(modal).find('form');
+
+        $(form).PostValidate(button, function (valid) {
+            if (valid) {
+                func(button, form);
+            }
+        });
+    });
+
+    $('#@formId').ready(function () {
+        Form().init('#@formId');
+    });
+</script>

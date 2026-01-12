@@ -1,0 +1,30 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "hr_emp";
+}
+
+
+@if (User.HasAccess("Resource"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Employees</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Resource", "ActiveIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ActiveIndex", "Resource", routeValues: new { Area = "HumanResource" })">Active Employees</a></li>
+            }
+            @if (User.HasAccess("Resource", "TermedIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("TermedIndex", "Resource", routeValues: new { Area = "HumanResource" })">Recently Termed</a></li>
+            }
+            @if (User.HasAccess("Resource", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Resource", routeValues: new { Area = "HumanResource" })">All Employees</a></li>
+            }
+        </ul>
+    </li>
+}

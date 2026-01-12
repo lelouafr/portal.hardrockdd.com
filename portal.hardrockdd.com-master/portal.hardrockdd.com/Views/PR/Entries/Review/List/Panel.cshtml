@@ -1,0 +1,113 @@
+﻿@model portal.Models.Views.Payroll.PayrollReviewSummaryListViewModel
+
+<div class="panel panel-inverse" data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table", "PayrollReview", new { WeekId = Model.WeekId })"
+     data-tablereloadurl="@Url.Action("Table", "PayrollReview")"
+     data-addtobatchurl="@Url.Action("AddtoBatch", "PayrollReview")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        @if (Model.IsPayrollPeriodSetup == true)
+        {
+            <div class="btn-group pull-right pr-2">
+                <button type="button" class="btn btn-success btn-xs">Menu</button>
+                <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a class="processItems" href="javascript:;" onclick="ProcessChecked(this, @Model.WeekId)">Process Checked Items</a></li>
+                </ul>
+            </div>
+        }
+        <h4 class="panel-title">Employee Payroll Summary</h4>
+    </div>
+    <div class="panel-body" id="PayrollReviewList">
+        @Html.Partial("../PR/Entries/Review/List/Table", Model)
+    </div>
+</div>
+
+<div class="modal fade"
+     id="rejectTicket"
+     data-url="@Url.Action("RejectIndex", "DailyTicketForm")">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<script>
+    
+    $('#rejectTicket').on('show.bs.modal', function (event) {
+        var dst = $(this).find(".modal-content");
+        var url =  $(this).data("url");
+        var data = $(event.relatedTarget).data("entitykey");
+        $.ajax({
+            type:"Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                dst.html(data);
+            }
+        });
+    });
+    $('#rejectTicket').on('hidden.bs.modal', function () {
+        var dst = $(this).find(".modal-content");
+        dst.html('');
+    })
+
+    function ProcessChecked(elem, PayWeekId) {
+        var panel = $(elem).closest('.panel');
+        var table = $(panel).find('.table');
+
+		if (!$(panel).hasClass('panel-loading')) {
+			var targetBody = $(panel).find('.panel-body');
+            var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+			$(panel).addClass('panel-loading');
+            $(targetBody).prepend(spinnerHtml);
+        }
+
+        var listData = new Array();
+        $(table).find('tr').each(function () {
+            var button = $(this).find('.payrollstatusBtn');
+            if ($(button).length != 0) {
+                if ($(button).hasClass('btn-success')) {
+
+                    var url = $(panel).data("addtobatchurl");
+                    var row = $(this);
+                    var data = $(row).data("entitykey");
+                    data += '&payWeekId=' + PayWeekId;
+
+                    data = {
+                        PRCo: $(row).data("prco"),
+                        EmployeeId: $(row).data("employeeid"),
+                        WeekId: $(row).data("weekid"),
+                        PayWeekId: PayWeekId,
+                    };
+                    listData.push(data);
+                    $(row).remove();
+                }
+            }
+        });
+        var data = { List: listData, payWeekId: PayWeekId };
+        data = JSON.stringify(data);
+        $.ajax({
+            type: "Post",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Action("AddtoBatchList", "PayrollReview")",
+            async: true,
+            data: data,
+            success: function (res) {
+                if (res.success === "true") {
+                    $(panel).removeClass('panel-loading');
+                    $(panel).find('.panel-loader').remove();
+                }
+                else {
+
+                    $(panel).removeClass('panel-loading');
+                    $(panel).find('.panel-loader').remove();
+                }
+            }
+        });
+    }
+</script>

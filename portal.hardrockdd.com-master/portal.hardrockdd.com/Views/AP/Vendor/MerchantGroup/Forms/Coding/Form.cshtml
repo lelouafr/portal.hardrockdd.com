@@ -1,0 +1,40 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantGroupCodingViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "MerchantGroupCoding")"
+      data-urlvalidate="@Url.Action("Validate", "MerchantGroupCoding")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.VendGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DefaultJCPhaseId)
+        @Html.EditorFor(m => m.DefaultJCCType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DefaultEMCostCodeId)
+        @Html.EditorFor(m => m.DefaultEMCType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DefaultGLAcct)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

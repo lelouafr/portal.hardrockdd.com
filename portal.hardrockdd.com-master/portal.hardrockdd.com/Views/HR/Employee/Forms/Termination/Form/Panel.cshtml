@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.PR.Employee.Form.PayrollTerminationViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+        >
+    <div class="panel-heading">
+        <h4 class="panel-title">Termination Notice Form</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../HR/Employee/Forms/Termination/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+    });
+</script>

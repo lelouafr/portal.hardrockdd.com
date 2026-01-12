@@ -1,0 +1,89 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveRequestRejectViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var buttonId = string.Format("button_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="model-title">Reject Ticket</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal"
+              id="@formId"
+              data-entitykey="@entityKey"
+              data-urlvalidate="@Url.Action("Validate", "LeaveRequestReject")"
+              data-urlsubmit="@Url.Action("Reject", "LeaveRequest")">
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-md-center">
+                <div class=" col-xl-8 ">
+                    <div class="form-group has-feedback">
+                        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.EmployeeId, new { viewOnly = true })
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Comments)
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div id ="@buttonId" class="pull-right">
+            <button class="btn btn-primary pr-20 cancelReject">
+                <i class="fa fa-ban"> Cancel</i>
+            </button>
+            <button class="btn btn-danger rejectTicket"
+                    data-prco="@Model.PRCo"
+                    data-requestid="@Model.RequestId">
+                <i class="fa fa-thumbs-down"></i>
+                Reject Request
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#@buttonId').ready(function () {
+        $('#@buttonId .rejectTicket').on('click', function () {
+            var func = function (modelBody) {
+                data = $(modelBody).find('form').SerializeForm();
+                url = $(modelBody).find('form').data('urlsubmit');
+                //console.log(data, url);
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        var model = res.model;
+                        var prco = model.PRCo;
+                        var requestId = model.RequestId;
+                        var rowKey = "PRCo=" + prco + "&requestId=" + requestId + "";
+                        var rowElem = $('tr[data-entitykey="' + rowKey + '"]');
+                        rowElem.remove();
+                        $('#rejectRow').modal('hide');
+                    }
+                });
+            }
+            var button = this;
+            $('.modal-body').PostValidate(button, function (valid) {
+                if (valid) {
+                    func('.modal-body');
+                }
+            });
+        });
+        $('#@buttonId .cancelReject').off('click').on('click', function () {
+            $('#rejectRow').modal('hide');
+        });
+
+    });
+</script>

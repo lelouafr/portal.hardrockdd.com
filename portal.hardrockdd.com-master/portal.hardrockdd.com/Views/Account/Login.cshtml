@@ -1,0 +1,76 @@
+﻿@using portal.Models
+@model LoginViewModel
+@{ 
+    ViewBag.Title = "Hardrock Infrastructure Portal Login";
+}
+    <!-- begin login -->
+    <div class="login login-with-news-feed">
+        <!-- begin news-feed -->
+        <div class="news-feed">
+            <div class="news-image" style="background-image: url(../Content/images/Banner_02.jpg)"></div>
+            <div class="news-caption">
+                <h4 class="caption-title"><b>Hardrock</b> Portal</h4>
+                <p>
+                    Welcome to the Hardrock Infrastructure Portal.
+                </p>
+            </div>
+        </div>
+        <!-- end news-feed -->
+        <!-- begin right-content -->
+        <div class="right-content">
+            <!-- begin login-header -->
+            <div class="login-header">
+                <div class="brand">
+                    <b>Hardrock</b> Portal
+                    <small>Login into Hardrock Infrastructure Portal</small>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-sign-in"></i>
+                </div>
+            </div>
+            <!-- end login-header -->
+            <!-- begin login-content -->
+            <div class="login-content">
+
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group m-b-15">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control form-control-lg", placeholder = "Email Address" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+                    <div class="form-group m-b-15">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control form-control-lg" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group m-b-30 row">
+                        <div class="col-md-2 input-group pull-left">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-control form-control-sm " })
+                        </div>
+                        @Html.LabelForRequired(m => m.RememberMe, new { @class = "col-md-10 col-form-label " })
+                        @Html.ValidationMessageFor(m => m.RememberMe, "", new { @class = "invalid-feedback" })
+                    </div>
+                    <div class="login-buttons">
+                        <button type="submit" class="btn btn-success btn-block btn-lg">Log in</button>
+                        <hr />
+                        <p class="text-muted text-center">Do not have an account?</p>
+                        <a href="@Url.Action("Register","Account", routeValues: new { Area = "" })" class="btn btn-primary btn-block">Create Account</a>
+                        <a href="@Url.Action("ForgotPassword","Account", routeValues: new { Area = "" })" class="btn btn-danger btn-block"> Forgot password?</a>
+                    </div>
+                    <hr />
+                    <p class="text-center text-grey-darker">
+                        &copy; HardRock Infrastructure All Right Reserved @DateTime.Now.Year
+                    </p>
+                }
+            </div>
+            <!-- end login-content -->
+        </div>
+        <!-- end right-container -->
+    </div>
+    <!-- end login -->
+<!-- end page container -->
+
+@section Scripts {
+    @Scripts.Render("~/jsbase/jqueryval")
+}

@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditCreateViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+        data-reloadurl="@Url.Action("CreateForm", "EMAudit")"
+        >
+    <div class="panel-heading">
+        <h4 class="panel-title">New Equipment Audit Setup</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../EM/Audit/Add/Form/Form", Model)
+    </div>
+</div>

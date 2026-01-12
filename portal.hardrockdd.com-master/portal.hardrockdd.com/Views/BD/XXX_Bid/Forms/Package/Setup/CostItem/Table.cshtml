@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Setup.CostItemListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageCostItemAdd", "BidForm")"
+       data-urldelete="@Url.Action("PackageCostItemDelete", "BidForm")"
+       data-urlupdate="@Url.Action("PackageCostItemUpdate", "BidForm")"
+       @*data-urlvalidate="@Url.Action("PackageCostItemValidate", "BidForm")"*@
+       data-urlselect=""
+       data-dstselect=""
+       data-dstselectvalidate=""
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetCodeId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Multiplier)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Applied)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Forms/Package/Setup/CostItem/TableRow", obj)
+        }
+    </tbody>
+</table>

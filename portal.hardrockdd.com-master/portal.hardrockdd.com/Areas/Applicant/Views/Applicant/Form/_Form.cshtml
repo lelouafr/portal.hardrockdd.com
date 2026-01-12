@@ -1,0 +1,35 @@
+﻿@model portal.Areas.Applicant.Models.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("Form/Info/_Panel", Model.Info)
+        <div id="applicationReviewPanel">
+
+        </div>
+    </div>
+    <div class="col-4">
+        @Html.Partial("Application/List/_Panel", Model.Applications)
+        <div id="appliedPositionReviewPanel">
+
+        </div>
+        @Html.Partial("../Forum/Panel", Model.Forum)
+        @if (User.IsInPosition("HR-MGR") ||
+            User.IsInPosition("HR-PRMGR") ||
+            User.IsInPosition("IT-DIR") ||
+            User.IsInPosition("CFO") ||
+            User.HasFullAccess("Applicant", "Index"))
+        {
+            @Html.Partial("Form/HRNotes/_Panel", Model.HRNotes)
+        }
+    </div>
+</div>

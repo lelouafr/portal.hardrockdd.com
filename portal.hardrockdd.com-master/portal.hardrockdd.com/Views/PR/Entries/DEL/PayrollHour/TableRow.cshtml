@@ -1,0 +1,57 @@
+﻿@model portal.Models.Views.Payroll.PayrollHourReviewViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    ViewBag.ViewOnly = Model.Status == DB.PayrollEntryStatusEnum.Posted;
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LineNum, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.TicketLineNum, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.WorkDate)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.DayDescription)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Hour)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.EarnCodeId)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.EntryTypeId)
+        </td>
+        <td>
+            <div class="selectJobId" style="display:none">
+                @Html.EditorFor(m => m.JobId)
+            </div>
+            <div class="selectEquipmentId" style="display:none">
+                @Html.EditorFor(m => m.EquipmentId)
+            </div>
+        </td>
+        <td>
+            <div class="selectPhaseId" style="display:none">
+                @Html.EditorFor(m => m.PhaseId)
+            </div>
+        </td>
+    </tr>
+<tr class="commentRow"
+    id="@("commentRow_" + Model.LineNum.ToString())"
+    style="@(!String.IsNullOrEmpty(Model.Comments) ? "display: normal;" : "display: none;")"
+    data-entitykey="@entityKey">
+
+    <td colspan="5" style="border-top-width: 0px; padding-top: 0px;">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineNum, new { @id = Guid.NewGuid() })
+        <div class="form-group has-feedback row" style="margin-bottom: 0px;">
+            @Html.EditorFor(m => m.Comments, new { tableRow = "False" })
+        </div>
+    </td>
+</tr>

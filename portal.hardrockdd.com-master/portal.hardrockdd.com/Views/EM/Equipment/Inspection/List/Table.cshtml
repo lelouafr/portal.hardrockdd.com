@@ -1,0 +1,137 @@
+﻿@model portal.Models.Views.Equipment.EquipmentListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table "
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table", ViewBag.DataController)"
+       data-dataurl="@Url.Action("Data", ViewBag.DataController)"
+       data-urlselect="@Url.Action("PartialIndex", "EquipmentForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th width="60px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th width="200px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="75px" class="text-right" data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().InspectionExpiration)</th>
+            <th width="75px" class="text-right" data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().LicensePlateExpDate)</th>
+            <th width="100px" data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignedTo)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().VINNumber)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LicensePlateNo)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= $(panel).height();
+        h -= $(tableElem).find('thead').height();
+        h -= 125;
+        var table = $('#@tableId').DataTable({
+            dom: 'Bfrtip',
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollX: true,
+            scrollY: 250,
+            //rowsGroup: [0, 1],
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    //d.statusId =  $('#@tableId').attr('data-statusid');
+                    //d.assignStatus =  $('#@tableId').attr('data-assignedstatus');
+                    //d.co = $(table).attr('data-co');
+                    //d.jobId = $(table).attr('data-jobid');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "EMCo" },
+                { data: "EquipmentId" },
+                { data: "Description" },
+                {
+                    data: "InspectionExpiration",
+                    render: function (data, type) {
+                        var result = "";
+                        if (data == null) {
+                            result = type === 'display' ? null : "0000-00-00";
+                        }
+                        else {
+                            result = type === 'display' ? moment(data).format('L') : moment(data).format("YYYY-MM-DD");
+                        }
+                        return result;
+                    }
+                },
+                {
+                    data: "LicensePlateExpDate",
+                    render: function (data, type) {
+                        var result = "";
+                        if (data == null) {
+                            result = type === 'display' ? null : "0000-00-00";
+                        }
+                        else {
+                            result = type === 'display' ? moment(data).format('L') : moment(data).format("YYYY-MM-DD");
+                        }
+                        return result;
+                    }
+                },
+                { data: "AssignedTo" },
+                { data: "VINNumber" },
+                { data: "LicensePlateNo" },
+            ],
+            columnDefs: [
+                { targets: [0], visible: false },
+                {
+                    targets: [3,4],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).addClass("text-right");
+                        //$(cell).html('<span class="pull-right">' + $(cell).html() + '</span>');
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "EMCo=" + data.EMCo + "&EquipmentId=" + data.EquipmentId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+
+        var dtButtons = $(panel).find('.dt-buttons');
+        var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+        $(dtButtons).hide();
+
+        $(panel).find('[data-click="panel-excel"]').on('click', function () {
+            var panel = $("#@tableId").closest('.panel').first();
+            var dtButtons = $(panel).find('.dt-buttons');
+            var dtExcelBtn = $(dtButtons).find('.buttons-excel');
+            console.log('clicked', dtExcelBtn);
+            $(dtExcelBtn).click();
+        });
+
+
+    })
+</script>

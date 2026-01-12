@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequstFormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div class="panel panel-inverse"
+     id="PORequestLineListViewModel"
+     data-reloadurl="@Url.Action("Table", "PORequestLine", new { poco = Model.Request.POCo, requestId = Model.Request.RequestId })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">PO Item(s)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PO/Request/Form/Lines/List/Table", Model.Lines)
+    </div>
+</div>
+<div id="poLinePanel">
+</div>

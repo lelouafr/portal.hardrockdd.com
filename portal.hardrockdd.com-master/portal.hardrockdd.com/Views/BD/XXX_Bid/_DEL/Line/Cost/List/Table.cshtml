@@ -1,0 +1,62 @@
+﻿@model  portal.Models.Views.Bid.BoreLine.CostItemListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+    <table class="table"
+           id="@tableId"
+           data-urlcreate="@Url.Action("Add", "BidBoreLineCostItem")"
+           data-urldelete="@Url.Action("Delete", "BidBoreLineCostItem")"
+           data-urlupdate="@Url.Action("Update", "BidBoreLineCostItem")"
+           data-urlvalidate="@Url.Action("Validate", "BidBoreLineCostItem")"
+           data-urlcalculate="@Url.Action("CalculateUnits", "BidBoreLineCostItem")"
+           data-tablekey="@tableKey">
+        <thead>
+            <tr class="">
+                <th width="33%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetCodeId)</th>
+                <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Multiplier)</th>
+                <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtUnits)</th>
+                <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockUnits)</th>
+                <th width="12%">@Html.LabelForRequired(model => model.List.FirstOrDefault().UM)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        <tbody>
+            @foreach (var obj in Model.List.GroupBy(f => f.CostType).Select(s => new { CostType = s.Key, DirtCost = s.Sum(sum => sum.DirtCost), RockCost = s.Sum(sum => sum.RockCost), s }).ToList())
+            {
+                <tr>
+                    <td colspan="6">
+                        <b>@obj.CostType</b>
+                    </td>
+
+                </tr>
+
+                foreach (var subModel in obj.s)
+                {
+                    @Html.Partial("../BD/Bid/Line/Cost/List/TableRow", subModel)
+                }
+            }
+        </tbody>
+       
+    </table>
+<script>
+</script>

@@ -1,0 +1,44 @@
+﻿@model  portal.Models.Views.AR.Invoice.InvoiceLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    viewOnly = true;
+    ViewBag.TableRow = "True";
+}
+
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.ARCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ARTransId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.LineId, new { DisplayOnly = true })
+        @Html.HiddenFor(m => m.ContractId, new { @id = Guid.NewGuid() })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ItemId, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ItemDescription, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Units, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.UnitPrice, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Amount, new { DisplayOnly = true })
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>

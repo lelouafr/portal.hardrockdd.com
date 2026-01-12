@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Bid.BidCustomerListViewModel
+
+<div class="panel panel-inverse" 
+     id="BidCustomerListViewModel"
+     data-reloadurl="@Url.Action("Table", "BidCustomerProposal", new { co = Model.Co, bidId = Model.BidId })"
+     data-reloadpanels="">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Customer Proposals</h4>
+    </div>
+    <div class="panel-body" id="CustomerProposals">
+        @Html.Partial("../BD/Bid/Customer/ProposalList/Table", Model)
+    </div>
+</div>
+<script>
+
+</script>

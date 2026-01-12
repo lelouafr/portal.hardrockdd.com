@@ -1,0 +1,23 @@
+﻿@*@model portal.Models.Views.Purchase.Order.PurchaseOrderStatusLogListViewModel
+
+
+<div class="panel panel-inverse" data-sortable-id="PurchaseOrderStatusLogListViewModel"
+     data-reloadurl="@Url.Action("Table", "POStatusStatusLog", new { co = Model.Co, po = Model.PO })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Status Log</h4>
+    </div>
+    <div class="panel-body" id="poRequestStatusLogListViewModel">
+        @Html.Partial("../PurchaseOrder/StatusLog/Table", Model)
+    </div>
+</div>
+<script>
+    //function initPane() {
+    //    console('StatusLog Pane Inited');
+    //    handleTableAutoUpdate();
+    //}
+</script>*@

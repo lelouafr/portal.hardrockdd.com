@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.LeaveReviewCount > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-blue">
+            <div class="stats-icon"><i class="fas fa-clipboard-list"></i></div>
+            <div class="stats-info">
+                <h4>Time Off Request Pending Approvals</h4>
+                <p>@Model.LeaveReviewCount</p>
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("Index", "LeaveRequestApproval")">Goto Review<i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

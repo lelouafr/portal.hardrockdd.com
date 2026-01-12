@@ -1,0 +1,13 @@
+﻿@model portal.Areas.HumanResource.Models.Position.FormViewModel
+
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("Form/Info/_Panel", Model.Info)
+    </div>
+    <div class="col-4">
+        @Html.Partial("Form/ActiveEmployees/_Panel", Model.ActiveEmployees)
+    </div>
+    <div class="col-12">
+        @Html.Partial("Form/Tasks/_Panel", Model.HireTasks)
+    </div>
+</div>

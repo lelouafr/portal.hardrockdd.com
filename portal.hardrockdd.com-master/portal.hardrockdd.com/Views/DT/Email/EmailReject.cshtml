@@ -1,0 +1,62 @@
+﻿@model  DB.Infrastructure.EmailModels.DailyTicketEmailViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Ticket Rejected";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>Your Ticket has been rejected.</h4>
+                                    <p class="m-b-5">Please click the following link to resolve the rejected ticket.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("Index","DailyTicket", new { Area = "",dtco = Model.DTCo, TicketId = Model.TicketId })">https://@(Request.Url.Authority)@Url.Action("Index", "DailyTicket", new { Area = "", dtco = Model.DTCo, TicketId = Model.TicketId })</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="panel">
+                                    <p>@Model.Comments</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

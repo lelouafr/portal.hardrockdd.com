@@ -1,0 +1,118 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentFormViewModel
+
+<div class="invoice">
+    <!-- begin invoice-company -->
+    <div class="invoice-company text-inverse f-w-600">
+        @Model.Info.Vendor
+        <span class="pull-right">Total @(string.Format(AppCultureInfo.CInfo(), "{0:C2}", @Model.Info.Amount))</span>
+    </div>
+    <!-- end invoice-company -->
+    <!-- begin invoice-header -->
+    <div class="invoice-header">
+        <div class="invoice-from">
+            <small>Info</small>
+            <div class="invoice-detail">
+                Invoice Date: @(Model.Info.InvoiceDate.Value.ToShortDateString())<br />
+                Ref: @Model.Info.APReference<br />
+                Posting Month: @Model.Info.Mth<br />
+                @{ 
+                    var dueDateVal = "************************************DUE DATE MISSING!***********************************"; 
+                    if (Model.Info.DueDate != null)
+                    {
+                        dueDateVal = String.Format("Due Date: {0}", Model.Info.DueDate.Value.ToShortDateString());
+                    }
+                }
+                @dueDateVal <br />                
+            </div>
+        </div>
+    </div>
+    <!-- end invoice-header -->
+    <!-- begin invoice-content -->
+    <div class="invoice-content">
+        <!-- begin table-responsive -->
+        <div class="table-responsive">
+            <table class="table table-invoice">
+                <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th class="" width="10%">Type</th>
+                        <th class="">Description</th>
+                        <th class="text-right" width="10%">Units</th>
+                        <th class="text-right" width="10%">Cost</th>
+                        <th class="text-right" width="10%">Gross</th>
+                        <th class="text-right" width="10%">Taxed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Lines.List)
+                    {
+                        <tr>
+                            <td class="">@item.LineId</td>
+                            <td class="">@item.LineTypeId</td>
+                            <td>
+                                <span class="text-inverse">@item.Description</span><br />
+                                <small>@item.JobId @item.EquipmentId</small>
+                            </td>
+                            <td class="text-right">@item.Units</td>
+                            <td class="text-right">@item.UnitCost</td>
+                            <td class="text-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", @item.GrossAmt))</td>
+                            <td class="text-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", @item.TaxAmount))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- end table-responsive -->
+        <!-- begin invoice-price -->
+        <div class="invoice-price">
+            @{
+                var totalGross = Model.Lines.List.Sum(sum => sum.GrossAmt);
+                var totalTax = Model.Lines.List.Sum(sum => sum.TaxAmount ?? 0);
+                var seqTotal = Model.Info.Amount;
+            }
+            <div class="invoice-price-left">
+                <div class="invoice-price-row">
+                    <div class="sub-price">
+                        <small>SUBTOTAL</small>
+                        <span class="text-inverse">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", totalGross))</span>
+                    </div>
+                    <div class="sub-price">
+                        <i class="fa fa-plus text-muted"></i>
+                    </div>
+                    <div class="sub-price">
+                        <small>TAXES</small>
+                        <span class="text-inverse">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", totalTax))</span>
+                    </div>
+                    <div class="sub-price">
+                        <i class="fas fa-equals text-muted"></i>
+                    </div>
+                    <div class="sub-price">
+                        <small>NET TOTAL</small>
+                        <span class="text-inverse">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", totalGross+ totalTax))</span>
+                    </div>
+                </div>
+            </div>
+            <div class="invoice-price-right @((totalGross+ totalTax) - seqTotal != 0 || Model.Info.DueDate == null|| Model.Info.VendorId == null ? "bg-red" : "")">
+
+                @if (Model.Info.DueDate == null)
+                {
+                    <span class="f-w-600">
+                        DUE DATE MISSING!
+                    </span>
+                }
+                else if (Model.Info.VendorId == null)
+                {
+                    <span class="f-w-600">
+                        VENDOR MISSING!
+                    </span>
+                }
+                else
+                {
+                    <small>TOTAL DIF</small> <span class="f-w-600">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", seqTotal - (totalGross+ totalTax)))</span>
+                }
+            </div>
+        </div>
+        <!-- end invoice-price -->
+    </div>
+    <!-- end invoice-content -->
+</div>

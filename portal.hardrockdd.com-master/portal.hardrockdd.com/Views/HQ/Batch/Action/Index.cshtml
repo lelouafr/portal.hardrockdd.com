@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.HQ.Batch.ActionListViewModel
+@{
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+@Html.Partial("../HQ/Batch/Action/Panel", Model)
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.2/js/dataTables.fixedColumns.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}
+
+

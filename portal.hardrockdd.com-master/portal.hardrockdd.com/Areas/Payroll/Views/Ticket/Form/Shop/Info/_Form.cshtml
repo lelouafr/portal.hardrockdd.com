@@ -1,0 +1,89 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Shop.TicketViewModel
+
+@*@Html.Partial("../DT/Type/Buttons")*@
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var employeePanelBodyId = string.Format("employeepanel_{0}_{1}", Model.DTCo, Model.TicketId);
+
+    if (Model.Status == DB.DailyTicketStatusEnum.Processed)
+    {
+        viewOnly = true;
+    }
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("ShopInfoUpdate", "Ticket")"
+      data-urlvalidate="@Url.Action("ShopInfoValidate", "Ticket")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WorkDate)
+        @Html.EditorFor(m => m.WorkDateDescription)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.JobId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+</form>
+<script>
+
+    $('#@formId').ready(function () {
+        var $form = $('#@formId');
+        Form().init($form);
+
+        var $employeePanelBody = $('#@employeePanelBodyId');
+        var $employeePanel = $employeePanelBody.closest('.panel');
+
+        function employeeView() {
+            var crewId = $form.find("[name='CrewId']").val();
+            if (crewId !== null && crewId !== "" && crewId !== "null") {
+                $employeePanelBody.show();
+            }
+            else {
+                $employeePanelBody.hide();
+            }
+        }
+        function crewChange() {
+            employeeView();
+            $employeePanel.ReloadPanel();
+        }
+        employeeView();
+
+        $form.on('change', '.JobId, .CrewId', function () {
+            var elem = this;
+            function func() {
+                var elemName = $(elem).attr('name');
+                switch (elemName) {
+                    case "CrewId":
+                        crewChange();
+                        break;
+                    case "JobId":
+                        jobChange();
+                        break;
+                    default:
+                }
+            }
+            setTimeout(function () {
+                Form().isUpdating($form, func);
+            }, 10);
+        });
+    });
+
+
+</script>
+

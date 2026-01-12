@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.Web.UserAccessLogViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var colSpan = viewOnly ? "3" : "4";
+}
+
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.EditorFor(m => m.UserName, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LogDateString, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.AccessLevel, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.ControllerActionId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.UserId, new { @id = Guid.NewGuid() })
+    </td>
+</tr>

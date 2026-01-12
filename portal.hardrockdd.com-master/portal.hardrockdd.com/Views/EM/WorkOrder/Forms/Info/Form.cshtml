@@ -1,0 +1,51 @@
+﻿@model portal.Models.Views.EM.WorkOrder.Forms.InfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("UpdateInfo", "EMWorkOrder")"
+      data-urlvalidate="@Url.Action("ValidateInfo", "EMWorkOrder")">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.WorkOrderId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ShopGroupId, new { @id = Guid.NewGuid() })
+    <input type="hidden" name="PRCo" value="1" />
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WorkOrderId, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EquipmentId, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ShopId, new { ViewOnly = viewOnly || Model.Complete })
+        @Html.EditorFor(m => m.MechanicID, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DateCreated, new { ViewOnly = true })
+        @Html.EditorFor(m => m.DateDue, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DateSched, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Notes, new { ViewOnly = viewOnly || Model.Complete })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

@@ -1,0 +1,74 @@
+﻿@model  portal.Models.Views.HR.Request.Term.TermRequestEmailViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Employee Termination Request";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <!--<table class="row">
+                <tr>-->
+            <!-- begin wrapper -->
+            <!--<td class="wrapper">
+                <table class="twelve columns">
+                    <tr>
+                        <td class="last">
+                            <h4>@ViewBag.Title.</h4>
+                            <p class="m-b-5">Please click the following link to review the employee</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="panel">
+                            <a href="https://@(Request.Url.Authority)@Url.Action("Index", "HRResourceForm", new { Area = "", co = Model.HRCo, employeeId = Model.HRRef })">https://@(Request.Url.Authority)@Url.Action("Index", "HRResourceForm", new { Area = "", co = Model.HRCo, employeeId = Model.HRRef })</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>-->
+            <!-- end wrapper -->
+            <!--</tr>
+            </table>-->
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    <h4>Requested By: @Model.RequestedUser</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <dl>
+                                        <dt>Employee:   @Model.EmployeeName (@Model.HRRef)</dt>
+                                        <dt>Date:       @Model.TermDate.Value.ToShortDateString()</dt>
+                                        <dt>Reason:     @Model.Comments</dt> @*(@Model.ReasonDescription())*@
+                                        @*<dt>Notes:      @Model.Notes</dt>*@
+                                    </dl>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

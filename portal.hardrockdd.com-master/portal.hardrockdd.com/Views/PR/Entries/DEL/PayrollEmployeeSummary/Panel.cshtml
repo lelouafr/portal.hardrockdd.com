@@ -1,0 +1,9 @@
+﻿@model portal.Models.Views.Payroll.PayrollEmployeeReviewListViewModel
+
+@Html.Partial("../PayrollDailyTicket/Panel", Model)
+
+@if (User.IsInPosition("HR-PRMGR,IT-DIR,CFO,FIN-CTRL"))
+{
+    @Html.Partial("../PayrollPerdiem/Panel", Model)
+    @Html.Partial("../PayrollHour/Panel", Model)
+}

@@ -1,0 +1,34 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderFormViewModel
+
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="row">
+                <div class="col-xl-12">
+                    @Html.Partial("../PO/PurchaseOrder/Form/Header/Panel", Model)
+                </div>
+                <div class="col-xl-12">
+                    @Html.Partial("../PO/PurchaseOrder/Form/Items/List/Panel", Model)
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4">
+            <div class="row">
+                <div class="col-xl-12">
+                    @*@Html.Partial("../PurchaseOrder/StatusLog/Panel", Model.StatusLogs)*@
+                </div>
+                <div class="col-xl-12">
+                    @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade"
+     id="poModel"
+     data-url="@Url.Action("GetPO", "PurchaseOrder")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>

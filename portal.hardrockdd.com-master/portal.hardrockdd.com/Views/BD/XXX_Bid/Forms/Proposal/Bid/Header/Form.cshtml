@@ -1,0 +1,99 @@
+﻿@model portal.Models.Views.Bid.Forms.Proposal.Bid.BidViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("BidProposalInfoUpdate", "BidForm")"
+      @*data-urlvalidate="@Url.Action("BidProposalInfoValidate", "BidForm")"*@
+      >
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <img class="d-block m-auto" style="height:100px;" src="~/Content/assets/img/logo/logo_big.bmp" />
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <p>
+                    @Model.CompanyInfo.Address <br />
+                    @Model.CompanyInfo.City, @Model.CompanyInfo.State @Model.CompanyInfo.Zip<br />
+                    Phone: @Model.CompanyInfo.Phone Fax: @Model.CompanyInfo.Fax<br />
+                </p>
+            </div>
+            <h3 class="text-center">Bid Proposal/Purchase Order </h3>
+            <h5 class="text-center">@DateTime.Now.ToLongDateString().Replace(DateTime.Now.DayOfWeek.ToString() + ", ", "") </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DelayDeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.MobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Status, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidDate, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DueDate, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidType, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DivisionId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.ProjectManagerId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.IndustryId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Comments, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">TO:</label>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">Attn:</label>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">Job Name:</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.Description, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">Owner:</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.FirmNumber, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">Job Location:</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.Location, new { tableRow = true })
+                </div>
+            </div>
+            <div class="form-group has-feedback row">
+                <label class="col-md-2 col-form-label">Anticipated Start Date:</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.StartDate, new { tableRow = true })
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+    <div class="col-12">
+        <h5>
+            We hereby propose to furnish labor and equipment as specified below to perform the work specified below:
+        </h5>
+    </div>
+</div>

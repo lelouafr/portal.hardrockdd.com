@@ -1,0 +1,62 @@
+﻿@model portal.Models.Views.AP.CreditCard.CreditImportListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = "TableCreditImportListViewModel";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    tableKey += "|";
+}
+
+@Html.Partial("../AP/CreditCard/Upload/DropZone", Model)
+<br />
+<table class="table"
+       id="@tableId"
+       @*data-urldelete="@Url.Action("Delete", "APDocument")"       
+       data-dataurl="@Url.Action("Data", "APDocument", new { status = (int)Model.Status })"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false" 
+           *@
+       data-urlselect="@Url.Action("ImportPanel", "APCreditCardImport")"
+       data-dstselect="reviewPanel"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ImportId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Source)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ImportedBy)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ImportDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().FileName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().NumberOfLines)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LinesAdded)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LinesSkipped)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ErrorLines)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in Model.List)
+        {
+            @Html.Partial("../AP/CreditCard/Upload/List/TableRow", row)
+        }
+    </tbody>
+</table>
+<script>
+
+    $('#@tableId').ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: true,
+            pageLength: 25,
+            ordering: true,
+            processing: true,
+            pageResize: true,
+            order: [
+                [0, "desc"]
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+
+        });
+    });
+</script>

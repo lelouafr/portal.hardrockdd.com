@@ -1,0 +1,39 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.StatusLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var guid = tableId.ToString().Replace("-", "");
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div id="div_@guid">
+    <table class="table"
+           id="@tableId"
+           data-tablekey="@tableKey">
+        <thead>
+            <tr>
+                <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusDate)</th>
+                <th width="40%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CompletedUser)</th>
+                <th width="35%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model.List)
+            {
+                @Html.Partial("Forms/StatusLog/_TableRow", obj)
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $("#div_@guid").ready(function () {
+        var $divElem = $("#div_@guid");
+        if ($divElem.height() > 225) {
+            $divElem.slimScroll({
+                height: '225px'
+            });
+        }
+    });
+</script>

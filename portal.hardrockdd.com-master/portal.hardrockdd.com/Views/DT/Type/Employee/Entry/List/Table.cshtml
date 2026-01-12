@@ -1,0 +1,54 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyWeeklyEntryListViewModel
+@{
+    ViewBag.TableRow = "True";
+
+    ViewBag.StartDate = Model.StartDate;
+    ViewBag.EndDate = Model.EndDate;
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "DailyWeeklyEntry")"
+       data-urldelete="@Url.Action("Delete", "DailyWeeklyEntry")"
+       data-urlupdate="@Url.Action("Update", "DailyWeeklyEntry")"
+       data-urlvalidate="@Url.Action("Validate", "DailyWeeklyEntry")"
+       data-tablekey= "@tableKey"
+       >
+    <thead>
+        <tr class="">
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().WorkDate)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().DayDescription)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().Value)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().EntryTypeId)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().JobId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().PhaseId)</th>
+            @if (!viewOnly)
+            {
+                <th width="30%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.Entries)
+        {
+            @Html.Partial("../DT/Type/Employee/Entry/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        commentElem.show();
+        $(this).hide();
+    });
+</script>

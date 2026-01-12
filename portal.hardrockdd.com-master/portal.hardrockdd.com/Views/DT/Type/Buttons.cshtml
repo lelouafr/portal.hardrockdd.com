@@ -1,0 +1,373 @@
+﻿@using portal.Models.Views.DailyTicket.Form
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var unSubmitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+    var ticketForm = (TicketForm)(ViewBag.TicketForm);
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ?partialViewOut : false;
+    var entityKey = "DTCo=" + ticketForm.DynaimicTicket.Ticket.DTCo.ToString();
+    entityKey += "&TicketId=" + ticketForm.DynaimicTicket.Ticket.TicketId.ToString();
+
+    var guid = string.Format("guid_{0}", Guid.NewGuid());
+
+}
+
+<div class="row" id="@guid">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            @if (ticketForm.CanSave)
+            {
+            <button type="button" class="btn btn-primary buttonSave"
+                    data-url="@Url.Action("Index", "UserSummary")"
+                    data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                    data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+                <i class="fa fa-save"></i>Save
+            </button>
+            }
+            @if (ticketForm.CanDecline)
+            {
+                <button type="button"
+                        class="btn btn-primary buttonSave"
+                        data-url="@Url.Action("Index", "UserSummary")"
+                        data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                        data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+                    <i class="fa fa-save"></i>Save
+                </button>
+                <button class="btn btn-danger rejectRow"
+                        data-entitykey="@entityKey"
+                        data-toggle="modal"
+                        data-target="#rejectTicket"
+                        data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                        data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+                    <i class="fa fa-thumbs-down"></i>Reject
+                </button>
+            }
+            @if (ticketForm.CanSubmit)
+            {
+        <button type="button" class="btn btn-success buttonSubmit"
+                data-url="@Url.Action("Submit", "DailyTicketForm")"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-share"></i>Submit
+        </button>
+            }
+            @if (ticketForm.CanApprove && (User.IsInRole("Admin") ||
+                                            User.IsInPosition("HR-PRMGR") ||
+                                            User.IsInPosition("HR-MGR") ||
+                                            User.IsInPosition("FIN-CTRL") ||
+                                            User.IsInPosition("CFO")))
+            {
+        <button type="button" class="btn btn-primary buttonApprove"
+                data-url="@Url.Action("Approve", "DailyTicketForm")"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-share"></i>Approve
+        </button>
+            }
+            @if (ticketForm.CanCancel)
+            {
+        <button type="button" class="btn btn-danger buttonCancel"
+                data-url="@Url.Action("Cancel", "DailyTicketForm")"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-ban "></i>Cancel
+        </button>
+            }
+            @if (ticketForm.CanUnPostTemp && (User.IsInRole("Admin") ||
+                                            User.IsInPosition("HR-PRMGR") ||
+                                            User.IsInPosition("HR-MGR") ||
+                                            User.IsInPosition("FIN-CTRL") ||
+                                            User.IsInPosition("CFO")))
+            {
+        <button type="button" class="btn btn-primary buttonReGenearateTempPost"
+                data-url="@Url.Action("ReGenearateTempPost", "DailyTicketForm")"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-undo"></i>Recreate Post Entires
+        </button>
+            }
+
+            @if (ticketForm.CanUnDelete)
+            {
+        <button type="button" class="btn btn-primary buttonUnDelete"
+                data-url="@Url.Action("UnDelete", "DailyTicketForm")"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-undo"></i>Re Open Ticket
+        </button>
+            }
+            @if (ticketForm.CanUnSubmit)
+            {
+        <button type="button" class="btn btn-primary buttonUnSubmit"
+                data-url="@Url.Action("UnSubmit","DailyTicketForm")"
+                data-urlhome="@Request.Url.AbsoluteUri"
+                data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+            <i class="fa fa-undo"></i>UnSubmit
+        </button>
+            }
+            @if (ticketForm.CanUnPost)
+            {
+                <button type="button" class="btn btn-primary buttonUnPost"
+                        data-url="@Url.Action("UnPost", "DailyTicketForm")"
+                        data-ticketco="@ticketForm.DynaimicTicket.Ticket.DTCo"
+                        data-ticketid="@ticketForm.DynaimicTicket.Ticket.TicketId">
+                    <i class="fa fa-undo"></i>Un Post Ticket
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#@guid').ready(function () {
+        $('#@guid .buttonSave').on('click', function () {
+            var button = this;
+            var urlSave = $(this).data('url');
+            $(button).SetButtonBusy();
+            if ('@partialView' != 'True') {
+                window.location.href = document.referrer;
+            }
+            else {
+                ReloadTicket(this);
+            }
+        });
+
+        $('#@guid .buttonUnSubmit').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId };
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            func(button);
+        });
+
+        $('#@guid .buttonUnPost').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId };
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            func(button);
+        });
+
+        $('#@guid .buttonUnDelete').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId };
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            func(button);
+        });
+
+        $('#@guid .buttonSubmit').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var url = $(button).data('url');
+                var row = $(button).closest('.row');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId ,
+                };
+                //console.log(data, url);
+                $.post(url, data, function (res) {
+                    $(button).SetButtonNotBusy();
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            var ticketPanel = $(button).closest('.ticketPanel');
+            if (ticketPanel.length == 0) {
+                ticketPanel = $(button).closest('#ticketPanel');
+            }
+            $(ticketPanel).PostValidate(button, function (valid) {
+                console.log('valid: ', valid, $(ticketPanel));
+                if (valid) {
+                    func(button);
+                }
+            });
+        });
+
+        $('#@guid .buttonApprove').on('click', function () {
+            var button = this;
+
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId ,
+                    };
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            $('#ticketPanel').PostValidate(button, function (valid) {
+                if (valid) {
+                    func(button);
+                }
+            });
+        });
+
+        $('#@guid .buttonCancel').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                __RequestVerificationToken: token.val(),
+                dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId};
+
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+
+            func(button);
+        });
+
+        $('#@guid .buttonReGenearateTempPost').on('click', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    dtco: @ticketForm.DynaimicTicket.Ticket.DTCo,
+                    ticketId: @ticketForm.DynaimicTicket.Ticket.TicketId};
+
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if ('@partialView' != 'True') {
+                            window.location.href = document.referrer;
+                        }
+                        else {
+                            ReloadTicket(button);
+                        }
+                    }
+                });
+            }
+            func(button);
+        });
+    });
+
+    function ReloadTicket(elem) {
+        var url = "@Url.Action("PartialIndex", "DailyTicketForm")";
+        var dstId = "ticketPanel";
+        var dst  = $(elem).closest('.ticketPanel');
+        var data = {
+            DTCo: $(elem).data("ticketco"),
+            TicketId:  $(elem).data("ticketid"),
+        };
+        //var dst = $('#' + dstId);
+        //console.log(url, data, dst);
+        var index = 0;
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {
+                //console.log(url, data, dst);
+                var divId = dstId + '_' + index ;
+                var html = '<div id="' + divId + '">\r\n';
+                html += res;
+                html += '\r\n</div>';
+
+                if (index === 0)
+                    dst.html(html);
+                else
+                    dst.append(html);
+
+                var panel = $('#' + divId).find('.panel-body');
+                Table().init(panel.get(0));
+                $(dst).removeClass('panel-loading');
+                $(dst).find('.panel-loader').remove();
+                $('html, body').animate({
+                    scrollTop: $(dst).offset().top - 150
+                }, 500)
+            }
+        });
+    }
+</script>

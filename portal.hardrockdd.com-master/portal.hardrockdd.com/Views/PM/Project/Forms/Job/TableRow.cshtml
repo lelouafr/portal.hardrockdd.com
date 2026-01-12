@@ -1,0 +1,39 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey  = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td data-search="">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.JobId, new { DisplayOnly = true })
+    </td>
+    <td data-search="@Model.JobName">
+        @Html.EditorFor(m => m.JobName)
+    </td>
+    <td data-search="@Model.StatusString" data-sort="@Model.StatusString" data-filter="@Model.StatusString">
+        @Html.EditorFor(m => m.StatusId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CrewId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RigId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Footage)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.PipeSize)
+    </td>
+    <td>
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>
+
+

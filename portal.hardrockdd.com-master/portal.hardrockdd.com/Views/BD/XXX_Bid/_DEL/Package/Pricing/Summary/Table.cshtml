@@ -1,0 +1,76 @@
+﻿@model portal.Models.Views.Bid.BidCostDetailListViewModel
+    @{ 
+
+        var tableId = string.Format("table_{0}", Guid.NewGuid());
+    }
+<style>
+    .tableHeaderColSpan{
+        border-left: 1px solid #b6c2c9 !important;
+        border-right: 1px solid #b6c2c9 !important;
+        border-bottom: 0px !important;
+    }
+</style>
+
+<table class="table"
+       id="@tableId">
+    <thead>
+        <tr class="no-border">
+            <th colspan="4 "style="border-bottom: 0px !important;"><label></label></th>
+            <th colspan="5" class="text-center"  style="border-left: 1px solid #b6c2c9 !important; border-right: 1px solid #b6c2c9 !important; border-bottom: 0px !important;"><label>Dirt</label></th>
+            <th colspan="5" class="text-center"  style="border-left: 1px solid #b6c2c9 !important; border-right: 1px solid #b6c2c9 !important; border-bottom: 0px !important;"><label>Rock</label></th>
+        </tr>
+        <tr>
+            <th class="text-center" style="border-top: 0px !important;"><label>#</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Crossing</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Footage</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Pipesize</label></th>
+            <th class="text-center" style="border-left: 1px solid #b6c2c9 !important; border-top: 0px !important;"><label>Cost</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>LF Cost</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Revenue<br />(40% GM)</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>LF Price<br />(40% GM)</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Dia Inch<br />Price</label></th>
+            <th class="text-center" style="border-left: 1px solid #b6c2c9 !important; border-top: 0px !important;"><label>Cost</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>LF Cost</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>Revenue<br />(40% GM)</label></th>
+            <th class="text-center" style="border-top: 0px !important;"><label>LF Price<br />(40% GM)</label></th>
+            <th class="text-center" style="border-right: 1px solid #b6c2c9 !important; border-top: 0px !important;"><label>Dia Inch<br />Price</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var bores = Model.List.Where(f => f.PipeSize != null)
+                                    .GroupBy(g => new { g.BoreId, g.Description, g.Footage, g.PipeSize })
+                                    .Select(s => new
+                                    {
+                                        BoreId = s.Key.BoreId,
+                                        Crossing = s.Key.Description ,
+                                        Footage = (double)(s.Key.Footage ?? 0),
+                                        PipeSize = (double)(s.Key.PipeSize ?? 0),
+                                        DirtCost = (double)Math.Round(s.Where(f => f.GroundDensityType == "Dirt").Sum(sum => sum.ExtCost), 2),
+                                        RockCost = (double)Math.Round(s.Where(f => f.GroundDensityType == "Rock").Sum(sum => sum.ExtCost), 2)
+                                    }).ToList();
+        }
+        @foreach (var bore in bores)
+        {
+        <tr>
+            <td class="text-center">@bore.BoreId</td>
+            <td class="text-center">@bore.Crossing</td>
+            <td class="text-center">@bore.Footage</td>
+            <td class="text-center">@bore.PipeSize</td>
+            <td class="text-center" style="border-left: 1px solid #b6c2c9 !important;">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(bore.DirtCost, 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(bore.DirtCost / bore.Footage, 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round((bore.DirtCost) * (1 / (1 - .4)), 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round((bore.DirtCost / bore.Footage) * (1 / (1 - .4)), 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(((bore.DirtCost / bore.Footage) * (1 / (1 - .4))) / bore.PipeSize, 2))</td>
+            <td class="text-center" style="border-left: 1px solid #b6c2c9 !important;">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(bore.RockCost, 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(bore.RockCost / bore.Footage, 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round((bore.RockCost) * (1 / (1 - .4)), 2))</td>
+            <td class="text-center">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round((bore.RockCost / bore.Footage) * (1 / (1 - .4)), 2))</td>
+            <td class="text-center" style="border-right: 1px solid #b6c2c9 !important;">@string.Format(AppCultureInfo.CInfo(), "{0:C0}", Math.Round(((bore.RockCost / bore.Footage) * (1 / (1 - .4))) / bore.PipeSize, 2))</td>
+        </tr>
+        }
+    </tbody>
+</table>
+<script>
+   
+</script>

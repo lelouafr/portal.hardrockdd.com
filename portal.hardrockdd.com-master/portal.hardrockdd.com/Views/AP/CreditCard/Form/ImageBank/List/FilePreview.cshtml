@@ -1,0 +1,69 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.ImageBankViewModel
+
+
+@Html.HiddenFor(m => m.ImageId, new { @id = Guid.NewGuid() })
+@Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+@if (Model.AttachmentId != null)
+{
+
+    <div class="file col-lg-12 fileObject" style="padding:0px;">
+        @switch (Model.MimeType)
+        {
+            case "application/pdf":
+                <embed src="@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = Model.AttachmentId })"
+                       id="preview"
+                       frameborder="0"
+                       class="preview"
+                       style="width: 100%; height: 450px;"
+                       type="application/pdf" />
+                break;
+            case "application/octet-stream":
+                break;
+            case "application/txt":
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            case "htaccess":
+            case "log":
+            case "sql":
+            case "php":
+            case "js":
+            case "json":
+            case "css":
+            case "html":
+                break;
+            case "image/jpeg":
+            case "image/jpg":
+            case "image/png":
+            case "image/bmp":
+            case "image/gif":
+                <div class="image center "
+                     style="cursor: zoom-in;">
+                    <img data-magnify="gallery" 
+                         src="@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = Model.AttachmentId })"
+                         data-src="@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = Model.AttachmentId })"
+                         class="preview"
+
+                         alt=""
+                         style="left:50%; top:50%; padding:0;  max-height:700px;">
+                </div>
+                break;
+            default:
+                <div>@Model.MimeType</div>
+                break;
+        }
+    </div>
+}
+else
+{
+    <p>Image was not imported from VISA yet.</p>
+}
+<script>
+    $(document).ready(function () {
+        var isModal = $('.fileObject').closest('.modal').length != 0;
+        var pictureElem = $('.fileObject').find('.preview');
+        var height = $(window).height();
+        if (isModal) {
+            $(pictureElem).css("height", "450");
+            $(pictureElem).css("max-height", "450px");
+        }
+    });
+</script>

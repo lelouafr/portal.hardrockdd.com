@@ -1,0 +1,37 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "ad";
+}
+@if (User.HasAccess("ErrorLog") ||
+    User.HasAccess("Unifi") ||
+    User.HasAccess("Azure"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-tools"></i>
+            <span>Administration</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("ErrorLog", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "ErrorLog", routeValues: new { Area = "" })">Error Log</a></li>
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Test", routeValues: new { Area = "" })">Test</a></li>
+            }
+            @if (User.HasAccess("Azure", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="https://portal.azure.com" target="_blank">Azure</a></li>
+            }
+            @if (User.HasAccess("Unifi", "Index"))
+            {
+                @*<li id="menu_li_@(listItemId++)"><a href="@Url.Action("Index", "Unifi")">Network</a></li>*@
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="https://unifi.ui.com" target="_blank">Network</a></li>
+            }
+            @if (User.HasAccess("Office", "Index"))
+            {
+            }
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Office", routeValues: new { Area = "Admin" })">Offices</a></li>
+        </ul>
+    </li>
+}

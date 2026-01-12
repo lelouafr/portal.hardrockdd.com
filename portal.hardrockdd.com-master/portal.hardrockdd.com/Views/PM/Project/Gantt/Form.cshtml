@@ -1,0 +1,54 @@
+﻿
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var timeline = "JobGantt_";// + formId.ToString().Replace("-", "");
+    var panel = "panel_" + formId.ToString().Replace("-", "");
+}
+<div class="gantt_control">
+    <button class='zoom_toggle' onclick="toggleMode(this)">Zoom to Fit</button>
+    <input type=button value="Zoom In" onclick="zoom_in();">
+    <input type=button value="Zoom Out" onclick="zoom_out();">
+</div>
+<div id="@timeline" style='width:100%; height:100%; height:750px;'
+     data-dataurl="@Url.Action("Data", "PMProjectGantt")">
+</div>
+
+<script>
+    $("#@panel").ready(function () {
+
+        setTimeout(function () { 
+            var url = $('#@timeline').data("dataurl");
+            var elem = $('#@timeline');
+
+            var windowHeight = $(window).innerHeight();
+            var elemTop = $(elem).offset().top;
+            var bufferHeight = 2;
+            var availableWindowSize = windowHeight - elemTop - bufferHeight;
+
+            if (availableWindowSize > 600) {
+                $(elem).height(availableWindowSize);
+            }
+
+            //gantt.ext.zoom.setLevel("week");
+            gantt.clearAll();
+            gantt.load(url, "json");
+            gantt.init("@timeline");
+            gantt.ext.inlineEditors.attachEvent("onBeforeSave", function (state) {
+                var oldDate = new Date(state.oldValue);
+                var newDate = new Date(state.newValue);
+                var diff = newDate - oldDate;
+                gantt.message("handler");
+                console.log("date diff:", diff);
+                var task = gantt.getTask(state.id);
+                var subTasks = gantt.getChildren(task.id);
+                subTasks.forEach(function (subTaskId) {
+                    var subTask = gantt.getTask(subTaskId);
+                    subTask.start_date = new Date(+subTask.start_date + diff);
+                    subTask.end_date = new Date(+subTask.end_date + diff);
+                    gantt.updateTask(subTask.id, subTask);
+                });
+                return true;
+            });
+        }, 500);
+    });
+</script>

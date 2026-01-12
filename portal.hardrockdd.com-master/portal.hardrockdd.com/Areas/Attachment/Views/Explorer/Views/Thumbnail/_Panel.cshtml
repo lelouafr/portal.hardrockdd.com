@@ -1,0 +1,224 @@
+﻿@model portal.Areas.Attachment.Models.ExplorerListViewModel
+@{
+    var tableId = string.Format("row_{0}_{1}", Model.UniqueAttchId, Model.FolderId);
+    var contextId = "context_" + Guid.NewGuid().ToString().Replace('-', '_');
+    var fileId = "file_" + Guid.NewGuid().ToString().Replace('-', '_');
+    var panelId = string.Format("previewPanel_{0}_{1}", Model.UniqueAttchId.ToString().Replace('-', '_'), Model.FolderId);
+}
+<style>
+    .thumb-img-container {
+        overflow-wrap: break-word;
+    }
+
+        .thumb-img-container .p {
+            overflow-wrap: break-word;
+        }
+
+        .thumb-img-container .tagged {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 15px;
+            color: green;
+        }
+
+    .fileObject.active {
+        background-color: lightgray;
+    }
+
+    .fileObject:hover {
+        background-color: lightgray;
+    }
+
+    .fileObject, .fileObject > i {
+        cursor: pointer !important;
+    }
+
+        .fileObject, .fileObject > i, .thumb-img-container, .thumb-img-container > i {
+            cursor: pointer !important;
+        }
+
+            .thumb-img-container img {
+                width: 100%;
+            }
+
+            .thumb-img-container:hover button {
+                opacity: 1; /* added */
+            }
+
+            .thumb-img-container:hover {
+                opacity: 1; /* added */
+            }
+
+            .thumb-img-container button {
+                position: absolute;
+                opacity: 0;
+                top: 100%;
+                left: 100%;
+                transform: translate(-100%, -100%);
+                -ms-transform: translate(-100%, -100%);
+                text-align: center;
+            }
+</style>
+
+<div class="row "
+     id="@tableId"
+     data-downloadurl="@Url.Action("Download", "Explorer")"
+     data-deleteurl="@Url.Action("ItemDelete", "Explorer")"
+     data-folderurl="@Url.Action("Form", "Explorer", new { viewType = Model.ViewType })">
+    @foreach (var item in Model.Items)
+    {
+        @Html.Partial("Views/Thumbnail/_ThumbnailPreview", item)
+    }
+
+    @*<div class="dropdown-menu dropdown-menu-sm" id="@contextId">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+        </div>*@
+</div>
+<script>
+    var table = $('#@tableId');
+    var h = $(table).height();
+
+    if (h > 300) {
+        h = 300;
+        $(table).slimScroll({
+            height: h + 'px',
+            alwaysVisible: true
+        });
+
+    }
+    $('.file').on('click', function (e) {
+        var row = $(this);
+        data = $(row).SerializeTableRow();
+        if (data.ObjectType == "1" || data.ObjectType == "File") {
+            setActive(this, e);
+            //data.url = $(row).data('fileurl');
+            //AttachmentLoadDoc($('#@panelId'), data);
+        }
+    });
+
+    $('.file').on('dblclick', function (e) {
+        //console.log('file double clicked');
+        var row = $(this).closest('.file');
+        var table = $(row).closest('.row');
+
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+
+        var data = $(row).SerializeTableRow();
+        var dst = $('#panel_' + data.UniqueAttchId);
+
+        if (data.ObjectType == 1 || data.ObjectType == "Folder") {
+            var url = $(table).data('folderurl');
+            var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+            $(dst).addClass('panel-loading');
+            $(dst).append(spinnerHtml);
+
+            $(panelBody).data('folderid', data.FolderId);
+            $(panelBody).attr('data-folderid', data.FolderId);
+            //console.log(url, data);
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    $(dst).empty();
+                    $(dst).append(data);
+                    Table().init($(dst));
+                }
+            });
+        }
+        else {
+            data.url = $(row).data('fileurl');
+            AttachmentLoadDoc($('#@panelId'), data, true);
+        }
+        //var data = Object.fromEntries(new URLSearchParams($(row).data('key')));
+
+
+    });
+
+    function setActive(elem, e) {
+        var elm = $(elem);
+        var container = $(elem).closest('.row');
+        if ($(elm).hasClass('active')) {
+            return;
+        }
+        if (!elm.hasClass('file')) {
+            elm = $(elm).closest('.file');
+        }
+        var data = $(elm).SerializeTableRow();
+        data.url = $(elm).data('fileurl');
+
+        var dst = $('#@panelId');
+        //console.log(data, dst, container);
+
+        $(dst).find('.edit').hide();
+        $(dst).find('.display').show();
+        if (!e.ctrlKey) {
+            $(container).find('.active').removeClass('active');
+            if (data.ObjectType == "1" || data.ObjectType == "File") {
+                //console.log('file clicked');
+                AttachmentLoadDoc($('#@panelId'), data);
+            }
+        }
+        $(elm).addClass('active');
+    }
+
+    function deleteItem(elem) {
+        var table = $(elem).closest('.row');
+        var row = $(elem).closest('.file');
+        var data = $(row).SerializeTableRow();
+        var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+
+        $(row).addClass('panel-loading');
+        $(row).append(spinnerHtml);
+
+        url = $(table).data('deleteurl');
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (response, status, xhr) {
+                $(row).remove();
+                var dst = $('#@panelId');
+                dst.html("");
+            }
+        });
+    }
+
+    function download(elem) {
+        var table = $(elem).closest('.row');
+        var token = $(table).find('[name="__RequestVerificationToken"]').val();
+        var subNodes = [];
+
+        $(table).find('.active').each(function () {
+            rowData = $(this).SerializeTableRow();
+            subNodes.push(rowData);
+        });
+
+        var url = $(table).data('downloadurl');
+        var data = {
+            __RequestVerificationToken: token,
+            List: subNodes
+        };
+        //console.log(url, data, $(this));
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function (response, status, xhr) {
+                var a = document.createElement("a");
+                a.href = url;
+                document.body.appendChild(a);
+                a.click();
+            }
+        });
+    }
+
+</script>

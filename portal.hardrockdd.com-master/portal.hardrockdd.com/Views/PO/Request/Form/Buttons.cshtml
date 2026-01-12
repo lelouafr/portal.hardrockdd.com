@@ -1,0 +1,231 @@
+﻿@model portal.Models.Views.Purchase.Request.ActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var unSubmitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : false;
+
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+
+<div class="row"
+     data-poco="@Model.POCo"
+     data-requestid="@Model.RequestId">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            @if (Model.CanSave)
+            {
+                <button type="button" class="btn btn-primary btnPOAction">
+                    <i class="fa fa-save"></i> Save
+                </button>
+            }
+            @if (Model.CanSubmit)
+            {
+                <button type="button" class="btn btn-success btnPOAction"
+                        data-url="@Url.Action("Submit", "PORequest")"
+                        data-validate="true">
+                    <i class="fa fa-share"></i> Submit
+                </button>
+            }
+            @if (Model.CanCreatePO)
+            {
+                <button type="button" class="btn btn-primary btnPOAction"
+                        data-url="@Url.Action("GetPO", "PORequest")"
+                        data-validate="true">
+                    <i class="fas fa-circle-plus"> Generate PO</i>
+                </button>
+            }
+            @if (Model.CanApprove)
+            {
+                <button type="button" class="btn btn-primary btnPOAction"
+                        data-url="@Url.Action("Approve", "PORequest")"
+                        data-validate="true">
+                    <i class="fa fa-thumbs-up"></i> Approve
+                </button>
+            }
+            @if (Model.CanReject)
+            {
+                <button class="btn btn-danger rejectRow"
+                        data-entitykey="@entityKey"
+                        data-toggle="modal"
+                        data-target="#rejectTicket">
+                    <i class="fa fa-thumbs-down"> Reject</i>
+                </button>
+            }
+            @if (Model.CanCancel)
+            {
+                <button type="button" class="btn btn-danger btnPOAction"
+                        data-url="@Url.Action("Cancel", "PORequest")"
+                        data-validate="false">
+                    <i class="fa fa-ban"></i> Cancel
+                </button>
+            }
+            @if (Model.CanUnSubmit)
+            {
+                <button type="button" class="btn btn-primary btnPOAction"
+                        data-url="@Url.Action("UnSubmit","PORequest")"
+                        data-validate="true">
+                    <i class="fa fa-undo"></i> UnSubmit
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $('.btnPOAction').on('click', function () {
+        var validate = $(this).data('validate');
+        var button = this;
+        var func = function (button) {
+            var row = $(button).closest('.row');
+            var url = $(button).data('url');
+            $(button).SetButtonBusy();
+            if (url) {
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    poco: $(row).data("poco"),
+                    requestId: $(row).data("requestid")
+                };
+                $.post(url, data, function (res) {
+                    console.log(res);
+                    if (res.success === "true") {
+                        $(button).SetButtonNotBusy();
+                        var isSubmittedStatus = res.model.Request.Status === @((int)DB.PORequestStatusEnum.Submitted) ||
+                                                res.model.Request.Status === "Submitted";
+                        var isPoNew = res.model.Action.IsPONew;
+                        console.log('isPoNew: ', isPoNew);
+                        if (isSubmittedStatus && res.model.Request.PO == null) {
+                            swal.fire({
+                                title: 'PO Request Pending',
+                                text: 'Your PO Number will be Emailed upon approval',
+                                icon: 'info',
+                                onClose: function () {
+                                    if ('@partialView' != 'True') {
+                                        window.location.href = document.referrer;
+                                    }
+                                    else {
+                                        ReloadElement(row);
+                                    }
+                                },
+                                buttons: {
+                                    confirm: {
+                                        text: 'Close',
+                                        value: true,
+                                        visible: true,
+                                        className: 'btn btn-success',
+                                        closeModal: true
+                                    }
+                                }
+                            });
+                        }
+                        else if (isPoNew === true && res.model.Request.PO !== "") {
+                            swal.fire({
+                                title: 'New PO  Number',
+                                text: 'Your PO Number is: ' + res.model.Request.PO,
+                                icon: 'success',
+                                onClose: function () {
+                                    if ('@partialView' != 'True') {
+                                        window.location.href = document.referrer;
+                                    }
+                                    else {
+                                        ReloadElement(row);
+                                    }
+                                },
+                                buttons: {
+                                    confirm: {
+                                        text: 'Close',
+                                        value: true,
+                                        visible: true,
+                                        className: 'btn btn-success',
+                                        closeModal: true
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            if ('@partialView' != 'True') {
+                                window.location.href = document.referrer;
+                            }
+                            else {
+                                ReloadElement(row);
+                            }
+                        }
+                    }
+                    else {
+                        $(button).SetButtonNotBusy();
+                        swal.fire({
+                            title: 'Error',
+                            text: 'Please review the PO',
+                            icon: 'error',
+                            buttons: {
+                                confirm: {
+                                    text: 'Close',
+                                    value: true,
+                                    visible: true,
+                                    className: 'btn btn-success',
+                                    closeModal: true
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            else {
+                //window.location.href = document.referrer;
+            }
+        }
+        if (validate) {
+            $(document).PostValidate(button, function (valid) {
+                if (valid) {
+                    func(button);
+                }
+            });
+        }
+        else {
+            func(button);
+        }
+    });
+
+    function ReloadElement(elem) {
+        var url = "@Url.Action("PartialIndex", "PORequest")";
+        var dstId = "reviewPanel";
+        var data = {
+            poco: $(elem).data("poco"),
+            requestId:  $(elem).data("requestid"),
+        };
+        var dst = $('#' + dstId);
+        //console.log(url, data, dst);
+        var index = 0;
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {
+                //console.log(url, data, dst);
+                var divId = dstId + '_' + index ;
+                var html = '<div id="' + divId + '">\r\n';
+                html += res;
+                html += '\r\n</div>';
+
+                if (index === 0)
+                    dst.html(html);
+                else
+                    dst.append(html);
+
+                var panel = $('#' + divId).find('.panel-body');
+                Table().init(panel.get(0));
+                $(dst).removeClass('panel-loading');
+                $(dst).find('.panel-loader').remove();
+                $('html, body').animate({
+                    scrollTop: $(dst).offset().top - 150
+                }, 500)
+            }
+        });
+    }
+</script>

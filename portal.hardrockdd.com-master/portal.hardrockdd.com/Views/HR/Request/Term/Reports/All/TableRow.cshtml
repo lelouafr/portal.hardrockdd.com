@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.HR.Request.Term.TermRequestViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = tableLayout.TableKey;
+    var classStr = "";
+    if (Model.Status == HRTermRequestStatusEnum.Submitted)
+    {
+        //classStr = "text-red-darker font-weight-bold";
+    }
+}
+
+<tr data-rowkey="@rowKey">
+    <td class="@classStr">
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.HRCo, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.RequestId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Status, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.EmployeeName, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.RequestedOn, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.RequestedBy, new { DisplayOnly = true })
+    </td>
+</tr>

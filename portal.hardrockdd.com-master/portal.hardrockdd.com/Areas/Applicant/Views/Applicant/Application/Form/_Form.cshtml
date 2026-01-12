@@ -1,0 +1,33 @@
+﻿@model portal.Areas.Applicant.Models.ApplicationFormViewModel
+    @{ 
+
+        var panelShow = ViewBag.ExpandAllPanels == true ? "show" : "collapse";
+    }
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    @*<div class="col-12">
+        @Html.Partial("Application/Form/AppliedPosition/_Panel", Model.AppliedPositions)
+    </div>*@
+    <div class="col-12">
+        @Html.Partial("Application/Form/WorkHistory/_Panel", Model.WorkHistory)
+    </div>
+    <div class="col-12">
+        @Html.Partial("Application/Form/EquipmentHistory/_Panel", Model.EquipmentHistory)
+    </div>
+    <div class="col-12">
+        @Html.Partial("Application/Form/TrafficCitation/_Panel", Model.Citations)
+    </div>
+    <div class="col-12">
+        @Html.Partial("Application/Form/TrafficAccident/_Panel", Model.Accidents)
+    </div>
+</div>

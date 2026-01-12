@@ -1,0 +1,53 @@
+﻿@model  portal.Models.Views.Bid.BidCustomerListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidCustomer")"
+       data-urldelete="@Url.Action("Delete", "BidCustomer")"
+       data-urlupdate="@Url.Action("Update", "BidCustomer")"
+       data-urlvalidate="@Url.Action("Validate", "BidCustomer")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="45%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerId)</th>
+            <th width="40%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ContactId)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Customer/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+   
+</script>

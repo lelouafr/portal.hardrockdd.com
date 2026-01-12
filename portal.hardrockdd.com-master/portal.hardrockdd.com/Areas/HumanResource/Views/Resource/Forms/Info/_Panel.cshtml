@@ -1,0 +1,18 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.InfoViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<!-- begin card -->
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Employee Picture
+    </div>
+    <div id="@panelId" class="collapse show">
+        <div class="card-body">
+            @Html.Partial("Forms/Info/_Form", Model)
+        </div>
+    </div>
+</div>
+<!-- end card -->

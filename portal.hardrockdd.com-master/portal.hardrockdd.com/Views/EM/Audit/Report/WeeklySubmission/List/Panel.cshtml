@@ -1,0 +1,18 @@
+﻿@model  portal.Models.Views.EM.Audit.Report.AuditWeeklyReportListViewModel
+
+<div class="panel panel-inverse" 
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table", "EMAuditWeeklySubmissionReport")" 
+     data-tablereloadurl="@Url.Action("Table", "EMAuditWeeklySubmissionReport")"  
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">@ViewBag.Title</h4>
+    </div>
+    <div class="panel-body" id="AuditWeeklyReportListViewModel">
+        @Html.AntiForgeryToken()
+        @Html.Partial("../EM/Audit/Report/WeeklySubmission/List/Table", Model)
+    </div>
+</div>

@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.YourInvoicePendingCount > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-red">
+            <div class="stats-icon"></div>
+            <div class="stats-info">
+                <h4>
+                    Invoices Needing your Review
+                </h4>
+                <p>
+                    @Model.YourInvoicePendingCount <span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", Model.YourInvoicePendingTotal))</span>
+                </p>
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("RequestedInfoIndex", "Document", routeValues: new { Area = "AccountsPayable" })">Goto Review <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

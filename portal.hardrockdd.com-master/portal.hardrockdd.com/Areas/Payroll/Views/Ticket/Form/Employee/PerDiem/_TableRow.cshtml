@@ -1,0 +1,35 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Employee.WeekPerDiemViewModel
+
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.WeekId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.Saturday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Sunday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Monday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Tuesday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Wednesday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Thursday, new { ViewOnly = viewOnly })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Friday, new { ViewOnly = viewOnly })
+    </td>
+</tr>

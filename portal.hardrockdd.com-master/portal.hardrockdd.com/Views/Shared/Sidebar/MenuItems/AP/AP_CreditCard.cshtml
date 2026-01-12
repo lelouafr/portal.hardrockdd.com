@@ -1,0 +1,26 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "ap_cc";
+}
+
+
+@if (User.HasAccess("APCreditCardAdministrationTransaction", "Index") ||
+                   User.HasAccess("APCreditCardImport", "Index"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Credit Card</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "APCreditCardImport", routeValues: new { Area = "" })">Upload Credit Trans</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "APCreditCardAdministrationTransaction", routeValues: new { Area = "" })">Monthly Transactions</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "APCreditCardAudit", routeValues: new { Area = "" })">Audit Transactions</a></li>
+            @if (User.HasAccess("APCreditCardBatch", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "APCreditCardBatch", routeValues: new { Area = "" })">VP Batch</a></li>
+            }
+        </ul>
+    </li>
+}

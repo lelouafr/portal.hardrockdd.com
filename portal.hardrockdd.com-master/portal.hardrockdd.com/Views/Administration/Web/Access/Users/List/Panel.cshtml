@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Web.UserAccessListViewModel
+<div class="panel panel-inverse"
+     
+     data-reloadurl="@Url.Action("Table", "WebFormUsers", new { Area = "", controllerId = Model.Id })"
+     >
+    <div class="panel-heading">
+        @*<div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>*@
+        <h4 class="panel-title">User Access</h4>
+    </div>
+    <div class="panel-body" id="UserAccessListViewModel">
+        @Html.Partial("../Administration/Web/Access/Users/List/Table", Model)
+    </div>
+</div>
+
+<script>
+
+</script>

@@ -1,0 +1,49 @@
+﻿@model portal.Models.Views.Bid.Wizard.Estimate.PackageListViewModel
+@{ 
+    var accordionGuid = "BidBoreLineAccordion";
+}
+<div class="row">
+    <div class="col-12">
+        <div id="@accordionGuid" class="card-accordion">
+            <div class="panel-heading p-0">
+                @foreach (var package in Model.List)
+                {                    
+                    <!-- begin card -->
+                    <div class="card">
+                        <div class="card-header bg-black text-white pointer-cursor collapsed " data-toggle="collapse" data-target="#collapse@(accordionGuid)@(package.PackageId)">
+                            @package.Description
+                        </div>
+                        <div id="collapse@(accordionGuid)@(package.PackageId)" class="collapse @(package.PackageId == Model.List.FirstOrDefault().PackageId ? "show" : "")" data-parent="#@accordionGuid">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-xl-8">
+                                        @Html.Partial("../BD/Bid/Line/List/Panel", package.LineDetails)
+                                    </div>
+                                    <div class="col-xl-4" id="BidBoreLineInfo@(package.PackageId)">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPanels();
+        //$(this).DataTable().draw();
+
+        $('#@accordionGuid').on('shown.bs.collapse', function () {
+            $(this).find('.dataTable').each(function () {
+                $(this).DataTable().draw();
+            });
+        })
+    });
+</script>
+
+

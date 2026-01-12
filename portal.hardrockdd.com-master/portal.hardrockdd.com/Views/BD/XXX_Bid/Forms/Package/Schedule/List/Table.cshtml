@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Schedule.ScheduleListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("PackageScheduleUpdate", "BidForm")"
+       data-urlvalidate="@Url.Action("PackageScheduleValidate", "BidForm")"
+       data-urlselect="@Url.Action("BoreSchedulePanel", "BidForm")"
+       data-dstselect="PackageScheduleListViewModel"
+       data-dstselectvalidate="true"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="150px">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().NumberOfBores)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="16%">@Html.LabelFor(model => model.List.FirstOrDefault().StartDate)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Forms/Package/Schedule/List/TableRow", obj)
+        }
+    </tbody>
+</table>

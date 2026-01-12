@@ -1,0 +1,430 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AP.CreditCard.Supervisor.TransactionListViewModel
+@{ 
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+    var EmployeeList = Model.List.GroupBy(g => new { g.EmployeeName, g.EmployeeId }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "e.{0}", s.Key.EmployeeId),
+        //parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.EmployeeName),
+        transdate = "",
+        pictureCount = s.Where(f => f.PictureStatusId == DB.CMPictureStatusEnum.Attached || f.PictureStatusId == DB.CMPictureStatusEnum.NotNeeded).Count(),
+        codedCount = s.Where(f => f.CodeStatusId == DB.CMTransCodeStatusEnum.AutoCoded ||
+                                            f.CodeStatusId == DB.CMTransCodeStatusEnum.Coded ||
+                                            f.CodeStatusId == DB.CMTransCodeStatusEnum.Complete ||
+                                            f.CodeStatusId == DB.CMTransCodeStatusEnum.EmployeeCoded).Count(),
+        approvalCount = s.Where(f => f.ApprovalStatusId == DB.CMApprovalStatusEnum.SupervisorApproved).Count(),
+        transCount = s.Count(),
+        source = "",
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.TransAmt)),
+        children = s.Select(c => new
+        {
+            id = string.Format(AppCultureInfo.CInfo(), "t.{0}.{1}", c.EmployeeId, c.TransId),
+            parent = string.Format(AppCultureInfo.CInfo(), "e.{0}", c.EmployeeId),
+            ccco = c.CCCo,
+            transId = c.TransId,
+            source = c.Source,
+            name = string.Format(AppCultureInfo.CInfo(), "{0}", c.Merchant),
+            transdate = c.TransDate,
+            pictureCount = c.PictureStatusId == DB.CMPictureStatusEnum.Attached || c.PictureStatusId == DB.CMPictureStatusEnum.NotNeeded ? 1 : 0,
+            pictureStatusId = (int)c.PictureStatusId,
+            codedCount = c.CodeStatusId == DB.CMTransCodeStatusEnum.AutoCoded ||
+                             c.CodeStatusId == DB.CMTransCodeStatusEnum.Coded ||
+                             c.CodeStatusId == DB.CMTransCodeStatusEnum.Complete ||
+                             c.CodeStatusId == DB.CMTransCodeStatusEnum.EmployeeCoded ? 1 : 0,
+            autoCodedCount = c.CodeStatusId == DB.CMTransCodeStatusEnum.AutoCoded ? 1 : 0,
+            approvalCount = c.ApprovalStatusId == DB.CMApprovalStatusEnum.SupervisorApproved ? 1 : 0,
+            amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", c.TransAmt)
+        }).OrderBy(o => o.transdate)
+    });
+    dataSet.AddRange(EmployeeList);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+@*<div class="btn-group center-block">
+        <button class="btn btn-default btn-sm" onclick="collapseAll()">Collapse All</button>
+        <button class="btn btn-default btn-sm" onclick="expandAll()">Expand All</button>
+    </div>*@
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-urlselect="@Url.Action("Panel", "APCreditCardTransaction")"
+           data-urlapprove="@Url.Action("Approval", "APCreditCardTransaction")"
+           data-dstselect="reviewPanel"
+           data-dstselectvalidate="false">
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        h = @((dataSet.Count()  * 23) + (20 *2));
+        if (h >= (10 * 23 + (40))) {
+            h = (10 * 23) + (40);
+        }
+        else {
+            h = null;
+        }
+        var countMark = function (cnt, transCnt, item) {
+            var div = $('<div></div>');
+            var span = $('<span></span>');
+            var icon = $('<i></i>');
+            $(div).append($(span));
+            $(span).append($(icon));
+            if (item.children) {
+                if (cnt == transCnt) {
+                    $(div).addClass("text-center");
+                    $(icon).addClass("fas");
+                    $(span).addClass("text-green");
+                    $(icon).addClass("fa-check-circle");
+                }
+                else {
+                    $(div).addClass("text-center");
+                    if (cnt == 0) {
+                        $(span).addClass("text-danger");
+                    }
+                    else {
+                        $(span).addClass("text-green");
+                    }
+                    $(span).html("<b>" + cnt + "</b>")
+                    $(div).append(" of " + "<b>" + transCnt + "</b>")
+                }
+            }
+            else {
+                $(div).addClass("text-center");
+                if (cnt == 0) {
+                    $(icon).addClass("far");
+                    $(span).addClass("text-danger");
+                    $(icon).addClass("fa-times-circle");
+                }
+                else {
+                    $(icon).addClass("fas");
+                    $(span).addClass("text-green");
+                    $(icon).addClass("fa-check-circle");
+                }
+            }
+            return $(div).get(0).outerHTML;
+        }
+        var pictureMark = function (cnt, transCnt, item) {
+            var div = $('<div></div>');
+            var span = $('<span></span>');
+            var icon = $('<i></i>');
+            $(div).append($(span));
+            $(span).append($(icon));
+            if (item.children) {
+                if (cnt == transCnt) {
+                    $(div).addClass("text-center");
+                    $(icon).addClass("fas");
+                    $(span).addClass("text-green");
+                    $(icon).addClass("fa-check-circle");
+                }
+                else {
+                    $(div).addClass("text-center");
+                    if (cnt == 0) {
+                        $(span).addClass("text-danger");
+                    }
+                    else {
+                        $(span).addClass("text-green");
+                    }
+                    $(span).html("<b>" + cnt + "</b>")
+                    $(div).append(" of " + "<b>" + transCnt + "</b>")
+                }
+            }
+            else {
+                $(div).addClass("text-center");
+                if (cnt == 0) {
+                    $(icon).addClass("far");
+                    $(span).addClass("text-danger");
+                    $(icon).addClass("fa-times-circle");
+                }
+                else {
+                    switch (item.pictureStatusId) {
+                        case @((int)DB.CMPictureStatusEnum.Empty):
+                        case @((int)DB.CMPictureStatusEnum.Attached):
+                        case @((int)DB.CMPictureStatusEnum.Approved):
+                            $(icon).addClass("fas");
+                            $(span).addClass("text-green");
+                            $(icon).addClass("fa-check-circle");
+                            break;
+                        case @((int)DB.CMPictureStatusEnum.Rejected):
+                            $(icon).addClass("fas");
+                            $(span).addClass("text-danger");
+                            $(icon).addClass("fa-ban");
+                            break;
+                        case @((int)DB.CMPictureStatusEnum.NotNeeded):
+                            $(icon).addClass("fas");
+                            $(span).addClass("text-black-50");
+                            $(icon).addClass("fa-do-not-enter");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                //<i class="fab fa-autoprefixer"></i>
+            }
+            return $(div).get(0).outerHTML;
+        }
+        var countCodeMark = function (cnt, transCnt, item) {
+            var div = $('<div></div>');
+            var span = $('<span></span>');
+            var icon = $('<i></i>');
+            $(div).append($(span));
+            $(span).append($(icon));
+            if (item.children) {
+                if (cnt == transCnt) {
+                    $(div).addClass("text-center");
+                    $(icon).addClass("fas");
+                    $(span).addClass("text-green");
+                    $(icon).addClass("fa-check-circle");
+                }
+                else {
+                    $(div).addClass("text-center");
+                    if (cnt == 0) {
+                        $(span).addClass("text-danger");
+                    }
+                    else {
+                        $(span).addClass("text-green");
+                    }
+                    $(span).html("<b>" + cnt + "</b>")
+                    $(div).append(" of " + "<b>" + transCnt + "</b>")
+                }
+            }
+            else {
+                $(div).addClass("text-center");
+                if (cnt == 0) {
+                    $(icon).addClass("far");
+                    $(span).addClass("text-danger");
+                    $(icon).addClass("fa-times-circle");
+                }
+                else {
+                    if (item.autoCodedCount > 0) {
+                        $(icon).addClass("fab");
+                        $(span).addClass("text-blue");
+                        $(icon).addClass("fa-autoprefixer");
+                    }
+                    else {
+                        $(icon).addClass("fas");
+                        $(span).addClass("text-green");
+                        $(icon).addClass("fa-check-circle");
+                    }
+                }
+            }
+            return $(div).get(0).outerHTML;
+        }
+        var countApprovalMark = function (cnt, transCnt, item) {
+            var div = $('<div></div>');
+            var span = $('<span></span>');
+            var icon = $('<i></i>');
+            if (item.children) {
+                $(div).append($(span));
+                $(span).append($(icon));
+                if (cnt == transCnt) {
+                    $(div).addClass("text-center");
+                    $(icon).addClass("fas");
+                    $(span).addClass("text-green");
+                    $(icon).addClass("fa-check-circle");
+                }
+                else {
+                    $(div).addClass("text-center");
+                    if (cnt == 0) {
+                        $(span).addClass("text-danger");
+                    }
+                    else {
+                        $(span).addClass("text-green");
+                    }
+                    $(span).html("<b>" + cnt + "</b>")
+                    $(div).append(" of " + "<b>" + transCnt + "</b>")
+                }
+            }
+            else {
+                $(div).addClass("text-center");
+                if (cnt == 0) {
+                    var checkinput = $('<input type="checkbox" class="js-switch approvalSwitch" data-size="small" data-theme="green" data-secondary-color="#ff5b57"/>');
+                }
+                else {
+                    var checkinput = $('<input type="checkbox" class="js-switch approvalSwitch" data-size="small" data-theme="green" data-secondary-color="#ff5b57" checked/>');
+                }
+                $(div).append($(checkinput));
+
+            }
+            return $(div).get(0).outerHTML;
+        }
+        var columns = [
+            {
+                title: '',
+                target: 0,
+                width: 5,
+                className: 'treegrid-control',
+                data: function (item) {
+                    if (item.children) {
+                        return '<span><i class="fas fa-caret-right"></i></span>';
+                    }
+                    return '';
+                }
+            },
+            {
+                title: 'Date',
+                target: 1,
+                width: 60,
+                class: 'text-center',
+                render: {
+                    _: function (item) {
+                        if (item == "") {
+                            return "";
+                        }
+                        return moment(item).format("M/D/YYYY");
+                    },
+                    sort: function (item) {
+                        if (item == "") {
+                            return "";
+                        }
+                        return moment(item).format("YYYY-MM-DD");
+                    },
+                },
+                data: function (item) {
+                    return item.transdate;
+                }
+            },
+            {
+                title: 'Source',
+                target: 2,
+                width: 60,
+                render: {
+                    _: function (value, type, data) {
+                        return value;
+                    },
+                    sort: function (value, type, data) {
+                        if (data.children) {
+                            return data.id
+                        }
+                        return data.parent + data.source;
+                    },
+                },
+                data: function (item) {
+                    if (item.children) {
+                        return "";
+                    }
+                    return item.source;
+                }
+            },
+            {
+                title: 'Merchant',
+                target: 3,
+                width: 120,
+                render: {
+                    _: function (value, type, data) {
+                        return value;
+                    },
+                    sort: function (value, type, data) {
+                        if (data.children) {
+                            return data.id
+                        }
+                        return data.parent + data.name;
+                    },
+                },
+                data: function (item) {
+                    if (item.children) {
+                        return "<b>" + item.name + "</b>";
+                    }
+                    return item.name;
+                }
+            },
+            {
+                title: 'Amount',
+                target: 4,
+                width: 75,
+                class: 'text-right',
+                data: function (item) {
+                    if (item.children) {
+                        return '<div class="text-right"><b>' + item.amount + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.amount + '</div>';
+                }
+            },
+            {
+                title: 'Picture',
+                target: 5,
+                width: 60,
+                class: 'text-center',
+                data: function (item) {
+                    return pictureMark(item.pictureCount, item.transCount, item);
+                }
+            },
+            {
+                title: 'Coded',
+                target: 6,
+                width: 60,
+                class: 'text-center',
+                data: function (item) {
+                    return countCodeMark(item.codedCount, item.transCount, item);
+                }
+            },
+            {
+                title: 'Approval',
+                target: 7,
+                width: 60,
+                class: 'text-center',
+                data: function (item) {
+                    return countApprovalMark(item.approvalCount, item.transCount, item);
+                }
+            },
+            {
+                title: '',
+                target: 8,
+                width: 35,
+                data: function (item) {
+                    if (item.children) {
+                        return "";
+                    }
+                    var rowKey = "ccco=" + item.ccco + "&TransId=" + item.transId;
+                    var btn = $('<button type="button" class="btn btn-xs btn-white" data-entitykey="' + rowKey + '" data-toggle="modal" data-target="#imageSelect"> <i class="fas fa-camera"></i> </button>');
+                    return $(btn).get(0).outerHTML;
+                }
+            }
+        ];
+        //$("#treeGrid").height(h);
+        $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: false,
+            ordering: false,
+            scrollX: true,
+            //keys: true,
+            columns: columns,
+            data: data,
+            treeGrid: {
+                left: 5,
+                expandIcon: '<span><i class="fas fa-caret-right"></i></span>',
+                collapseIcon: '<span><i class="fas fa-caret-down"></i></span>'
+            },
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                if (!data.children) {
+                    var rowKey = "ccco=" + data.ccco + "&TransId=" + data.transId;
+                    $(row).attr('data-entitykey', rowKey);
+                    $(row).find('.approvalSwitch').InitSwitchery();
+                }
+            }
+        });
+
+        $('#@tableId').on('change','.approvalSwitch', function () {
+            $(this).val($(this).is(":checked"));
+            var table = $(this).closest('table');
+            var row = $(this).closest('tr');
+            var url = $(table).data('urlapprove');
+            var data = $(row).data('entitykey');
+            data += '&Approved=' + $(this).val();
+            var token = $(document).find('[name="__RequestVerificationToken"]');
+            if (token.length != 0) {
+                data += '&__RequestVerificationToken=' + token.val();
+            }
+            //console.log(url, data, table);
+            $.post(url, data, function () { });
+
+        });
+    });
+</script>

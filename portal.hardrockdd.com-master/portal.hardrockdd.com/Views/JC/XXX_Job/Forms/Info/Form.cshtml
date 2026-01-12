@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.JC.Job.Forms.JobInfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();   
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-rowkey="@formLayout.TableKey"
+      data-urlupdate="@Url.Action("JobInfoUpdate", "JobForm")"
+      data-urlvalidate="@Url.Action("JobInfoValidate", "JobForm")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.JobId, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.StatusId)
+        @Html.EditorFor(m => m.BidId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ProjectOwner)
+        @Html.EditorFor(m => m.DivisionId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EndMarketId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId)
+        @Html.EditorFor(m => m.RigId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.PipeSize)
+        @Html.EditorFor(m => m.Footage)
+    </div>
+</form>

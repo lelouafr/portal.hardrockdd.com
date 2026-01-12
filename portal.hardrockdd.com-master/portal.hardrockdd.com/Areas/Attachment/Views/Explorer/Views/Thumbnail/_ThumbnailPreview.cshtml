@@ -1,0 +1,141 @@
+﻿@model portal.Areas.Attachment.Models.ExplorerViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+    var contextId = "context_" + Guid.NewGuid().ToString().Replace('-', '_');
+    var fileId = "file_" + Guid.NewGuid().ToString().Replace('-', '_');
+    var fileName = Model.Title.Trim();
+}
+<style>
+    .wrapword {
+        white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+        white-space: -webkit-pre-wrap; /* Chrome & Safari */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        white-space: pre-wrap; /* CSS3 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+        word-break: break-all;
+        white-space: normal;
+        font-size: 10px;
+    }
+</style>
+<div class="file col-xl-4 col-md-6 col-sm-6 col-xs-6 fileObject p-t-4 p-r-1 p-l-1"
+     data-entitykey="@entityKey"
+     id="@fileId"
+     data-fileurl="@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = Model.AttachmentId })">
+    <input id="@Guid.NewGuid()" name="HQCo" type="hidden" value="@Model.HQCo">
+    <input id="@Guid.NewGuid()" name="ObjectType" type="hidden" value="@Model.ObjectType">
+    <input id="@Guid.NewGuid()" name="FolderId" type="hidden" value="@Model.FolderId">
+    <input id="@Guid.NewGuid()" name="Title" type="hidden" value="@Model.Title">
+    <input id="@Guid.NewGuid()" name="OriginalName" type="hidden" value="@Model.OriginalName">
+    <input id="@Guid.NewGuid()" name="AttachmentId" type="hidden" value="@Model.AttachmentId">
+    <input id="@Guid.NewGuid()" name="Mime" type="hidden" value="@Model.Mime">
+    <input id="@Guid.NewGuid()" name="UniqueAttchId" type="hidden" value="@Model.UniqueAttchId">
+    @Html.AntiForgeryToken()
+    @if (Model.ObjectType == DB.ExplorerObjectTypeEnum.File)
+    {
+        <div class="thumb-img-container ">
+            @if (Model.Mime.Contains("image/") || Model.TumbnailId != null)
+            {
+                var attachmentId = Model.TumbnailId ?? Model.AttachmentId;
+                var url = Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = attachmentId });
+                <table>
+                    <tr>
+                        <td style="min-width: 40px; max-width: 40px;">
+                            <img src="@url"
+                                 data-src="@url"
+                                 alt=""
+                                 style="padding: 0; max-height: 100px; " @*cursor: zoom-in;*@>
+                        </td>
+                        <td class="wrapword">
+                            @fileName
+                        </td>
+                    </tr>
+                </table>
+            }
+            else
+            {
+                <table>
+                    <tr>
+                        <td>
+                            <i class="@Model.FontIcon fa-2x"></i>
+                        </td>
+                        <td class="wrapword">
+                            @fileName
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <td>
+                    <div class="icon">
+                        <i class="@Model.FontIcon fa-2x">
+                        </i>
+                        @if (Model.FileCnt > 0)
+                        {
+                            <span class="badge badge-info">@Model.FileCnt</span>
+                        }
+                    </div>
+                </td>
+                <td class="wrapword">
+                    @fileName
+                </td>
+            </tr>
+        </table>
+    }
+    <div class="dropdown-menu dropdown-primary contextMenu" id="@contextId">
+        <button type="button" class="dropdown-item rename"><i class="fas fa-pencil" style="width:20px;"></i>&nbsp;&nbsp;Rename</button>
+        <button class="dropdown-item download"><i class="fas fa-download" style="width:20px;"></i>&nbsp;&nbsp;Download</button>
+        <button class="dropdown-item delete "><i class="fas fa-trash text-danger" style="width:20px;"></i>&nbsp;&nbsp;Delete</button>
+    </div>
+</div>
+<script>
+    $('#@fileId').on('contextmenu', function (e) {
+
+        var parentOffset = $('#@fileId').offset();
+        var parent = $('#@fileId').parent();
+
+        $(parent).find('.contextMenu.show').each(function (elem) {
+            //console.log('context menu', this);
+            $(this).removeClass("show").hide();
+        });
+
+        var relX = e.pageX - parentOffset.left;
+        var relY = e.pageY - parentOffset.top;
+        var top = relX - 0;
+        var left = relY - 0;
+        //console.log($("#@fileId"), $(this).parent(), relX, relY);
+        $("#@contextId").css({
+            display: "block",
+            top: relY,
+            left: relX
+        }).addClass("show");
+        return false; //blocks default Webbrowser right click menu
+    }).on("click", function () {
+        $("#@contextId").removeClass("show").hide();
+    });
+
+    $("#@contextId button").on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var row = $(this).closest('.row');
+        data = $(row).SerializeTableRow();
+        setActive(this, e);
+        if ($(this).hasClass('download')) {
+            download(this);
+        }
+        if ($(this).hasClass('delete')) {
+            console.log('delete')
+            deleteItem(this);
+        }
+        if ($(this).hasClass('rename')) {
+            console.log('rename')
+        }
+        $(this).parent().removeClass("show").hide();
+    });
+</script>

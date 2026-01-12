@@ -1,0 +1,31 @@
+﻿@model portal.Models.Views.Equipment.Category.EquipmentCategoryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.EditorFor(m => m.CategoryId, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Description, new { ViewOnly = true })
+        </td>
+        <td>
+            @Model.AssignedEquipment.List.Count
+        </td>
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.EditorFor(m => m.Co, new { ViewOnly = true })
+        </td>
+        @if (!viewOnly)
+        {
+            <td>
+                <button class="btn btn-danger btn-sm pull-right delRow"
+                        data-entitykey="@entityKey">
+                    <i class="fa fa-xs fa-trash"></i>
+                </button>
+            </td>
+        }
+    </tr>

@@ -1,0 +1,90 @@
+﻿@model portal.Areas.Job.Models.Job.Report.ProductionVarianceListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th style="border-bottom: 0px !important; border-top: 0px !important" colspan="4"></th>
+            <th class="border-left-2 border-right-2 text-center" style="border-bottom: 0px !important; border-top: 0px !important" colspan="3">Days</th>
+            <th style="border-bottom: 0px !important; border-top: 0px !important"></th>
+            <th class="border-left-2 border-right-2 text-center" style="border-bottom: 0px !important; border-top: 0px !important" colspan="5">Production Footage</th>
+            <th style="border-bottom: 0px !important; border-top: 0px !important"></th>
+            <th class="border-left-2 border-right-2 text-center" style="border-bottom: 0px !important; border-top: 0px !important" colspan="3">Trucks</th>
+        </tr>
+        <tr>
+            <th class="b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            <th class="b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().BgtBoreSize)</th>
+            <th class="b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().ActBoreSize)</th>
+            <th class="b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+
+            <th class="border-left-2 b-t-0 text-center">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetDays)</th>
+            <th class="text-center b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().ActualDays)</th>
+            <th class="border-right-2 b-t-0 text-center"><label>Under <span class="text-red">(Over)</span></label></th>
+
+            <th class="text-center" style="border-bottom: 0px !important; border-top: 0px !important"></th>
+
+            <th class="border-left-2 b-t-0 text-center">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetProductionRate)</th>
+            <th class="text-center b-t-0 ">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetFootage)</th>
+            <th class="text-center b-t-0 ">@Html.LabelForRequired(model => model.List.FirstOrDefault().ActualFootage)</th>
+            <th class="text-center b-t-0 ">@Html.LabelForRequired(model => model.List.FirstOrDefault().RemainingFootage)</th>
+            <th class="border-right-2 text-center b-t-0">@Html.LabelForRequired(model => model.List.FirstOrDefault().ActualProdutionRate)</th>
+
+            <th class="text-center" style="border-bottom: 0px !important; border-top: 0px !important"></th>
+
+            <th class="border-left-2 text-center b-t-0 ">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetTrucks)</th>
+            <th class="text-center b-t-0 ">@Html.LabelForRequired(model => model.List.FirstOrDefault().ActualTrucks)</th>
+            <th class="border-right-2 text-center b-t-0 "><label>Under <span class="text-red">(Over)</span></label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("Form/ProductionVariance/_TableRow", request)
+        }
+        <tr>
+            <td colspan="4">Total</td>
+            <td class="border-left-2  font-weight-bold text-center">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F2}", Model.List.Sum(sum => sum.BudgetDays)))
+            </td>
+            <td class="text-center font-weight-bold">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F2}", Model.List.Sum(sum => sum.ActualDays)))
+            </td>
+            @{
+                var difClass = Model.List.Sum(sum => sum.Dif) < 0 ? "text-red" : "text-green";
+            }
+            <td class="border-right-2 text-center font-weight-bold @difClass">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F2}", Model.List.Sum(sum => sum.Dif)))
+            </td>
+            <td style="border-bottom: 0px !important; border-top: 0px !important"></td>
+            @{
+                var ActualProdutionRateClass = (double)(Model.List.Sum(sum => sum.BudgetProductionRate) ?? 0) > (double)(Model.List.Sum(sum => sum.ActualProdutionRate) ?? 0) ? "text-red" : "";
+            }
+            <td colspan="5"></td>
+
+            <td style="border-bottom: 0px !important; border-top: 0px !important"></td>
+            @{
+                var truckDifClass = Model.List.Sum(sum => sum.TruckDif) < 0 ? "text-red" : "text-green";
+            }
+            <td class="border-left-2 font-weight-bold text-center">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F0}", Model.List.Sum(sum => sum.BudgetTrucks)))
+            </td>
+            <td class="text-center font-weight-bold">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F0}", Model.List.Sum(sum => sum.ActualTrucks)))
+            </td>
+            <td class="border-right-2 text-center font-weight-bold @truckDifClass">
+                @(string.Format(AppCultureInfo.CInfo(), "{0:F0}", Model.List.Sum(sum => sum.TruckDif)))
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+    });
+</script>

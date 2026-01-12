@@ -1,0 +1,51 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentFormViewModel
+@{ 
+    //
+}
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+
+<div id="accordion" class="accordion">
+    <div class="row">
+        <div class="col-8">
+            @Html.Partial("../EM/Equipment/Forms/Info/Panel", Model.Info)
+            <div class="row">
+                <div class="col-6">
+                    @Html.Partial("../EM/Equipment/Forms/Ownership/Panel", Model.Ownership)
+                </div>
+                <div class="col-6">
+                    @Html.Partial("../EM/Equipment/Forms/LicInfo/Panel", Model.LicInfo)
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../EM/Equipment/Forms/Spec/Panel", Model.Specifications)
+        </div>
+        <div class="col-12">
+            @Html.Partial("../EM/Equipment/Forms/Assignment/Panel", Model.Assignment)
+        </div>
+        <div class="col-12">
+            @Html.Partial("../EM/Equipment/Forms/Meter/Panel", Model.Meter)
+        </div>
+        <div class="col-12">
+            @Html.Partial("../EM/Equipment/Forms/ServiceItem/Panel", Model.ServiceItems)
+        </div>
+        <div class="col-12">
+            @Html.Partial("../EM/Equipment/Forms/ServiceHist/Panel", Model.ServiceHistory)
+        </div>
+    </div>
+</div>

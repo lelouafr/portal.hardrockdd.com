@@ -1,0 +1,110 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderItemViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<div class="panel panel-inverse"
+     data-sortable-id="PurchaseOrderItemViewModel"
+     id="PurchaseOrderItemViewModel"
+     data-reloadurl="@Url.Action("Form", "POItem", new { poco = Model.POCo, po = Model.PO, poItem = Model.POItem })"
+     data-initpane="initPane@(id)">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">PO Item #@Model.POItem Details</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PO/PurchaseOrder/Form/Items/Form/Form", Model)
+    </div>
+</div>
+<div id="poLinePanel">
+    @*@Html.Partial("../PurchaseOrder/Items/Form", obj)*@
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        setTimeout(function () {
+            $('#@panelId').find('form').each(function () {
+                handleTypeView(this);
+                handleCalcView(this);
+                handleTaxView(this);
+            });
+        }, 0);
+    }
+
+    function handleTaxView(form) {
+        var elem = $(form).find("[name='TaxTypeId']");
+        var val = $(elem).val();
+        var tax = $(form).find('.taxFieldSet');
+        //$(taxGroup).hide();
+        var taxType = $(form).find('.TaxTypeId');
+        $(taxType).prop("disabled", true);
+        $(form).find('.taxGroup').hide();
+        if (val != "0" && "@(User.IsInRole("Admin") ||
+                User.IsInPosition("FIN-APMGR") ||
+                User.IsInPosition("FIN-AP") ||
+                User.IsInPosition("FIN-CTRL") ||
+                User.IsInPosition("CFO"))" == "True") {
+            $(form).find('.taxGroup').show();
+            if ("@viewOnly" === "false") {
+                $(taxType).prop("disabled", false);
+            }
+        }
+        var taxAmount = $(form).find('.TaxAmount');
+        $(taxAmount).prop("disabled", true);
+
+        var taxRate = $(form).find('.TaxRate');
+        $(taxRate).prop("disabled", true);
+    }
+
+    function handleCalcView(form) {
+        var elem = $(form).find("[name='CalcType']");
+        var val = $(elem).val();
+        //console.log(elem, val);
+
+        $(form).find('.unitGroup').hide();
+        var cost = $(form).find('.Cost');
+        if (val == "1") {
+            $(form).find('.unitGroup').show();
+            $(cost).prop("disabled", true);
+        }
+        else if (@((int)Model.Status) <= 2){
+            if ("@viewOnly" === "false") {
+                $(cost).prop("disabled", false);
+            }
+        }
+    }
+
+    function handleTypeView(form) {
+        var elem = $(form).find("[name='ItemTypeId']");
+        var val = $(elem).val();
+
+        $(form).find('.jobGroup').hide();
+        $(form).find('.eqpGroup').hide();
+        var gLAcct = $(form).find('.GLAcct');
+        $(gLAcct).prop("disabled", true);
+        if (val == "4") {
+            $(form).find('.eqpGroup').show();
+        }
+        else if (val == "1") {
+            $(form).find('.jobGroup').show();
+        }
+        else if (val == "3" && @((int)Model.Status) == 2 && "@(User.IsInRole("Admin") ||
+                User.IsInPosition("FIN-APMGR") ||
+                User.IsInPosition("FIN-AP") ||
+                User.IsInPosition("FIN-CTRL") ||
+                User.IsInPosition("CFO"))" == "True") {
+            if ("@viewOnly" === "false") {
+                $(gLAcct).prop("disabled", false);
+            }
+        }
+    }
+</script>

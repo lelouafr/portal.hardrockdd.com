@@ -1,0 +1,42 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyEquipmentListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "DailyEquipment")"
+       data-urldelete="@Url.Action("Delete", "DailyEquipment")"
+       data-urlupdate="@Url.Action("Update", "DailyEquipment")"
+       data-urlvalidate="@Url.Action("Validate", "DailyEquipment")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="60%">@Html.LabelForRequired(model => model.Equipments.FirstOrDefault().EquipmentId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.Equipments.FirstOrDefault().Value)</th>
+            @*<th width="15%">@Html.LabelForRequired(model => model.FirstOrDefault().EarnCodeId)</th>*@
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.Equipments)
+        {
+            @Html.Partial("../DT/Type/Job/Equipment/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

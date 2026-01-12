@@ -1,0 +1,69 @@
+﻿@using portal
+@{
+    var menu = new portal.Models.Views.Web.WebMenuListViewModel();
+}
+    <ul class="nav">
+        <li id="menu_li_0" class="nav-header">Navigation</li>
+        @foreach (var item in menu.List)
+        {
+            @Html.Partial("../Shared/SideBar/_MenuItem", item)
+        }
+        <!-- begin sidebar minify button -->
+        <li id="menu_li_99999"><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+        <!-- end sidebar minify button -->
+    </ul>
+<script>
+    $(document).ready(function () {
+        var liList = lscache.get("Menu_ListItems");
+        if (liList != null) {
+            var li = $('#' + liList)
+            li.addClass('active');
+            $(li).parentsUntil('.nav').addClass('active')
+        }
+    });
+    $(document).on('click', 'li', function () {
+        var id = $(this).attr('id');
+        if (!$(this).hasClass('has-sub')) {
+            lscache.set("Menu_ListItems", id);
+        }
+    });
+
+
+
+ //   $('.sidebar .nav > li.has-sub > ul.sub-menu li > a').click(function (e) {
+ //       e.preventDefault();
+ //       var formurl = $(this).data("formurl");
+ //       var targetBody = $('.content');
+ //       var target = $(this).closest('.content');
+
+ //       var spinnerHtml = '<div class="panel-loader"><span class="spinner"></span></div>';
+    //    $(target).addClass('panel-loading');
+ //       $(targetBody).prepend(spinnerHtml);
+
+ //       if (formurl !== '' && formurl !== undefined) {
+ //           $.ajax({
+ //               type: "Get",
+ //               dataType: "html",
+ //               url: formurl,
+ //               data: "",
+ //               success: function (data) {
+ //                   setTimeout(function () {
+ //                       $(target).removeClass('panel-loading');
+ //                       $(target).find('.panel-loader').remove();
+ //                       $(targetBody).html(data);
+ //                   }, 1000);
+ //               }
+ //           });
+ //       }
+ //       else {
+ //           $(target).removeClass('panel-loading');
+ //           $(target).find('.panel-loader').remove();
+ //           $(targetBody).html("");
+ //       }
+
+    //});
+ //   $('.sidebar .nav > .has-sub .sub-menu li.has-sub > a').click(function () {
+ //       //console.log('link clicked 4');
+
+    //});
+</script>

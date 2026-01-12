@@ -1,0 +1,77 @@
+﻿@model portal.Models.Views.AP.CreditCard.Import.ImportFormViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : true;
+    var rowKey = "Co=" + Model.Co.ToString();
+    rowKey += "&ImportId=" + Model.ImportId.ToString();
+
+    var guid = string.Format("guid_{0}", Guid.NewGuid());
+
+}
+
+<div class="row" id="@guid">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary buttonSubmit"
+                    data-url="@Url.Action("Reprocess", "APCreditCardImport")"
+                    data-co="@Model.Co"
+                    data-importid="@Model.ImportId">
+                <i class="fa fa-share"></i>Re-Process
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#@guid').ready(function () {
+
+
+        $('#@guid .buttonSubmit').on('click', function () {
+            var button = this;
+            var reload = function (button) {
+                var url = "@Url.Action("ImportPanel", "APCreditCardImport")";
+                var dstId = "reviewPanel";
+                var dst = $(button).closest('.reviewPanel');
+                var data = {
+                    co: $(button).data('co'),
+                    importId: $(button).data('importid')
+                };
+
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: url,
+                    async: false,
+                    data: data,
+                    success: function (res) {
+                        dst.html(res);
+                        Table().init($(dst));
+                    }
+                });
+            }
+            var action = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    co: $(button).data('co'),
+                    importId: $(button).data('importid')
+                };
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        reload(button);
+                        $(button).SetButtonNotBusy();
+                    }
+                });
+            }
+            action(button);
+        });
+
+    });
+
+</script>

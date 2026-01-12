@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.WA.Applicant.LicenseInfoViewModel 
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("LicenseInfoUpdate", "WebApplication")"
+      data-urlvalidate="@Url.Action("LicenseInfoValidate", "WebApplication")">
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicNumber)
+        @Html.EditorFor(m => m.LicType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicState)
+        @Html.EditorFor(m => m.LicCountry)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicClass)
+        @Html.EditorFor(m => m.LicExpDate)
+    </div>
+</form>

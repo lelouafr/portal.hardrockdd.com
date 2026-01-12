@@ -1,0 +1,142 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.ActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+    var btnId = "button_" + Model.DocId.ToString();
+}
+
+<div class="row"
+     id="@formId">
+    <div class="col-lg-12 m-b-5">
+        @Html.AntiForgeryToken()
+        <div class="text-right">
+            @foreach (var action in Model.WorkFlowActions)
+            {
+                if (action.GotoStatusId == (int)DB.APDocumentStatusEnum.RequestedInfo)
+                {
+                    <button type="button"
+                            class="btn @action.ButtonClass @btnId"
+                            data-url="@Url.Action("UpdateStatus", "Document", new { Area = "AccountsPayable" })"
+                            data-gotostatusid="@((int)action.GotoStatusId)"
+                            data-redirectaction="@action.ActionRedirect"
+                            data-key="@formLayout.TableKey"
+                            >
+                        @action.Title
+                    </button>
+                }
+                else
+                {
+                    <button type="button"
+                            class="btn @action.ButtonClass @btnId"
+                            data-url="@Url.Action("UpdateStatus", "Document", new { Area = "AccountsPayable" })"
+                            data-gotostatusid="@((int)action.GotoStatusId)"
+                            data-redirectaction="@action.ActionRedirect"
+                            data-key="@formLayout.TableKey">
+                        @action.Title
+                    </button>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#@formId').ready(function () {
+        @*$("#requestInfoModel")
+            .off("show.bs.modal")
+            .on("show.bs.modal", function (event) {
+                // Place the returned HTML into the selected element
+                var model = this;
+                var button = $(event.relatedTarget);
+                var url ="@Url.Action("RequestInfoModel", "Document", new { Area = "AccountsPayable" })"
+                var data = {
+                    apco: @(Model.APCo),
+                    docId:  @(Model.DocId),
+                };
+                //console.log(button, url, data);
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: url,
+                    data: data,
+                    success: function (res) {
+                        $(model).find(".modal-body").html(res);
+                    },
+                    error: function (res) {
+                        //console.log(res);
+                    }
+                });
+            });
+
+        $("#requestInfoModel")
+            .off("hide.bs.modal")
+            .on("hide.bs.modal", function (event) {
+                $(this).find(".modal-body").html("");
+                console.log('model hide');
+                $('#requestInfoModel').remove();
+            });*@
+
+        $('#@(formId)').on('click', 'button.@btnId', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+
+                var data = $(button).data('key');
+                var gotoStatusId = $(button).data('gotostatusid');
+                data += "&status=" + gotoStatusId;
+                data += "&__RequestVerificationToken=" + token.val();
+
+                if (gotoStatusId == @((int)DB.APDocumentStatusEnum.RequestedInfo)) {
+                    var model = $('<div class="modal fade" id="requestInfoModel"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"></div></div></div></div>');
+                    $(model)
+                        .on("show.bs.modal", function (event) {
+                            var model = this;
+                            var url ="@Url.Action("RequestInfoModel", "Document", new { Area = "AccountsPayable" })"
+                            var data = {
+                                apco: @(Model.APCo),
+                                docId:  @(Model.DocId),
+                            };
+                            $.ajax({
+                                type: "Get",
+                                dataType: "html",
+                                url: url,
+                                data: data,
+                                success: function (res) {
+                                    $(model).find(".modal-body").html(res);
+                                   // Form().init(model);
+                                },
+                            });
+                        })
+                        .on("hide.bs.modal", function (event) {
+                            $('#requestInfoModel').each(function () {
+                                $(this).remove();
+                            });
+                        });
+
+                    $(model).appendTo("body")
+                    $(model).modal('show');
+                    $(button).SetButtonNotBusy();
+                }
+                else {
+                    console.log(url, data);
+                    $.post(url, data, function (res) {
+                        if (res.success === "true") {
+                            $(button).ReloadPanel();
+                        }
+                        else {
+                            var panel = $(button).closest(".panel");
+                            SetValidationErrorForObject($(panel), res.errorModel);
+                        }
+                        $(button).SetButtonNotBusy();
+                    });
+                }
+            }
+            func(button);
+        });
+    });
+</script>

@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.Bid.BidBoreLineFormViewModel
+
+<div class="panel panel-inverse" >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            
+        </div>
+        <h4 class="panel-title">Bore Line Info</h4>
+    </div>
+    <div class="panel-body" id="jobInfo">
+        @*@Html.EditorForModel("Form/FormList")*@
+        @Html.Partial("../JC/Job/Bid/Line/Form", Model.Line)
+    </div>
+</div>
+<script>
+    function initPane() {
+        //handleTableAutoUpdate();
+    }
+</script>

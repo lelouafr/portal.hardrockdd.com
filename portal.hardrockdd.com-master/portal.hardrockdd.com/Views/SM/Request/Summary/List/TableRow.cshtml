@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.SM.Request.ServiceRequestViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+}
+
+
+<tr data-entitykey="@entityKey">
+
+    <td>
+        @Html.EditorFor(m => m.SMCo, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RequestId, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.RequestDate.ToShortDateString()" data-order="@Model.RequestDate.ToString("yyyy-MM-dd")">
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </td>
+    <td>
+        @Model.RequestType.ToString()
+    </td>
+    <td>
+        @Model.Status.ToString()
+    </td>
+</tr>

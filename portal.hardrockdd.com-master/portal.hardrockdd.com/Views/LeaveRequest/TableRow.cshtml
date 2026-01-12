@@ -1,0 +1,36 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveRequestSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey">
+        <td>@Model.Year</td>
+        <td>@Model.EmployeeName</td>
+        <td data-sort="@Model.Status.ToString()">
+            <span class="label @Model.StatusClass">@Html.EditorFor(l => l.Status, new { DisplayOnly = true })</span>
+        </td>
+        <td class="hidden-xs hidden-sm">
+            @Html.EditorFor(l => l.Description, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(l => l.Hours, new { DisplayOnly = true })
+        </td>
+        @if (ViewBag.Controller != "LeaveRequestUserList")
+        {
+            @*<td class="hidden-xs hidden-sm">
+                @Html.EditorFor(l => l.CreatedUser, new { DisplayOnly = true })
+            </td>*@
+        }
+        else
+        {
+            <td>
+                @if (Model.ContainsErrors)
+                {
+                    <i class="fas fa-exclamation-triangle fa-2x text-red pull-right "></i>
+                    <div class="text-sm-left text-red">@Model.ErrorMsg</div>
+                }
+            </td>
+        }
+    </tr>

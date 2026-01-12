@@ -1,0 +1,17 @@
+﻿@{
+    var listItemId = 1;
+    var listItemTag = "bd";
+}
+@if (User.HasAccess("Bid"))
+{
+    <li id="menu_li_bd_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="far fa-comment-dollar"></i>
+            <span>Bids</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Tracker", "Bid", routeValues: new { Area = "Project" })">Bid Tracker</a></li>       
+        </ul>
+    </li>
+}

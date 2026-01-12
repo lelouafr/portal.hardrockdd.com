@@ -1,0 +1,34 @@
+﻿@model portal.Models.Views.SM.Request.Forms.InfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+@Html.Partial("../SM/Request/Forms/Actions", Model.WorkFlowActions)
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("ServiceRequestInfoUpdate", "ServiceRequest")"
+      data-urlvalidate="@Url.Action("ServiceRequestInfoValidate", "ServiceRequest")">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestType, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Status, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestByName, new { ViewOnly = true })
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

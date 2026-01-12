@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.DailyTicket.DailyJobEmployeeListViewModel
+
+
+<div class="panel panel-inverse" data-sortable-id="DailyJobEmployeeListViewModel"
+     data-reloadurl="@Url.Action("DailyJobEmployeeTable", "DailyTicketForm", new { dtco = Model.DTCo, ticketId = Model.TicketId, forEdit = !ViewBag.ViewOnly })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>            
+        </div>
+        <h4 class="panel-title">Task Employees</h4>
+    </div>
+    <div class="panel-body" id="employees">
+        @Html.Partial("../DT/Type/Job/Employee/List/Table", Model)
+    </div>
+</div>

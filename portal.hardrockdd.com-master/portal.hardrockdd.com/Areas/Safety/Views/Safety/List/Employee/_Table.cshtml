@@ -1,0 +1,81 @@
+﻿@model portal.Areas.Safety.Models.Safety.EmployeeListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table  order-column"
+       id="@tableId"
+       data-reloadurl="@Url.Action("EmployeeTable", "Safety")"
+       data-dataurl="@Url.Action("EmployeeData", "Safety")"
+       data-urlselect="@Url.Action("EmployeeSafetyPanel", "Safety")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().HRCo)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().HRRef)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().Position)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().Crew)</th>
+            <th data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().Supervisor)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= $(panel).height();
+        h -= $(tableElem).find('thead').height();
+        h -= 130;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            pageLength: 50,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "HRCo" },
+                { data: "HRRef" },
+                { data: "Name" },
+                { data: "Position" },
+                { data: "Crew" },
+                { data: "Supervisor" },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init('#@tableId');
+            },
+            columnDefs: [
+                { targets: [0], visible: false },
+                //{ targets: [1], orderable: false },
+                //{ targets: [4], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "HRCo=" + data.HRCo + "&HRRef=" + data.HRRef;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+
+    })
+</script>

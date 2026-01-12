@@ -1,0 +1,35 @@
+﻿<div class="modal fade" id="newPosition">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style=" padding: 0px 0px 5px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#newPosition").on("show.bs.modal", function (event) {
+            if (event.target == this) {
+
+                console.log("newPosition.show.bs.modal", event, this);
+                var button = $(event.relatedTarget);
+                $(button).SetButtonBusy();
+                if (true) {
+                    var url = "@Url.Action("Create", "HRPosition", new { Area = "" })";
+                    //console.log(url);
+                    $(this).find(".modal-body").load(url);
+                    $(button).SetButtonNotBusy();
+                }
+            }
+        });
+        $("#newPosition").on("hide.bs.modal", function (event) {
+            if (event.target == this) {
+                var button = $(event.relatedTarget);
+                console.log("newPosition.hide.bs.modal", event, this);
+            
+                // Place the returned HTML into the selected element
+                $(this).find(".modal-body").html("");
+            }
+        });
+    });
+</script>

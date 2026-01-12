@@ -1,0 +1,76 @@
+﻿@model object
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    var rowData = "";
+    var colCnt = tableLayout.ControllerInfo.AllowDelete && !viewOnly ? 1 : 0;
+    var tdCnt = 1;
+
+}
+
+@foreach (var tblRow in tableLayout.Properties
+                                   .GroupBy(g => new { g.InternalTableRow })
+                                   .Select(s => new
+                                   {
+                                       RowId = s.Key.InternalTableRow,
+                                       Properties = s.Select(m => m).ToList()
+                                   })
+                                   .ToList())
+{
+    <tr>
+        @foreach (var prp in tblRow.Properties.Where(f => f.IsHidden == false ).ToList())
+        {
+            if (prp.IsKey)
+            {
+
+                var myData = Model.GetType().GetProperty(prp.Property);
+                var myVal = myData.GetValue(Model, null);
+
+
+                rowData += "[" + prp.Property + "]=" + myVal.ToString() + ",";
+            }
+            if (tblRow.RowId == 1)
+            {
+                if (prp.IsHidden == false)
+                {
+                    <td>
+                        @if (tdCnt == 1)
+                        {
+                            foreach (var hiddenprp in tblRow.Properties.Where(f => f.IsHidden).ToList())
+                            {
+                                var myData = Model.GetType().GetProperty(prp.Property);
+                                var myVal = myData.GetValue(Model, null);
+                                @Html.Hidden(hiddenprp.Property, myVal, new { id = hiddenprp.Property, Name = hiddenprp.Property })
+                            }
+                        }
+                        @{
+                            tdCnt ++;
+                        }
+
+                        @Html.Editor(prp.Property, new { rowData = rowData })
+                    </td>
+                    colCnt++;
+                }
+            }
+            else
+            {
+                var colSpan = (tblRow.RowId == 1 ? 1 : colCnt).ToString();
+                <td colspan="@colSpan" style="border-top-width: 0px; padding-top: 0px;">
+                    <div class="form-group has-feedback row" style="margin-bottom: 0px;">
+                        @Html.Editor(prp.Property, new { tableRow = "False" })
+                    </div>
+                </td>
+            }
+        }
+
+        @if (tableLayout.ControllerInfo.AllowDelete && !viewOnly && tblRow.RowId == 1)
+        {
+            <td>
+                <button type="button" class="btn btn-danger rowDelete  pull-right" data-rowdata="@rowData">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        }
+    </tr>
+}
+

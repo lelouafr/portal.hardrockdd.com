@@ -1,0 +1,50 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "coding";
+    var statusclass = "";
+    switch (Model.BasicInfo.CodeStatusId)
+    {
+        case DB.CMTransCodeStatusEnum.Empty:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+        case DB.CMTransCodeStatusEnum.EmployeeCoded:
+            statusclass = "fa-circle text-purple  mr-2 f-s-8";
+            break;
+        case DB.CMTransCodeStatusEnum.Coded:
+            statusclass = "fa-circle text-green  mr-2 f-s-8";
+            break;
+        case DB.CMTransCodeStatusEnum.AutoCoded:
+            statusclass = "fa-circle text-blue  mr-2 f-s-8";
+            break;
+        case DB.CMTransCodeStatusEnum.NeedReview:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+        case DB.CMTransCodeStatusEnum.Complete:
+            statusclass = "fa-circle text-blue  mr-2 f-s-8";
+            break;
+        default:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+    }
+}
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa @statusclass"></i> Coding (@Model.BasicInfo.CodeStatusId.DisplayName())
+        </div>
+        <div id="@panelId" class="show">
+            <div class="card-body">
+                <div class="d-xl-none">
+                    @Html.Partial("../AP/CreditCard/Form/Coding/Form/Panel", Model.Coding)
+                </div>
+                <div class="d-none d-xl-block">
+                    @Html.Partial("../AP/CreditCard/Form/Coding/List/Table", Model.Coding)
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

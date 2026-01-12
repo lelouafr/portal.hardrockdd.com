@@ -1,0 +1,69 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.RequestLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.RequestByName, new { DisplayOnly = "true" })
+    </td>
+    <td data-search="@Model.RequestDate.ToShortDateString()" data-order="@Model.RequestDate.ToString("yyyy-MM-dd")">
+        @Html.EditorFor(m => m.RequestDate, new { DisplayOnly = "true" })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.EstServiceDate, new { DisplayOnly = "true" })
+    </td>
+    <td>
+        @if (!string.IsNullOrEmpty(Model.WorkOrderId))
+        {
+            @Html.HiddenFor(m => m.IsComplete, new { @id = Guid.NewGuid() })
+        }
+        else
+        {
+            @Html.EditorFor(m => m.IsComplete, new { ViewOnly = "true" })
+        }
+    </td>
+</tr>
+
+<tr class="commentRow"
+    data-entitykey="@entityKey">
+    <td style="border-top-width: 0px; padding-top: 0px;" class="text-right">
+        <label >Request:</label>
+    </td>
+    <td colspan="3" style="border-top-width: 0px; padding-top: 0px;">
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.RequestComments, new { tableRow = "true", DisplayOnly = "true" })
+    </td>
+</tr>
+@if (!string.IsNullOrEmpty(Model.CompletedComments))
+{
+    <tr class="commentRow"
+        data-entitykey="@entityKey">
+        <td style="border-top-width: 0px; padding-top: 0px;" class="text-right">
+            <label>Service:</label>
+        </td>
+        <td colspan="3" style="border-top-width: 0px; padding-top: 0px;">
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.CompletedComments, new { tableRow = "true", DisplayOnly = "true" })
+        </td>
+    </tr>
+}

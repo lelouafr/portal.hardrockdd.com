@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+
+}
+<div class="panel panel-inverse"
+     style="margin-bottom: 0px;"
+     id="DailyEquipmentUsageListViewModel"
+     data-reloadurl="@Url.Action("LineTable", "DailyEquipmentUsage", new { dtco = Model.DTCo, weekId = Model.WeekId, equipmentId = Model.EquipmentId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>            
+        </div>
+        <h4 class="panel-title">Equipment (@Model.EquipmentId) </h4>
+    </div>
+    <div class="panel-body"
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("../EM/EMUsage/Lines/Table", Model)
+    </div>
+</div>
+<div id="apLinePanel">
+</div>

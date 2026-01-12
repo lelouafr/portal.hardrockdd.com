@@ -1,0 +1,141 @@
+﻿@model portal.Models.Views.HR.Resource.Form.ResourceInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("Update", "HRResourceInfo")"
+      data-urlvalidate="@Url.Action("Validate", "HRResourceInfo")">
+    @Html.AntiForgeryToken()
+    
+    @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EntityKeyString, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EntityName, new { @id = Guid.NewGuid() })
+
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#Info">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Name
+                </div>
+                <div id="Info" class="collapse show">
+                    <div class="card-body">
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.ResourceId, new { ViewOnly = true })
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.FirstName)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.LastName)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.MiddleName)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.Suffix)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.NickName)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            @Html.Partial("../HR/Employee/Forms/Picture/Panel", Model)
+        </div>
+        <div class="col-6">
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#Address">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Address
+                </div>
+                <div id="Address" class="collapse">
+                    <div class="card-body">
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.Address)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.Address2)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.City)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.State)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.Zip)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (User.HasAccess("PayrollReview", "Index"))
+            {
+                <div class="card" style="overflow:visible;">
+                    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#Personal">
+                        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Personal Info
+                    </div>
+                    <div id="Personal" class="collapse">
+                        <div class="card-body">
+                            <div class="form-group has-feedback row">
+                                @Html.EditorFor(m => m.BirthDate)
+                            </div>
+                            <div class="form-group has-feedback row">
+                                @Html.EditorFor(m => m.Phone)
+                            </div>
+                            <div class="form-group has-feedback row">
+                                @Html.EditorFor(m => m.Email)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(m => m.BirthDate, new { @id = Guid.NewGuid() })
+                @Html.HiddenFor(m => m.Phone, new { @id = Guid.NewGuid() })
+                @Html.HiddenFor(m => m.Email, new { @id = Guid.NewGuid() })
+            }
+        </div>
+        <div class="col-6">
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#Contact">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Contact Info
+                </div>
+                <div id="Contact" class="collapse">
+                    <div class="card-body">
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.CellPhone)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.WorkPhone)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#EmergencyContact">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Emergency  Contact Info
+                </div>
+                <div id="EmergencyContact" class="collapse">
+                    <div class="card-body">
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.EmergencyContact)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.EmegencyRelationship)
+                        </div>
+                        <div class="form-group has-feedback row">
+                            @Html.EditorFor(m => m.EmegencyContactPhone)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

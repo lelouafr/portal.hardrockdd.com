@@ -1,0 +1,74 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTruckEmployeeListViewModel
+
+@{
+    var id = "panel_" + Guid.NewGuid().ToString().Replace("-", "");
+    var panelBodyId = "panel_" + Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panel_DailyTruckEmployeeListViewModel" + Model.TicketId.ToString();
+}
+
+
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("TruckEmployeeTable", "DailyTicketForm", new { dtco = Model.DTCo, ticketId = Model.TicketId, forEdit = !ViewBag.ViewOnly })"
+     data-initpane="initPane@(id)"
+     id="@panelId">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Employees</h4>
+    </div>
+    <div class="panel-body" id="@panelBodyId">
+        @Html.Partial("../DT/Type/Trucking/Employee/List/Table", Model)
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        handleEntryTypeChange();
+        var table = $('#@panelId').find('table');
+        //console.log(table);
+        $(table).find('tr').each(function () {
+            handleEntryTypeView(this);
+        });
+    }
+
+    function handleEntryTypeView(rowElem) {
+        var entryType = $(rowElem).find('select.EntryTypeId').val();
+        var jobSelect = $(rowElem).find('.selectJobId');
+        var equipSelect = $(rowElem).find('.selectEquipmentId');
+        var taskSelect = $(rowElem).find('.selectPhaseId');
+        jobSelect.hide();
+        equipSelect.hide();
+        taskSelect.hide();
+        //console.log(rowElem, entryType, jobSelect, equipSelect);
+
+        switch (entryType) {
+            case "@(((short)DB.EntryTypeEnum.Job))":
+                equipSelect.hide();
+                jobSelect.show();
+                taskSelect.show();
+                break;
+            case "@(((short)DB.EntryTypeEnum.Equipment))":
+                equipSelect.show();
+                jobSelect.hide();
+                break;
+            case "@(((short)DB.EntryTypeEnum.Admin))":
+                equipSelect.hide();
+                jobSelect.hide();
+                break;
+            default:
+                break;
+        }
+    }
+    function handleEntryTypeChange() {
+        $('#@panelId').on('change', '.EntryTypeId', function () {
+            var row = $(this).closest('tr');
+            handleEntryTypeView(row);
+        });
+    }
+</script>

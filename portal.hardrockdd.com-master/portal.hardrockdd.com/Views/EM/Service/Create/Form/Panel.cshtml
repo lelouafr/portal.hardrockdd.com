@@ -1,0 +1,13 @@
+﻿@model portal.Models.Views.Equipment.Category.EquipmentCategoryCreateViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse">
+    <div class="panel-heading">
+        <h4 class="panel-title">New Equipment Category Setup</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../EM/Category/Create/Form/Form", Model)
+    </div>
+</div>

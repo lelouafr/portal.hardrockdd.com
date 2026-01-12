@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.AR.Customer.Aging.CustomerAgaingListViewModel
+<div class="panel panel-inverse"
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table","CustomerAging")"
+     style="margin-bottom: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Aging</h4>
+    </div>
+    <div class="panel-body" id="CustomerAgaingListViewModel">
+        @Html.Partial("../AR/Customer/Summary/Aging/Table", Model)
+    </div>
+</div>

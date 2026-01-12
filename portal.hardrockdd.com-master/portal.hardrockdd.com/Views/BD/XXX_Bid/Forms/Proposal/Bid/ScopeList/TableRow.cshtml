@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.Bid.Forms.Proposal.Bid.ProposalScopeViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var isTitleBlank = ViewBag.IsTitleBlank;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ScopeTypeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+
+        @if (isTitleBlank)
+        {
+            @Html.HiddenFor(m => m.Title, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.LineId, new { DisplayOnly = true })
+        }
+        else
+        {
+            @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.Title)
+
+        }
+
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Notes)
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>

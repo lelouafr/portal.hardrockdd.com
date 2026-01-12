@@ -1,0 +1,55 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.InfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+@Html.Partial("../AP/CreditCard/Form/Buttons", Model.Actions)
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "APCreditCardTransactionInfo")"
+      data-urlvalidate="@Url.Action("Validate", "APCreditCardTransactionInfo")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.TransDate, new { ViewOnly = true })
+        @Html.EditorFor(m => m.TransAmt, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @{
+            var ApRefViewOnly = true;
+            if (Model.IsAPRefRequired)
+            {
+                ApRefViewOnly = false;
+            }
+            if (string.IsNullOrEmpty(Model.APRef))
+            {
+                ApRefViewOnly = false;
+            }
+        }
+        @Html.EditorFor(m => m.APRef, new { ViewOnly = ApRefViewOnly })
+
+        @if (Model.APRef != Model.OriginalAPRef)
+        {
+            @Html.EditorFor(m => m.OriginalAPRef, new { ViewOnly = true })
+        }
+
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

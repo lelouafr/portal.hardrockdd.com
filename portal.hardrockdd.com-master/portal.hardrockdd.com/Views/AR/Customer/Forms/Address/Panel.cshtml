@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.AR.Customer.Forms.CustomerInfoViewModel
+@{
+    var id = "a" + Guid.NewGuid().ToString().Replace("-", "");
+}
+<div id="accordion" class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@id">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Address
+        </div>
+        <div id="@id" class="collapse">
+            <div class="card-body">
+                @Html.Partial("../AR/Customer/Forms/Address/Form", Model)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

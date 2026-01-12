@@ -1,0 +1,26 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.ScheduleViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RigCategoryId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.StartDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RigCategoryId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RigId)
+    </td>
+</tr>

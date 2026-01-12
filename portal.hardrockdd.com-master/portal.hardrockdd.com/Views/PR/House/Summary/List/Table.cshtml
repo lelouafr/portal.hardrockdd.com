@@ -1,0 +1,82 @@
+﻿@model portal.Models.Views.Employee.Housing.EmployeeHousingListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+
+}
+<div class="row">
+    <div class="col-4">
+        <form class="form-horizontal" id="EmployeeHousingListViewModelWeekSelect">
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.WeekId, new { ViewOnly = false })
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table"
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table","PayrollHousing")"
+       data-urlupdate="@Url.Action("Update", "PayrollHousing")"
+       data-prco="@((byte?)Model.PRCo)"
+       data-weekid="@(Model.WeekId)"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().PRCo)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().CrewLeader)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().SaturdayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().SundayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().MondayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().TuesdayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().WednesdayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ThursdayHouse)</th>
+            <th width="9%" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().FridayHouse)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../PR/House/Summary/List/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#EmployeeHousingListViewModelWeekSelect'));
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= 325;
+        //console.log("body height: ", $("body").height());
+        var table = $('#@tableId');
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: false,
+            ordering: false,
+            scrollY: 250,
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+        //DataTablesMoveSearch($('.tableFilter'))
+    })
+
+
+    $(document).on('change', '[name="WeekId"]', function () {
+        var table = $('#@tableId');
+        $(table).attr('data-weekid', $(this).val());
+        var data = {
+            prco: $(table).attr('data-prco'),
+            weekId: $(table).attr('data-weekid')
+        };
+        ReloadTable(table, data);
+        //$('#@tableId').DataTable().ajax.reload();
+    })
+</script>

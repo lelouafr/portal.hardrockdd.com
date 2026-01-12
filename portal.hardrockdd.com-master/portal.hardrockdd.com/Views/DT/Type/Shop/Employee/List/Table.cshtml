@@ -1,0 +1,62 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyShopEmployeeListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    tableId = "DailyShopEmployeeListViewModel";
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("ShopEmployeeAdd", "DailyTicketForm")"
+       data-urldelete="@Url.Action("ShopEmployeeDelete", "DailyTicketForm")"
+       data-urlupdate="@Url.Action("ShopEmployeeUpdate", "DailyTicketForm")"
+       data-urlvalidate="@Url.Action("ShopEmployeeValidate", "DailyTicketForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Perdiem)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Value)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EntryTypeId)</th>
+            <th width="25%"><label>Job | Equipment | WO</label></th>
+            <th width="15%"><label>Task | WO Item</label></th>
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var Employees = Model.List.Where(w => w.EmployeeId != null).GroupBy(g => g.EmployeeId).Select(s => new {Lines = s.ToList() }).ToList();
+            var newLines = Model.List.Where(w => w.EmployeeId == null).GroupBy(g => g.LineNum).Select(s => new { Lines = s.ToList() }).ToList();
+        }
+
+        @foreach (var emp in Employees)
+        {
+            @Html.Partial("../DT/Type/Shop/Employee/List/Row/EmployeeRow", emp.Lines)
+        }
+        @foreach (var emp in newLines)
+        {
+            @Html.Partial("../DT/Type/Shop/Employee/List/Row/EmployeeRow", emp.Lines)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        //console.log(commentElem.html());
+        commentElem.show();
+        $(this).hide();
+    });
+
+</script>

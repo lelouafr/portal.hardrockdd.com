@@ -1,0 +1,44 @@
+﻿@model portal.Models.Views.Payroll.PayrollEmployeeHourViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+    ViewBag.ViewOnly = Model.Status == DB.PayrollEntryStatusEnum.Posted;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Model.WorkDate.ToShortDateString()
+    </td>
+    <td>
+        @Model.DayDescription
+    </td>
+    <td>
+        @Html.EditorFor(m => m.EarnCodeId, new { displayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.EntryTypeId, new { displayOnly = true })
+    </td>
+    <td class="f-s-10">
+        @Html.HiddenFor(m => m.JobId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.JobId, new { displayOnly = true })
+        @Html.EditorFor(m => m.EquipmentId, new { displayOnly = true })
+    </td>
+    <td>
+        @if (Model.EntryTypeId == DB.EntryTypeEnum.Job)
+        {
+            @Html.EditorFor(m => m.PhaseId, new { displayOnly = true })
+        }
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineNum, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketLineNum, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Hour, new { displayOnly = true })
+    </td>
+</tr>

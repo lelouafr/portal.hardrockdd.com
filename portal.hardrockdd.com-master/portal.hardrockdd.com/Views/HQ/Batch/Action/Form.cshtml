@@ -1,0 +1,13 @@
+﻿@model portal.Models.Views.HQ.Batch.ActionListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="row">
+    <div class="col-xl-4">
+        @Html.Partial("../HQ/Batch/Action/List/Panel", Model)
+    </div>
+    <div class="col-xl-8">
+        <div class="reviewPanel" id="errorReviewPanel">
+        </div>
+    </div>
+</div>

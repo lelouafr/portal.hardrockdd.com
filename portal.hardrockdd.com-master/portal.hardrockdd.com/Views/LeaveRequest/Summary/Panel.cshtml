@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveEmployeeSummaryListViewModel
+
+
+<div class="panel panel-inverse" 
+     id="LeaveEmployeeSummaryListViewModel_Panel"
+     data-sortable-id="LeaveEmployeeSummaryListViewModel"
+     data-reloadurl="@Url.Action("Table", "LeaveEmployeeSummary", new { prco = Model.PRCo, employeeId = Model.EmployeeId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Time off Summary</h4>
+    </div>
+    <div class="panel-body" id="LeaveEmployeeSummaryListViewModel_Body">
+        @Html.Partial("../LeaveRequest/Summary/Table", Model)
+    </div>
+</div>

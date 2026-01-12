@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.RequestInfoViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlpost="@Url.Action("RequestInfoStatus","APCreditCardTransaction")">
+    <fieldset>
+        <legend>Request Additional Info</legend>
+    </fieldset>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.SendTo, new { FlushCache = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

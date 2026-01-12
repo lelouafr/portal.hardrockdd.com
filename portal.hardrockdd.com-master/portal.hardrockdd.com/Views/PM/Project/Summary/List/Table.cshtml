@@ -1,0 +1,89 @@
+﻿@model portal.Models.Views.PM.Project.Summary.ProjectListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+
+}
+
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-dataurl="@Url.Action("ListData", "PMProject")"
+       data-reloadurl="@Url.Action("ListTable", "PMProject")"
+       data-urlselect="@Url.Action("ProjectForm", "PMProjectForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Co)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().ProjectId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().ProjectName)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelFor(model => model.List.FirstOrDefault().ProjectStartDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().CustomerId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().OwnerId)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 30;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "Co", visible: false },
+                { data: "Division", visible: true },
+                { data: "ProjectId", visible: true },
+                { data: "ProjectName", visible: true, width: 250 },
+                { data: "StatusStr", visible: true },
+                {
+                    data: "ProjectStartDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "CustomerName", visible: true, width: 190 },
+                { data: "OwnerId", visible: true },
+            ],
+            order: [[2, "asc"], [3, "asc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "JCCo=" + data.JCCo + "&projectId=" + data.ProjectId;// + "&bdco=" + data.BDCo ;
+                $(row).attr('data-entitykey', rowKey);
+                data.rowKey = rowKey;
+            }
+        });
+    })
+</script>

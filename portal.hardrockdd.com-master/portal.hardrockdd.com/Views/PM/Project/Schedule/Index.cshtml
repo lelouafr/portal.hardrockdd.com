@@ -1,0 +1,448 @@
+﻿@model portal.Models.Views.PM.Project.Schedule.ScheduleListViewModel
+@{
+    ViewBag.Title = "Project Scheduling";
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    <link href="~/Content/assets/plugins/dhtmlx7/suite/suite.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/dhtmlx7/scheduler/dhtmlxscheduler_material.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/dhtmlx7/gantt/dhtmlxgantt.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/dhtmlx7/gantt/controls_styles.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/dhtmlx/suite/custom.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css?v=7.1.3">
+
+    <style>
+        .owner-label {
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            font-size: 12px;
+            display: inline-block;
+            border: 1px solid #cccccc;
+            border-radius: 25px;
+            background: #e6e6e6;
+            color: #6f6f6f;
+            margin: 0 3px;
+            font-weight: bold;
+        }
+
+        .gantt-fullscreen {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            padding: 2px;
+            font-size: 32px;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0.5;
+            text-align: center;
+            -webkit-transition: background-color 0.5s, opacity 0.5s;
+            transition: background-color 0.5s, opacity 0.5s;
+        }
+
+            .gantt-fullscreen:hover {
+                background: rgba(150, 150, 150, 0.5);
+                opacity: 1;
+            }
+
+        .inprogress {
+            border: 2px solid #ecd556;
+            color: #ecd556;
+            background: #ecd556;
+        }
+
+            .inprogress .gantt_task_progress {
+                background: #edce20;
+            }
+    </style>
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<div class="row">
+    <div class="col-xl-4 row-space-4 ">
+        @Html.Partial("../PM/Project/Schedule/List/Panel", Model)
+    </div>
+    <div class="col-xl-8 row-space-4 ">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/suite/suite.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/scheduler/dhtmlxscheduler.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/scheduler/ext/dhtmlxscheduler_timeline.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/scheduler/ext/dhtmlxscheduler_treetimeline.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/scheduler/ext/dhtmlxscheduler_readonly.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/scheduler/ext/dhtmlxscheduler_container_autoresize.js"></script>
+    <script src="~/Content/assets/plugins/dhtmlx7/gantt/dhtmlxgantt.js"></script>
+    @*<script src="~/Content/assets/plugins/dhtmlx7/gantt/sources/dhtmlxgantt.js"></script>*@
+    <script src="~/Content/assets/plugins/dhtmlx7/gantt/ganttcontrols.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js?v=7.1.3"></script>
+
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $(document).ready(function () {
+            initJobTimeLine();
+            initGanttSettings();
+        });
+
+        function initGanttSettings() {
+            gantt.plugins({
+                auto_scheduling: true,
+                fullscreen: true,
+                grouping: true,
+            });
+            gantt.config.auto_scheduling = true;
+            gantt.config.auto_scheduling_strict = true;
+            gantt.config.auto_scheduling_compatibility = true;
+            gantt.config.sort = true;
+            gantt.config.duration_unit = "minute";
+            //gantt.config.work_time = true;
+            gantt.config.round_dnd_dates = false;
+            gantt.config.open_tree_initially = true;
+            gantt.config.open_split_tasks = true;
+            gantt.config.resource_store = "resource";
+            gantt.config.resource_property = "owner";
+            gantt.setWorkTime({ hours: [0, 24] });//global working hours. 8:00-12:00, 13:00-17:00
+
+
+            // formatting durations
+            var dayFormatter = gantt.ext.formatters.durationFormatter({
+                enter: "day",
+                store: "minute",
+                format: "day",
+                hoursPerDay: 24,
+                hoursPerWeek: 168,
+                daysPerMonth: 30,
+                short: false
+            });
+            var hourFormatter = gantt.ext.formatters.durationFormatter({
+                enter: "hour",
+                store: "minute",
+                format: "hour",
+                short: true
+            });
+            var autoFormatter = gantt.ext.formatters.durationFormatter({
+                enter: "day",
+                store: "minute",
+                format: "auto"
+            });
+
+            var textEditor = { type: "text", map_to: "text" };
+            var dateEditor = { type: "date", map_to: "start_date" };//, min: new Date(2020, 0, 1), max: new Date(2021, 0, 1)
+            var durationEditor = { type: "duration", map_to: "duration", formatter: autoFormatter, min: 0, max: 1000 };
+            var dayDurationEditor = { type: "duration", map_to: "duration", formatter: dayFormatter, min: 0, max: 1000 };
+            var hourDurationEditUrlrlr = { type: "duration", map_to: "duration", formatter: hourFormatter, min: 0, max: 1000 };
+
+            gantt.config.columns = [
+                {
+                    name: "text", tree: true, width: 145, resize: true,
+                },
+                {
+                    name: "description", align: "left", resize: true, width: 200, label: "Job Name", template: function (task) {
+                        //console.log(task);
+                        return task.JobDescription;
+                    }
+                },
+                {
+                    name: "dayDuration", label: "Duration (days)", resize: true, align: "center", template: function (task) {
+                        return dayFormatter.format(task.duration);
+                    },
+                    width: 100
+                },
+                {
+                    name: "start_date", align: "center", width: 125, label: "Start Date", resize: true,  template: function (task) {
+
+                        return moment(task.start_date).format('L');
+                    }
+                },
+                {
+                    name: "end_date", align: "center", width: 125, label: "End Date", resize: true, template: function (task) {
+
+                        return moment(task.end_date).format('L');
+                    }
+                },
+                {
+                    name: "status", align: "left", resize: true, width: 100, label: "Status", template: function (task) {
+                        //console.log(task);
+                        return task.JobStatusString;
+                    }
+                },
+                {
+                    name: "resource", align: "center", width: 75, label: "Crew", template: function (task) {
+                        //if (task.type == gantt.config.types.project) {
+                        //    return "";
+                        //}
+
+                        var result = "";
+                        var store = gantt.serverList("resource");
+                        var owners = task[gantt.config.resource_property];
+
+                        if (!owners || !owners.length) {
+                            return "Unassigned";
+                        }
+
+                        if (owners.length == 1) {
+                            var result = store.find(o => o.id === owners[0].resource_id);
+                            return result.text;
+                        }
+
+                        owners.forEach(function (ownerId) {
+                            //var owner = store.getItem(ownerId);
+                            var owner = store.find(o => o.id === ownerId.resource_id);
+                            if (!owner)
+                                return;
+                            result += "<div class='owner-label' title='" + owner.text + "'>" + owner.text.substr(0, 1) + "</div>";
+
+                        });
+
+                        return result;
+                    }, resize: true
+                },
+            ];
+
+            gantt.config.lightbox.sections = [
+                { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
+                { name: "resource", height: 60, type: "multiselect", options: gantt.serverList("resource"), map_to: "resource", unassigned_value: "1" },
+                { name: "time", type: "duration", map_to: "auto", formatter: autoFormatter },
+            ];
+            gantt.config.layout = {
+                css: "gantt_container",
+                cols: [
+                    {
+                        width: 500,
+                        min_width: 470,
+
+                        // adding horizontal scrollbar to the grid via the scrollX attribute
+                        rows: [
+                            { view: "grid", scrollX: "gridScroll", scrollable: true, scrollY: "scrollVer" },
+                            { view: "scrollbar", id: "gridScroll" }
+                        ]
+                    },
+                    { resizer: true, width: 1 },
+                    {
+                        rows: [
+                            { view: "timeline", scrollX: "scrollHor", scrollY: "scrollVer" },
+                            { view: "scrollbar", id: "scrollHor" }
+                        ]
+                    },
+                    { view: "scrollbar", id: "scrollVer" }
+                ]
+            };
+            gantt.ext.zoom.init(zoomConfig);
+            gantt.attachEvent("onTaskDblClick", function (id, e) {
+                var task = gantt.getTask(id);
+                var task = gantt.getTask(id);
+                var urlPopup = "@Url.Action("PopupForm", "PMPRojectGantt")";
+                var urlmodel = "@Url.Action("PopupForm", "PMPRojectGantt")";
+                data = "co=" + task.Co;
+                data += "&";
+                data += "taskid=" + task.id;
+                var IsExpanded = function (){
+                    var element = (document.fullscreenElement ||
+                        document.mozFullScreenElement ||
+                        document.webkitFullscreenElement ||
+                        document.msFullscreenElement);
+                    return !!(element && element === document.body);
+                    };
+                var isExpanded = IsExpanded();
+                if (isExpanded) {
+                    OpenPopUpWindow(urlmodel, data, true);
+                }
+                else {
+                    OpenPopUpWindow(urlPopup, data, false);
+                }
+
+                //if (isExpanded) {
+                //    setTimeout(function () { gantt.expand(); }, 500);
+
+                //}
+                return false;
+            });
+
+
+
+
+            function AttachExpandToggle() {
+                //var button = $('<button type="button"></button>');
+
+                var toggle = document.createElement("i");
+                toggle.className = "fa fa-expand gantt-fullscreen";
+                //$(button).append(toggle);
+
+                gantt.toggleIcon = toggle;
+                gantt.$container.appendChild(toggle);
+                toggle.onclick = function () {
+                    gantt.ext.fullscreen.toggle();
+                };
+            }
+            gantt.attachEvent("onTemplatesReady", function () {
+                AttachExpandToggle();
+            });
+            gantt.attachEvent("onExpand", function () {
+                $('#page-container').hide();
+                var ganttElem = $(gantt.$layout.$container);
+                var ganttId = $(ganttElem).attr("id");
+                var parentElem = $(ganttElem).parent();
+                var subLayer = parentElem.find("[data-gantcontanerId=" + ganttId + "]");
+                if (subLayer.length == 0) {
+                    subLayer = $("<div data-gantcontanerId='" + ganttId + "'></div>");
+                    parentElem.append(subLayer)
+                }
+                $(ganttElem).detach().appendTo('body');
+                var icon = gantt.toggleIcon;
+                if (icon) {
+                    icon.className = icon.className.replace("fa-expand", "fa-compress");
+                }
+
+            });
+
+            gantt.attachEvent("onLoadEnd", function () {
+                gantt.sort("start_date");
+                console.log('sort');
+            });
+            gantt.templates.task_text = function (start, end, task) {
+                if (task.progress == 1) {
+                    return task.text
+                }
+                else if (task.progress > 0) {
+                    var percent = parseFloat(task.progress).toFixed(2) * 100
+                    var stringPercent = parseFloat(percent).toFixed(0);
+                    return task.text + ' (' + stringPercent + "% Complete) ";
+                }
+                return task.text;
+            };
+
+            gantt.templates.task_class = function (start, end, task) {
+                if (task.progress > 0 && task.progress != 1) {
+                    console.log('inprogress', task.text);
+                    return "inprogress";
+                }
+                return "";
+            };
+
+            gantt.templates.project_class = function (start, end, task) {
+                if (task.progress > 0 && task.progress != 1) {
+                    console.log('inprogress', task.text);
+                    return "inprogress";
+                }
+                return "";
+            };
+
+            gantt.attachEvent("onCollapse", function () {
+                $('#page-container').show();
+                var ganttElem = $(gantt.$layout.$container);
+                var ganttId = $(ganttElem).attr("id");
+                var dst = $(document).find("[data-gantcontanerId=" + ganttId + "]").parent();
+                $(ganttElem).detach().appendTo(dst);
+                //dst.remove();
+                var icon = gantt.toggleIcon;
+                if (icon) {
+                    icon.className = icon.className.replace("fa-compress", "fa-expand");
+                }
+                //ganttElem.html("");
+                gantt.resetLayout();
+                AttachExpandToggle();
+                $(window).trigger('resize');
+
+            });
+
+            /*
+            var inlineEditors = gantt.ext.inlineEditors;
+            gantt.config.constraint_types = {
+                // As Soon As Possible
+                ASAP: "asap",
+                // As Late As Possible
+                ALAP: "alap",
+                // Start No Earlier Than
+                SNET: "snet",
+                // Start No Later Than
+                SNLT: "snlt",
+                // Finish No Earlier Than
+                FNET: "fnet",
+                // Finish No Later Than
+                FNLT: "fnlt",
+                // Must Start On
+                MSO: "mso",
+                // Must Finish On
+                MFO: "mfo"
+            };
+            inlineEditors.attachEvent("onBeforeSave", function (state) {
+
+                var oldDate = new Date(state.oldValue);
+                var newDate = new Date(state.newValue);
+                var diff = newDate - oldDate;
+
+                console.log("date diff:", diff);
+                var task = gantt.getTask(state.id);
+                var subTasks = gantt.getChildren(task.id);
+                subTasks.forEach(function (subTaskId) {
+                    var subTask = gantt.getTask(subTaskId);
+                    subTask.start_date = new Date(+subTask.start_date + diff);
+                    subTask.end_date = new Date(+subTask.end_date + diff);
+                    gantt.updateTask(subTask.id, subTask);
+                });
+                return true;
+            });
+            gantt.attachEvent("onAfterTaskUpdate", function (id, task) {
+                //any custom logic here
+                if (!gantt._autoscheduling_in_progress) {
+                    var oldTask = gantt.getTask(id);
+                    console.log('onAfterTaskUpdate task:', task);
+                }
+
+            });
+            */
+            //gantt.attachEvent("onBeforeTaskChanged", function (id, mode, original_task) {
+            //    //if (!gantt._autoscheduling_in_progress) {
+            //    //}
+            //    var task = gantt.getTask(id);
+            //    console.log('onBeforeTaskChanged task:', task.start_date, original_task.start_date);
+            //});
+            gantt.ext.zoom.setLevel("week");
+
+            gantt.$zoomToFit = false;
+
+        }
+
+        function initJobTimeLine() {
+            scheduler.locale.labels.timeline_tab = "Timeline";
+            scheduler.locale.labels.section_custom = "Section";
+            scheduler.config.details_on_create = true;
+            scheduler.config.details_on_dblclick = true;
+            scheduler.xy.scale_height = 50;
+
+            function block_readonly(id) {
+                if (!id) return true;
+                return !this.getEvent(id).readonly;
+            }
+            scheduler.attachEvent("onBeforeDrag", block_readonly)
+            scheduler.attachEvent("onClick", block_readonly)
+
+            scheduler.templates.event_class = function (start, end, event) {
+                var css = "";
+                if (event.JobStatus) // if event has subject property then special class should be assigned
+                    css += "event_" + event.JobStatus;
+                return css; // default return
+            };
+            var eventId = scheduler.attachEvent("onEventChanged", function (id, ev) {
+                var url = '@Url.Action("TimeLineUpdate", "PMProjectScheduleForm")';
+
+                ev.startdate = ev.start_date.toLocaleString();
+                ev.enddate = ev.end_date.toLocaleString();
+                console.log(id, ev);
+                $.post(url, ev, function (res) {
+                });
+            });
+        }
+
+
+    </script>
+}

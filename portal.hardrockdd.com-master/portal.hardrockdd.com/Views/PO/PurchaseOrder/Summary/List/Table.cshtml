@@ -1,0 +1,110 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("PartialIndex", "PurchaseOrder")"
+       data-urlcreate="@Url.Action("Add", "PurchaseOrder")"
+       data-dataurl="@Url.Action("Data", ViewBag.Controller)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().POCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().SearchString)</th>
+            <th data-datatable-filter-type="multiselect" >@Html.LabelFor(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelFor(model => model.List.FirstOrDefault().OrderedDate)</th>
+            <th data-datatable-filter-type="multiselect" class="hidden-xs hidden-sm">@Html.LabelFor(model => model.List.FirstOrDefault().VendorName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().PO)</th>
+            <th data-datatable-filter-type="input" class="hidden-xs hidden-sm">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().Cost)</th>
+            @*<th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var request in Model.List)
+        {
+            @Html.Partial("../PurchaseOrder/TableRow", request)
+        }*@
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -80;
+        $('#@tableId').DataTable({
+            autoWidth: true,
+            lengthMenu: [[100, 500, 1000], [100, 500, 1000]],
+            paging: true,
+            pageLength: 1000,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            scrollX: true,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+               "url": $('#@tableId').data('dataurl'),
+               "type": "GET",
+               "datatype": "json",
+            },
+            columns: [
+                { data: "POCo", visible: false },
+                { data: "SearchString", visible: false },
+                {
+                    data: "StatusString",
+                    render: function (data, type, row, meta) {
+                        var result = '<span class="label ' + row.StatusClass + '">' + data + '</span>';
+                        return result;
+                    },
+                },
+                {
+                    data: "OrderedDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = data;
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                },
+                {
+                    data: "VendorName",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-9">' + data + '</div>';
+                        return result;
+                    },
+                },
+                { data: "PO" },
+                {
+                    data: "Description",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-8">' + data + '</div>';
+                        return result;
+                    },
+                },
+                {
+                    data: "Cost",
+                    render: function (data, type) {
+                        return type === 'sort' ? data : currencyFormat(data, 2);
+                    },
+                    className: "text-right",
+                },
+                //{ data: "CreatedUser.FullName" }
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "poco=" + data.POCo + "&po=" + data.PO;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    });
+</script>

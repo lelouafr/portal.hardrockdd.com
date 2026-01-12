@@ -1,0 +1,25 @@
+﻿@*@model portal.Models.Views.Attachment.AttachmentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var colSpan = viewOnly ? "5" : "6";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HQCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.AttachmentId, new { @id = Guid.NewGuid() })
+
+        <a href='@Url.Action("Open", "Explorer", new { Area = "Attachment", attachmentId = @Model.AttachmentId  })' target="_blank">@Model.FileName</a>
+    </td>
+    <td>
+        @if (!viewOnly)
+        {
+            <button class="btn btn-xs btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-times"></i>
+            </button>
+        }
+    </td>
+</tr>*@

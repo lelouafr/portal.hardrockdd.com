@@ -1,0 +1,151 @@
+﻿@model portal.Models.Views.AP.Document.DocumentFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : false;
+
+    //var seq = Model.Sequences.List.FirstOrDefault();    
+}
+<div class="panel panel-inverse"
+     data-sortable-id="@id">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+        </div>
+        <h4 class="panel-title">Finish</h4>
+    </div>
+    <div class="panel-body" id="@id">
+        @if (!viewOnly || User.IsInRole("Admin"))
+        {
+            <div class="jumbotron m-b-0 text-center">
+                <p>
+                    @switch (Model.Document.Status)
+                    {
+                        case DB.APDocumentStatusEnum.Error:
+                        case DB.APDocumentStatusEnum.Filed:
+                            <button type = "button" class="btn btn-success btn-lg btnActionSubmit"
+                                    data-url="@Url.Action("UpdateStatus", "APDocument")"
+                                    data-apco="@Model.Document.APCo"
+                                    data-docid="@Model.Document.DocId"
+                                    data-status="@((int)DB.APDocumentStatusEnum.Processed)"
+                                    data-validate="false">
+                                <i class="fas fa-share-square"></i> Add To  batch
+                            </button>
+                            <div class="buttonError text-red">
+
+                            </div>
+                            break;
+                        case DB.APDocumentStatusEnum.Processed:
+                            <button type="button" class="btn btn-success btn-lg btnActionSubmit"
+                                    data-url="@Url.Action("UpdateStatus", "APDocument")"
+                                    data-apco="@Model.Document.APCo"
+                                    data-docid="@Model.Document.DocId"
+                                    data-status="@((int)DB.APDocumentStatusEnum.Filed)"
+                                    data-validate="false">
+                                <i class="fas fa-share-square"></i> Send back to Filed
+                            </button>
+                            <div class="buttonError text-red">
+
+                            </div>
+                            break;
+                        default:
+                            break;
+                    }
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $('#@id').ready(function () {
+
+        $('#@id')
+            .off('click', 'button.btnActionSubmit')
+            .on('click', 'button.btnActionSubmit', function () {
+
+            //console.log('clicked');
+                var row = $(this).closest('.row');
+                var url = $(this).data('url');
+                var validate = $(this).data('validate');
+                var apco = $(this).data('apco');
+                var docId = $(this).data('docid');
+                var form = $(this).closest('.panel').find('form');
+                var button = this;
+                $(button).SetButtonBusy();
+                var res = true;
+                if (validate) {
+                    res = $(form).parsley().validate();
+                }
+                if (res === false) {
+                    $(button).SetButtonNotBusy();
+                }
+
+            if (res && url) {
+
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+                var data = {
+                    __RequestVerificationToken: token.val(),
+                    apco: $(button).data("apco"),
+                    docId: $(button).data("docid"),
+                    status: $(button).data("status")
+                };
+                //console.log(url, data, token);
+                $.post(url, data, function (res) {
+                     if (res.success === "true") {
+                         var rowKey = "APCo=" + apco + '&DocId=' + docId;
+                         $(document).find("[data-entitykey='" + rowKey + "']").each(function () {
+                             $(this).hide();
+                         });
+                         $('#reviewPanel').html('');
+                     }
+                     else {
+                         $(button).SetButtonNotBusy();
+                         $('.buttonError').html("Error in submitting");
+                    }
+                });
+            }
+            else {
+                 //window.location.href = document.referrer;
+            }
+        });
+    });
+
+
+    function ReloadElementSubmit(elem) {
+        var url = "@Url.Action("Form", "APDocument")";
+        var dstId = "reviewPanel";
+        var data = {
+            apco: $(elem).data("apco"),
+            docId:  $(elem).data("docid"),
+        };
+        var dst = $('#' + dstId);
+        //console.log(url, data, dst);
+        var index = 0;
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            async: false,
+            data: data,
+            success: function (res) {
+                //console.log(url, data, dst);
+                var divId = dstId + '_' + index ;
+                var html = '<div id="' + divId + '">\r\n';
+                html += res;
+                html += '\r\n</div>';
+
+                if (index === 0)
+                    dst.html(html);
+                else
+                    dst.append(html);
+
+                var panel = $('#' + divId).find('.panel-body');
+                $(dst).removeClass('panel-loading');
+                $(dst).find('.panel-loader').remove();
+                $('html, body').animate({
+                    scrollTop: $(dst).offset().top - 150
+                }, 500)
+            }
+        });
+    }
+</script>

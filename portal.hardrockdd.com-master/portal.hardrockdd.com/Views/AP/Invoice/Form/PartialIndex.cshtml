@@ -1,0 +1,25 @@
+﻿@model portal.Models.Views.AP.Invoice.InvoiceFormViewModel
+
+<div class="row">
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../AP/Invoice/Header/Panel", Model)
+            </div>
+            <div class="col-xl-12">
+                @Html.Partial("../AP/Invoice/Lines/Panel", Model)
+            </div>
+        </div>
+    </div>
+        
+    <div class="col-xl-4">
+        <div class="row">
+            <div class="col-xl-12">
+                @*@Html.Partial("../PurchaseOrder/StatusLog/Panel", Model.StatusLogs)*@
+            </div>
+            <div class="col-xl-12">
+                @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+            </div>
+        </div>
+    </div>
+</div>

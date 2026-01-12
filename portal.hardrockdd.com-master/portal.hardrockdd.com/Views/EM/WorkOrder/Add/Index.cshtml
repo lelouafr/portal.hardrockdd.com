@@ -1,0 +1,132 @@
+@model portal.Models.Views.EM.WorkOrder.WorkOrderCreateViewModel
+@{
+    var formId = "createWorkOrderForm";
+}
+
+<div class="modal-header">
+    <h4 class="modal-title">Create Work Order</h4>
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+</div>
+
+<div class="modal-body">
+    <form class="form-horizontal" id="@formId">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="EMCo" value="@Model.EMCo" />
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Equipment <span class="text-danger">*</span></label>
+            <div class="col-md-9">
+                <select name="EquipmentId" id="EquipmentId" class="form-control" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Service Type</label>
+            <div class="col-md-9">
+                <select name="ServiceItemId" id="ServiceItemId" class="form-control">
+                    <option value="">Loading...</option>
+                </select>
+                <small class="text-muted">Select a service to auto-fill description, or type your own below</small>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Description <span class="text-danger">*</span></label>
+            <div class="col-md-9">
+                <input type="text" name="Description" id="Description" class="form-control" maxlength="60" required />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Date Due</label>
+            <div class="col-md-9">
+                <input type="date" name="DateDue" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">Notes</label>
+            <div class="col-md-9">
+                <textarea name="Notes" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-primary" id="btnCreateWorkOrder">
+        <i class="fas fa-plus"></i> Create Work Order
+    </button>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Load equipment dropdown
+        $.get('/EMCombo/Combo?emco=@Model.EMCo', function(data) {
+            var select = $('#EquipmentId');
+            select.empty();
+            $.each(data, function(i, item) {
+                select.append($('<option>', {
+                    value: item.Value || '',
+                    text: item.Text
+                }));
+            });
+        });
+
+        // Load service dropdown
+        $.get('/EMCombo/EMServiceCombo?emco=@Model.EMCo', function(data) {
+            var select = $('#ServiceItemId');
+            select.empty();
+            select.append($('<option>', { value: '', text: '-- Select Service (Optional) --' }));
+            $.each(data, function(i, item) {
+                if (item.Value) {
+                    select.append($('<option>', {
+                        value: item.Value || '',
+                        text: item.Text
+                    }));
+                }
+            });
+        });
+
+        // Auto-fill description when service is selected
+        $('#ServiceItemId').on('change', function() {
+            var selectedText = $(this).find('option:selected').text();
+            if (selectedText && selectedText !== '-- Select Service (Optional) --' && selectedText !== 'Select Service') {
+                $('#Description').val(selectedText);
+            }
+        });
+
+        // Create button click
+        $('#btnCreateWorkOrder').on('click', function() {
+            var btn = $(this);
+            var form = $('#@formId');
+
+            // Validate
+            var equipmentId = form.find('[name="EquipmentId"]').val();
+            var description = form.find('[name="Description"]').val();
+
+            if (!equipmentId) {
+                alert('Please select equipment');
+                return;
+            }
+            if (!description) {
+                alert('Please enter a description');
+                return;
+            }
+
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+
+            $.post('@Url.Action("Create", "EMWorkOrder")', form.serialize(), function(res) {
+                if (res.success === true || res.success === "true") {
+                    window.location.href = res.url;
+                } else {
+                    btn.prop('disabled', false).html('<i class="fas fa-plus"></i> Create Work Order');
+                    alert('Error creating work order');
+                }
+            });
+        });
+    });
+</script>

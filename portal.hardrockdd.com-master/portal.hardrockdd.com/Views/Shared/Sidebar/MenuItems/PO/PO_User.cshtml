@@ -1,0 +1,19 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "po_user";
+}
+@if (User.HasAccess("UserPORequest"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Yours</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "UserPORequest", routeValues: new { Area = "" })">PO Request</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "PORequestApproval", routeValues: new { Area = "" })">PO Approvals</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("PendingIndex", "UserPORequest", routeValues: new { Area = "" })">PO Pending</a></li>
+        </ul>
+    </li>
+}

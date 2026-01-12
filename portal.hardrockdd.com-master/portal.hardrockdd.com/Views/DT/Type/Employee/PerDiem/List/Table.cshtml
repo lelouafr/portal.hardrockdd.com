@@ -1,0 +1,37 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyWeeklyEntryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="text-center">
+            @{
+                var dayList = Model.Perdiems.GroupBy(grp => grp.WorkDate).Select(s => new { WorkDate = s.Key }).ToList();
+            }
+            @foreach (var day in dayList)
+            {
+                <th width="14%"><label class="col-form-label text-md-right col-form-label text-center">@(day.WorkDate.DayOfWeek.ToString()) <br /> (@(day.WorkDate.ToShortDateString()))  </label></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var perdiemList = Model.Perdiems.GroupBy(grp => grp.WorkDate).Select(s => new { WorkDate = s.Key, Perdiem = s.FirstOrDefault() }).ToList();
+        }
+        <tr>
+            @foreach (var per in perdiemList)
+            {
+            <td>
+                @Html.Partial("../DT/Type/Employee/PerDiem/List/TableCell", per.Perdiem)
+            </td>
+            }
+        </tr>
+    </tbody>
+</table>

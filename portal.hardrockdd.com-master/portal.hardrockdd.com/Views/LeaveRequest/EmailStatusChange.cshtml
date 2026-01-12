@@ -1,0 +1,115 @@
+﻿@model  portal.Models.Views.Payroll.Leave.LeaveRequstFormViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Time off Request " + Model.Request.Status.ToString();
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>@ViewBag.Title.</h4>
+                                    <p class="m-b-5">Please click the following link to review your Leave Request</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("Index","LeaveRequest", new { Area = "",prco = Model.Request.PRCo, RequestId = Model.Request.RequestId })">https://@(Request.Url.Authority)@Url.Action("Index", "LeaveRequest", new { Area = "", prco = Model.Request.PRCo, RequestId = Model.Request.RequestId })</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    @{
+                                        var user = Model.StatusLogs.List.OrderByDescending(o => o.LineNum).FirstOrDefault(f => f.Status == Model.Request.Status).CreatedUser;
+                                    }
+                                    @switch (Model.Request.Status)
+                                    {
+                                        case DB.LeaveRequestStatusEnum.Open:
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Submitted:
+                                            <h4>Leave @Model.Request.Status.ToString() by @Model.Request.CreatedUser.FullName</h4>
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Approved:
+                                            <h4>Leave @Model.Request.Status.ToString() by @user.FullName </h4>
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Rejected:
+                                            <h4>Leave @Model.Request.Status.ToString() by @user.FullName </h4>
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Processed:
+                                            <h4>Leave @Model.Request.Status.ToString() by @user.FullName </h4>
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Canceled:
+                                            <h4>Leave @Model.Request.Status.ToString() by @user.FullName </h4>
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.Reviewed:
+                                            break;
+                                        case DB.LeaveRequestStatusEnum.SupApproved:
+                                            <h4>Leave @Model.Request.Status.ToString() by @user.FullName </h4>
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    <table class="row">
+                                        <tr>
+                                            <th class="small-4 large-2 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Date</b></p>
+                                            </th>
+                                            <th class="small-4 large-5 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Type</b></p>
+                                            </th>
+                                            <th class="small-4 large-5 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Hours</b></p>
+                                            </th>
+                                        </tr>
+                                        @foreach (var date in Model.Lines.List)
+                                        {
+                                        <tr>
+                                            <td>@date.WorkDate.Value.ToShortDateString()</td>
+                                            <td>@date.LeaveCodeId</td>
+                                            <td>@date.Hours</td>
+                                        </tr>
+                                        }
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.WA.Application.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../HR/Applicant/Form/Application/Form/WorkHistory/Panel", Model.WorkHistory)
+    </div>
+    <div class="col-12">
+        @Html.Partial("../HR/Applicant/Form/Application/Form/EquipmentHistory/Panel", Model.EquipmentHistory)
+    </div>
+    <div class="col-12">
+        @Html.Partial("../HR/Applicant/Form/Application/Form/TrafficCitation/Panel", Model.Citations)
+    </div>
+    <div class="col-12">
+        @Html.Partial("../HR/Applicant/Form/Application/Form/TrafficAccident/Panel", Model.Accidents)
+    </div>
+</div>

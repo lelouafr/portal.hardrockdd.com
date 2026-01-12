@@ -1,0 +1,93 @@
+﻿@model portal.Models.Views.HQ.Attachment.FileExplorerListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panel_" + Model.UniqueAttchId;
+}
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("FileExplorerForm", "FileExplorer", new { uniqueAttchID = Model.UniqueAttchId, folderId = Model.FolderId, viewType = Model.ViewType })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-sm btn-icon btn-white" data-click="folder-list"><i class="fa fa-list"></i></a>
+            @*<a href="javascript:;" class="btn btn-sm btn-icon btn-white" data-click="folder-tree"><i class="fa fa-folder-tree"></i></a>*@
+            <a href="javascript:;" class="btn btn-sm btn-icon btn-white" data-click="folder-thumb"><i class="fas fa-images"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Explorer
+        </div>
+    </div>
+    <div class="panel-body show" data-view="folder-list" id="@panelId"
+         data-folderid="@Model.FolderId"
+         data-uniqueattchid="@Model.UniqueAttchId"
+         data-viewtype="@(Model.ViewType)"
+         >
+        @Html.Partial("../HQ/Attachment/Explorer/Folder", Model)
+    </div>
+</div>
+<script>
+    $('.panel-heading-btn').on('click', '[data-click=folder-list]', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+        $(panelBody).data('viewtype', 'List');
+        $(panelBody).attr('data-viewtype', 'List');
+        var data = {
+            uniqueAttchID: $(panelBody).data('uniqueattchid'),
+            folderId: $(panelBody).data('folderid'),
+            viewType: $(panelBody).data('viewtype')
+        }
+        var parms = $.param(data);
+        var url = "@Url.Action("FileExplorerForm", "FileExplorer")";
+        url = url + '?' + parms;
+
+        $(panel).data('reloadurl', url);
+        $(panel).attr('data-reloadurl', url);
+        $(panel).find('[data-click="panel-reload"]').click();
+    });
+
+    $('.panel-heading-btn').on('click', '[data-click=folder-tree]', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+        $(panelBody).data('viewtype', 'Tree');
+        $(panelBody).attr('data-viewtype', 'Tree');
+        var data = {
+            uniqueAttchID: $(panelBody).data('uniqueattchid'),
+            folderId: $(panelBody).data('folderid'),
+            viewType: $(panelBody).data('viewtype')
+        }
+        var parms = $.param(data);
+        var url = "@Url.Action("FileExplorerForm", "FileExplorer")";
+        url = url + '?' + parms;
+
+        $(panel).data('reloadurl', url);
+        $(panel).attr('data-reloadurl', url);
+        $(panel).find('[data-click="panel-reload"]').click();
+    });
+
+    $('.panel-heading-btn').on('click', '[data-click=folder-thumb]', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var panel = $(this).closest('.panel');
+        var panelBody = $(panel).find('.panel-body');
+        $(panelBody).data('viewtype', 'Thumbnail');
+        $(panelBody).attr('data-viewtype', 'Thumbnail');
+        var data = {
+            uniqueAttchID: $(panelBody).data('uniqueattchid'),
+            folderId: $(panelBody).data('folderid'),
+            viewType: $(panelBody).data('viewtype')
+        }
+        var parms = $.param(data);
+        var url = "@Url.Action("FileExplorerForm", "FileExplorer")";
+        url = url + '?' + parms;
+
+        $(panel).data('reloadurl', url);
+        $(panel).attr('data-reloadurl', url);
+        $(panel).find('[data-click="panel-reload"]').click();
+        //ReloadFolderView($(this));
+    });
+
+</script>

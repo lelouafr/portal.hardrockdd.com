@@ -1,0 +1,115 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = "apDocumentTable";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urldelete="@Url.Action("DocumentDelete", "Document", new { Area = "AccountsPayable" })"
+       data-urlselect="@Url.Action("DocumentPanel", "Document", new { Area = "AccountsPayable" })"
+       data-dataurl="@Url.Action("AllData", "Document", new { Area = "AccountsPayable" })"
+       data-status="@((int)Model.Status)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().DocId)</th>
+            <th data-datatable-filter-type="select">@Html.LabelFor(model => model.List.FirstOrDefault().VendorDescription)</th>
+            <th data-datatable-filter-type="select">@Html.LabelFor(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().APReference)</th>
+            <th data-datatable-filter-type="select">@Html.LabelFor(model => model.List.FirstOrDefault().Mth)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelFor(model => model.List.FirstOrDefault().InvoiceDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().Amount)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -50;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth:true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            //rowsGroup: [2],
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.status =  $('#@tableId').attr('data-status');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "APCo", visible: false },
+                { data: "DocId", visible: false },
+                {
+                    data: "VendorDescription",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-10">' + data + '</div>';
+                        return result;
+                    },
+                },
+                {
+                    data: "StatusString",
+                    sortable: false
+                },
+                {
+                    data: "APReference",
+                    sortable: false
+                },
+                {
+                    data: "Mth",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var dt = new Date(data);
+                        return type === 'sort' ? moment(dt).format("YYYY-MM-DD") : moment(dt).format('L');
+                    },
+                    sortable: false
+                },
+                {
+                    data: "InvoiceDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    },
+                    sortable: false
+                },
+                {
+                    data: "Amount",
+                    render: function (data, type) {
+                        return type === 'sort' ? data : currencyFormat(data, 2);
+                    },
+                    className: "text-right",
+                    sortable: false
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "APCo=" + data.APCo + "&DocId=" + data.DocId;
+                $(row).attr('data-entitykey', rowKey);
+            },
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+
+</script>

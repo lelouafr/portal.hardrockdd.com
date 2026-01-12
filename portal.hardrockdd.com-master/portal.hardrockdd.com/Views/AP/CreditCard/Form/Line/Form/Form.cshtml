@@ -1,0 +1,120 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("LineUpdate", "APCreditCardTransactionCoding")"
+      data-urlvalidate="@Url.Action("LineValidate", "APCreditCardTransactionCoding")"
+      data-relatedpanel="ApDocumentSeqLineListViewModel"
+      data-postupdate="PostUpdate@(id)">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TaxGroupId, new { @id = Guid.NewGuid() })
+
+    @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorId, new { @id = Guid.NewGuid() })
+    <div class="row">
+        <div class="col-xl-6">
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.LineTypeId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.Description)
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.CalcType)
+                </div>
+                <div class="form-group has-feedback row unitGroup">
+                    @Html.EditorFor(m => m.Units)
+                    @Html.EditorFor(m => m.UM)
+                </div>
+                <div class="form-group has-feedback row unitGroup">
+                    @Html.EditorFor(m => m.UnitCost)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.GrossAmt)
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-xl-6">
+            <fieldset class="poGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.PO)
+                    @Html.EditorFor(m => m.POItem)
+                    @Html.HiddenFor(m => m.POItemTypeId, new { @id = Guid.NewGuid() })
+                </div>
+            </fieldset>
+            <fieldset class="jobGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.JobId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.PhaseId)
+                    @Html.EditorFor(m => m.JobCostTypeId)
+                </div>
+            </fieldset>
+            <fieldset class="eqpGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.EquipmentId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.CostCodeId)
+                    @Html.EditorFor(m => m.CostTypeId)
+                </div>
+            </fieldset>
+            <fieldset class="glGroup" style="display: none">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.GLAcct)
+                </div>
+            </fieldset>
+            <fieldset class="taxFieldSet">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.TaxTypeId)
+                </div>
+                <div class="form-group has-feedback row taxGroup">
+                    @Html.EditorFor(m => m.TaxCodeId)
+                    @Html.EditorFor(m => m.TaxRate)
+                </div>
+                <div class="form-group has-feedback row taxGroup">
+                    @Html.EditorFor(m => m.TaxAmount)
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+    function PostUpdate@(id)(elem) {
+        handleCalcView($('#@formId'));
+        handleTypeView($('#@formId'));
+        handleTaxView($('#@formId'));
+    }
+</script>

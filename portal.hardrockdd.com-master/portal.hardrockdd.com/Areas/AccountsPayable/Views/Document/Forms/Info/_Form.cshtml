@@ -1,0 +1,97 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentInfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+@Html.Partial("Forms/Info/_Buttons", Model.Action)
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("InfoUpdate", "Document", new { Area = "AccountsPayable" })"
+      data-urlvalidate="@Url.Action("InfoValidate", "Document", new { Area = "AccountsPayable" })"
+      >
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendorGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @if (Model.Status == DB.APDocumentStatusEnum.Processed)
+        {
+            @Html.EditorFor(m => m.AllMth)
+            @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        }
+        else
+        {
+            @Html.EditorFor(m => m.Mth)
+        }
+        @Html.EditorFor(m => m.DivisionId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.VendorId)
+        @Html.EditorFor(m => m.APReference)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.InvoiceDate)
+        @Html.EditorFor(m => m.DueDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Amount)
+        @Html.EditorFor(m => m.PO)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function () {
+        var parsleyConfig = {
+            classHandler: function (parsleyField) {
+                var elem = parsleyField.$element;
+                if (elem.is('select')) {
+                    if ($(elem).parent('.bootstrap-select').length !== 0) {
+                        $(elem).removeClass('is-invalid').selectpicker('setStyle');
+                    }
+                }
+            },
+            triggerAfterFailure: 'focusout changed.bs.select',
+            errorClass: "is-invalid",
+            successClass:"",
+            errorTemplate: '<small class="text-small"></span>',
+            errorsContainer: function (parsleyField) {
+                var elem = parsleyField.$element;
+                if (elem.is('select')) {
+                    if ($(elem).parent('.bootstrap-select').length !== 0) {
+                        $(elem).selectpicker('setStyle');
+                    }
+                }
+                var fieldSet = parsleyField.$element.closest('.input-group');
+                if (fieldSet.length > 0) {
+                    var errorElem = fieldSet.find('.invalid-feedback');
+                    errorElem.show();
+                    console.log('fieldSet', fieldSet);
+                    return errorElem;
+                }
+                return parsleyField;
+            }
+        };
+        //$('#@formId').parsley(parsleyConfig);
+
+        Form().init($('#@formId'));
+    });
+</script>

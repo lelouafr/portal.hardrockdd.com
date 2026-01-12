@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.Equipment.Service.EquipmentServiceViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+   
+    <td>
+        @Html.EditorFor(m => m.Description, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.AntiForgeryToken()
+        <button class="btn btn-danger btn-sm pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

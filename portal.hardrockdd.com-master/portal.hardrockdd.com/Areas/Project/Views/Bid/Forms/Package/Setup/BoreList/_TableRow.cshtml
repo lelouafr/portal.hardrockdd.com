@@ -1,0 +1,48 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.BoreLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Status, new { @id = Guid.NewGuid() })
+        @*@Html.HiddenFor(m => m.GroundDensityId, new { @id = Guid.NewGuid() })*@
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.BoreTypeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Footage)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.PipeSize)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RigCategoryId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CrewCount)
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>
+@if (Model.IntersectBore != null)
+{
+    @Html.Partial("Forms/Package/Setup/BoreList/_TableRowIntersect", Model.IntersectBore)
+}

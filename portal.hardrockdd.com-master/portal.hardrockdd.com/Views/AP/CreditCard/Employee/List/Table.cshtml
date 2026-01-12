@@ -1,0 +1,8 @@
+﻿@model portal.Models.Views.AP.CreditCard.Employee.TransactionListViewModel
+@Html.Partial("../AP/CreditCard/Employee/List/DropZone", Model)
+<div class="d-xl-none">
+    @Html.Partial("../AP/CreditCard/Employee/List/Mobile/Table", Model)
+</div>
+<div class="d-none d-xl-block">
+    @Html.Partial("../AP/CreditCard/Employee/List/Desktop/Table", Model)
+</div>

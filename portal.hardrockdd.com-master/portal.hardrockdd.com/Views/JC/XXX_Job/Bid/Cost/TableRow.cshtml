@@ -1,0 +1,62 @@
+﻿@model portal.Models.Views.Bid.BoreLine.CostItemViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (rowKey != string.Empty)
+            {
+                rowKey += "&";
+            }
+            rowKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+    <tr data-rowkey="@rowKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Cost, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.BudgetCodeId, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Multiplier)
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Cost, new { ViewOnly = (Model.StdCost != 0 || viewOnly) })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.UM, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.DirtUnits, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.RockUnits, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.DirtCost, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.RockCost, new { ViewOnly = true })
+        </td>
+        @if (!viewOnly)
+        {
+            <td>
+                <button class="btn btn-danger pull-right delRow"
+                        data-rowkey="@rowKey">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        }
+    </tr>
+
+   

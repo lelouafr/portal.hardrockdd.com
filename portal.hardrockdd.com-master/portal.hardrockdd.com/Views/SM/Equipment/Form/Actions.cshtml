@@ -1,0 +1,38 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.Forms.FormViewModel
+@{
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+    var btnId = "button_" + Model.Info.EquipmentId.ToString();
+
+}
+
+<div class="row" id="@formId">
+    <div class="col-lg-12 m-b-10">
+        <div class="text-center">
+            @foreach (var action in Model.WorkFlowActions)
+            {
+                <button type="button" class="btn @action.ButtonClass @btnId" data-gotostatusid="@((int)action.GotoStatusId)" data-redirectaction="@action.ActionRedirect" data-key="@formLayout.TableKey">@action.Title</button>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $('#@formId').ready(function () {
+        $('#@(formId)').on('click', 'button.@btnId', function () {
+            var data = $(this).data('key');
+            var gotoStatusId = $(this).data('gotostatusid');
+            var redirectAction = $(this).data('redirectaction');
+
+            data += "&GotoStatusId=" + gotoStatusId;
+            data += "&ActionRedirect=" + redirectAction;
+            var url = "@Url.Action("RequestUpdateStatus", "ServiceRequest")";
+            url += "?" + data;
+
+            console.log('Goto: ', url);
+            location.href = url;
+        });
+
+    });
+</script>

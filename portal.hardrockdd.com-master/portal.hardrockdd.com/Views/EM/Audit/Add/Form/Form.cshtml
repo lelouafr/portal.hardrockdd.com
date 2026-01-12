@@ -1,0 +1,130 @@
+﻿@model portal.Models.Views.Equipment.Audit.EquipmentAuditCreateViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-tablelisturl="@Url.Action("CreateEquipmentList","EMAudit")"
+      data-urlcreate="@Url.Action("Create","EMAudit")"
+      data-urlvalidate="@Url.Action("CreateValidate", "EMAudit")"
+      data-postupdate="PostUpdate@(id)">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    <fieldset>
+        <legend>Create Equipment Audit</legend>
+    </fieldset>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AuditForm)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AuditType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AssignedTo)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row CrewId">
+        @Html.EditorFor(m => m.CrewId)
+    </div>
+    <div class="form-group has-feedback row EmployeeId">
+        @Html.EditorFor(m => m.EmployeeId)
+    </div>
+    <div class="form-group has-feedback row LocationId">
+        @Html.EditorFor(m => m.LocationId)
+    </div>
+
+    <fieldset class="">
+        <legend>Options</legend>
+        <div class="form-group has-feedback row IncludCrewLeaderEquipment">
+            @Html.EditorFor(m => m.IncludCrewLeaderEquipment)
+        </div>
+        <div class="form-group has-feedback row IncludeDirectReportEmployeeEquipment">
+            @Html.EditorFor(m => m.IncludeDirectReportEmployeeEquipment)
+        </div>
+        <div class="form-group has-feedback row">
+            @Html.EditorFor(m => m.IncludeSubEquipment)
+        </div>
+    </fieldset>
+</form>
+
+<script>
+    $('#@formId').ready(function () {
+        var form = $('#@formId');
+        Form().init('#@formId');
+        handleAuditTypeView(form);
+    })
+    function PostUpdate@(id)(elem) {
+        //console.log('Post Update');
+        var form = $(elem).closest('form');
+        if ($(elem).attr('name') === 'AuditType') {
+            handleAuditTypeView(form);
+            //console.log('Audit Type Changed');
+
+        }
+        UpdateTableList(form);
+
+    }
+    function handleAuditTypeView(form) {
+        var elem = $(form).find("[name='AuditType']");
+        var val = parseInt($(elem).val());
+        //console.log(val);
+        switch (val) {
+            case 0:
+                $(form).find('.IncludCrewLeaderEquipment').hide();
+                $(form).find('.IncludeDirectReportEmployeeEquipment').show();
+                //IncludeDirectReportEmployeeEquipment
+                $(form).find('.LocationId').hide();
+                $(form).find('.EmployeeId').hide();
+                $(form).find('.CrewId').show();
+                break;
+            case 1:
+                $(form).find('.IncludCrewLeaderEquipment').show();
+                $(form).find('.IncludeDirectReportEmployeeEquipment').show();
+                $(form).find('.LocationId').hide();
+                $(form).find('.CrewId').hide();
+                $(form).find('.EmployeeId').show();
+                break;
+            case 2:
+                $(form).find('.IncludCrewLeaderEquipment').hide();
+                $(form).find('.IncludeDirectReportEmployeeEquipment').hide();
+                $(form).find('.LocationId').show();
+                $(form).find('.CrewId').hide();
+                $(form).find('.EmployeeId').hide();
+                break;
+            default:
+        }
+    }
+
+    function UpdateTableList(form) {
+        var panel = $('#EquipmentListViewModel');
+        var url = $(form).data('tablelisturl');
+        var data = $(form).SerializeForm();
+        //console.log(url, data);
+        $.ajax({
+            type: "Get",
+            dataType: "html",
+            url: url,
+            data: data,
+            success: function (data) {
+                $(panel).html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+            }
+        });
+    }
+</script>

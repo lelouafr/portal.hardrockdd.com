@@ -1,0 +1,43 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em";
+}
+@if (   User.HasAccess("Equipment") ||
+        User.HasAccess("EMAuditUser") ||
+        User.HasAccess("DailyEquipmentUsage") ||
+        User.HasAccess("EquipmentParameter") ||
+        User.HasAccess("EquipmentLocation") ||
+        User.HasAccess("EquipmentCategory") ||
+        User.HasAccess("EquipmentService") ||
+        User.HasAccess("ServiceRequest")
+    )
+{
+<li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+    <a href="javascript:;">
+        <b class="caret"></b>
+        <i class="fas fa-truck-plow"></i>
+        <span>Equipment</span>
+    </a>
+    <ul class="sub-menu">
+        @if (User.HasAccess("Equipment", "Index"))
+        {
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Equipment", routeValues: new { Area = "" })">List</a></li>
+        }
+        @if (User.HasAccess("Equipment", "UserIndex"))
+        {
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("UserIndex", "Equipment", routeValues: new { Area = "" })">Your Equipment</a></li>
+        }
+        @if (User.HasAccess("EMInspection", "Index"))
+        {
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMInspection", routeValues: new { Area = "" })">Inspection</a></li>
+        }
+
+        @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM_Audit")
+        @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM_ServiceRequest")
+        @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM_WorkOrder")
+        @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM_Parameter")
+        @Html.Partial("../Shared/Sidebar/MenuItems/EM/EM_Usage")
+    </ul>
+</li>
+}

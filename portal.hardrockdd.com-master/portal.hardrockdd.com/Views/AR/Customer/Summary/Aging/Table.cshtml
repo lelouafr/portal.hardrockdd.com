@@ -1,0 +1,196 @@
+﻿@model portal.Models.Views.AR.Customer.Aging.CustomerAgaingListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<div class="row tableFilter">
+    <div class="col-12">
+        <form class="form-horizontal" id="CustomerAgaingListViewModelFilter">
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.DivisionId, new { ViewOnly = false })
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table "
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table", "CustomerAging")"
+       data-dataurl="@Url.Action(ViewBag.DataAction, ViewBag.DataController)"
+       data-divisionid="@((int)Model.DivisionId)"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th></th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerName)</th>
+            <th data-datatable-filter-type="none"><label class="text-center">Last Pay Date</label></th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().InvoiceDate)</th>
+            <th data-datatable-filter-type="none"><label class="text-center">Avg. Days</label></th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Bucket1)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Bucket2)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Bucket3)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Bucket4)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Bucket5)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Total)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#CustomerAgaingListViewModelFilter'));
+        var tableElem = $('#@tableId');
+        h = tableHeight($('#@tableId'), 100, 24.6);
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: false,
+            processing: true,
+            scrollY: 250,
+            scrollX: true,
+            autoWidth: true,
+            treeGrid: {
+                left: 5,
+                expandIcon: '<span><i class="fas fa-caret-right"></i></span>',
+                collapseIcon: '<span><i class="fas fa-caret-down"></i></span>'
+            },
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.divisionId = $(tableElem).attr('data-divisionid');
+                    //console.log('d.divisionId', d.divisionId, table);
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                {
+                    title: '',
+                    target: 0,
+                    width: 5,
+                    className: 'treegrid-control',
+                    data: function (item) {
+                        if (item.children) {
+                            return '<span><i class="fas fa-caret-right"></i></span>';
+                        }
+                        return '';
+                    }
+                },
+                {
+                    target: 1,
+
+                    data: function (item) {
+                        var result = item.name;
+                        //if (item.name.includes("Total")) {
+                        //    result = "<b>" + item.name + "</b>";
+                        //}
+                        //else if (item.children) {
+                        //    result = "<b>" + item.name + "</b>";
+                        //}
+
+                        if (item.Level == 0)
+                            return "<b class='f-s-12'>" + result + "</b>";
+
+                        if (item.Level == 1)
+                            return "<b class='f-s-10'>" + result + "</b>";
+
+                        if (item.Level == 2)
+                            return "<span class='f-s-9'>" + result + "</span>";
+                    },
+                    width: 250,
+                },
+                {
+                    width: 75,
+                    data: "LastPayDate",
+                    class: "text-right",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return ""
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    width: 75,
+                    data: "InvoiceDate",
+                    class: "text-right",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return ""
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    width: 40,
+                    data: "DaysOutstanding" ,
+                    class: "text-right border-left-2",
+                },
+                {
+                    width: 65,
+                    data: "Bucket1",
+                    class: "text-right border-left-2",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    width: 65,
+                    data: "Bucket2",
+                    class: "text-right",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    width: 65,
+                    data: "Bucket3",
+                    class: "text-right",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    width: 65,
+                    data: "Bucket4",
+                    class: "text-right",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    width: 65,
+                    data: "Bucket5",
+                    class: "text-right ",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    width: 65,
+                    data: "Total",
+                    class: "text-right  f-w-600 border-left-2 border-right-2",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$'),
+
+                },
+            ],
+            order: [[3, "desc"]],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                //var rowKey = "CustGroupId=" + data.CustGroupId + "&=" + data.Invoice;
+                //$(row).attr('data-entitykey', rowKey);
+            }
+        });
+        DataTablesMoveSearch(tableElem, $('.tableFilter'))
+    })
+
+    $(document).on('change', '[name="DivisionId"]', function () {
+        var table = $('#@tableId');
+        $(table).attr('data-divisionid', $(this).val());
+        $('#@tableId').DataTable().ajax.reload(function () {
+            Table().init($(table));
+        });
+
+    })
+</script>

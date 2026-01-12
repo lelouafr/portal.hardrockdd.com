@@ -1,0 +1,51 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("LocatePanel", "Locate")"
+       data-urlcreate="@Url.Action("RequestLocateAdd", "Locate", new { requestId = Model.RequestId })"
+       data-urldelete="@Url.Action("LocateDelete", "Locate")"
+       data-urlupdate="@Url.Action("LocateUpdate", "Locate")"
+       data-urlvalidate="@Url.Action("LocateValidate", "Locate")"
+       data-dstselect="reviewLocatePanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="50px" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateId)</th>            
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateRefId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().ExpDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().GPSCoords)</th>
+            <th>
+                <button class="btn btn-xs btn-success addRow pull-right">
+                    <i class='fas fa-plus'></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("Request/Form/Locate/_TableRow", request)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    })
+</script>

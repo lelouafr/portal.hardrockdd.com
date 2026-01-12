@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.Web.AuditLogListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div class="panel panel-inverse"
+     data-sortable-id="AuditLogListViewModel"
+     id="AuditLogListViewModel"
+     data-reloadurl="@Url.Action("Table", "AuditLog", new { Area = "",EntityKeyString = Model.EntityKeyString, EntityName = Model.EntityName })">
+    <div class="panel-heading">
+        <h4 class="panel-title">Audit Line(s)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../Administration/AuditLog/List/Table", Model)
+    </div>
+</div>

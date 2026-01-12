@@ -1,0 +1,312 @@
+﻿@using Newtonsoft.Json;
+@model portal.Areas.Project.Models.Job.Report.ISFormViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+
+    var RevenueList = Model.Revenue.List.GroupBy(g => g.ContractId)
+                                        .Select(rev => new
+                                        {
+                                            id = string.Format(AppCultureInfo.CInfo(), "r.{0}", rev.Key),
+                                            name = string.Format(AppCultureInfo.CInfo(), "Revenue"),
+
+                                            amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", rev.Sum(sum => sum.BilledAmt)),
+                                            amount = rev.Sum(sum => sum.BilledAmt),
+                                            gmpstr = "",
+
+                                            camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", rev.Where(f => f.Mth == Model.Mth).Sum(sum => sum.BilledAmt)),
+                                            camount = rev.Where(f => f.Mth == Model.Mth).Sum(sum => sum.BilledAmt),
+                                            cgmpstr = "",
+
+                                            children = rev.OrderBy(g => g.Mth).GroupBy(g => g.Mth)
+                                            .Select(mth => new
+                                            {
+                                                id = string.Format(AppCultureInfo.CInfo(), "rm.{0}", mth.Key),
+                                                parentid = string.Format(AppCultureInfo.CInfo(), "r.{0}", rev.Key),
+                                                name = string.Format(AppCultureInfo.CInfo(), "{0}", mth.Key.ToShortDateString()),
+                                                amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", mth.Sum(sum => sum.BilledAmt)),
+                                                amount = mth.Sum(sum => sum.BilledAmt),
+                                                camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", mth.Where(f => f.Mth == Model.Mth).Sum(sum => sum.BilledAmt)),
+                                                camount = mth.Where(f => f.Mth == Model.Mth).Sum(sum => sum.BilledAmt),
+                                                cgmpstr = "",
+                                                gmpstr = "",
+                                                cost = "",
+                                                children = mth.Select(revLine => new
+                                                {
+                                                    id = string.Format(AppCultureInfo.CInfo(), "rl.{0}", rev.Key),
+                                                    parentid = string.Format(AppCultureInfo.CInfo(), "rm.{0}", mth.Key),
+                                                    type = "rev",
+                                                    name = revLine.Description,
+                                                    amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", revLine.BilledAmt),
+                                                    amount = revLine.BilledAmt,
+                                                    gmpstr = "",
+
+                                                    camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", revLine.Mth == Model.Mth ? revLine.BilledAmt : 0),
+                                                    camount = revLine.Mth == Model.Mth ? revLine.BilledAmt : 0,
+                                                    cgmpstr = "",
+                                                }).ToList(),
+                                            }).ToList(),
+                                        }).ToList();
+
+    var CostList = Model.Cost.List.GroupBy(g => g.JobId)
+                                        .Select(cost => new
+                                        {
+                                            id = string.Format(AppCultureInfo.CInfo(), "c.{0}", cost.Key),
+                                            name = string.Format(AppCultureInfo.CInfo(), "Expense"),
+                                            gmpstr = "",
+                                            amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", cost.Sum(sum => sum.ActualCost)),
+                                            amount = cost.Sum(sum => sum.ActualCost) * -1,
+                                            camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", cost.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost)),
+                                            camount = cost.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost) * -1,
+                                            cgmpstr = "",
+                                            children = cost.GroupBy(g => g.CostTypeDesc)
+                                            .Select(costType => new
+                                            {
+                                                parentid = string.Format(AppCultureInfo.CInfo(), "c.{0}", cost.Key),
+                                                id = string.Format(AppCultureInfo.CInfo(), "ct.{0}", costType.Key),
+                                                name = string.Format(AppCultureInfo.CInfo(), costType.Key),
+                                                type = "cost",
+                                                gmpstr = "",
+                                                amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", costType.Sum(sum => sum.ActualCost)),
+                                                amount = costType.Sum(sum => sum.ActualCost) * -1,
+                                                camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", costType.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost)),
+                                                camount = costType.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost) * -1,
+                                                cgmpstr = "",
+                                                children = costType.GroupBy(g => (g.DisplayDescription ?? "")).Select(d => new
+                                                {
+                                                    parentid = string.Format(AppCultureInfo.CInfo(), "ct.{0}", costType.Key),
+                                                    id = string.Format(AppCultureInfo.CInfo(), "d.{0}.{1}", costType.Key, d.Key),
+                                                    name = d.Key,
+                                                    type = "cost",
+                                                    gmpstr = "",
+                                                    amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", d.Sum(sum => sum.ActualCost)),
+                                                    amount = d.Sum(sum => sum.ActualCost) * -1,
+                                                    camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", d.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost)),
+                                                    camount = d.Where(f => f.Mth == Model.Mth).Sum(sum => sum.ActualCost) * -1,
+                                                    cgmpstr = "",
+
+                                                    children = d.Select(costLine => new
+                                                    {
+                                                        parentid = string.Format(AppCultureInfo.CInfo(), "ct.{0}", costType.Key),
+                                                        id = string.Format(AppCultureInfo.CInfo(), "cl.{0}.{1}", costLine.Mth, costLine.CostTrans),
+                                                        type = "cost",
+                                                        name = costLine.Posted ? costLine.Description : String.Format("(pending) {0}", costLine.Description),
+                                                        amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", costLine.ActualCost),
+                                                        amount = costLine.ActualCost * -1,
+                                                        gmpstr = "",
+                                                        camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", costLine.Mth == Model.Mth ? costLine.ActualCost : 0),
+                                                        camount = costLine.Mth == Model.Mth ? costLine.ActualCost * -1 : 0,
+                                                        cgmpstr = "",
+                                                    }).ToList(),
+                                                }).ToList(),
+                                            }).ToList()
+                                        }).ToList();
+
+    var totRev = RevenueList.Sum(sum => sum.amount);
+    var totCost = CostList.Sum(sum => sum.amount);
+    var gmTotal = totRev + totCost;
+    var gmPer = totRev == 0 ? -1 : gmTotal / totRev;
+
+
+    var ctotRev = RevenueList.Sum(sum => sum.camount);
+    var ctotCost = CostList.Sum(sum => sum.camount);
+    var cgmTotal = ctotRev + ctotCost;
+    var cgmPer = ctotRev == 0 ? -1 : cgmTotal / ctotRev;
+
+    var TotalList = new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "t.T"),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", "Gross Margin"),
+
+        amountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", gmTotal),
+        amount = gmTotal,
+        gmpstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", gmPer),
+        gmp = gmPer,
+
+        camountstr = string.Format(AppCultureInfo.CInfo(), "{0:C2}", cgmTotal),
+        camount = cgmTotal,
+        cgmpstr = string.Format(AppCultureInfo.CInfo(), "{0:P0}", cgmPer),
+        cgmp = cgmPer,
+    };
+
+    dataSet.AddRange(RevenueList);
+    dataSet.AddRange(CostList);
+    dataSet.Add(TotalList);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-urlselect="@Url.Action("JobPanel", "JobForm")"
+           data-dstselect="reviewPanel"
+           data-dstselectvalidate="false">
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $(window).height();
+        h -= $(tableElem).offset().top;
+        //h -= $(panel).find('.dataTables_scrollHead').height();
+        h -= 75;
+
+
+        var columns = [
+            {
+                title: '',
+                target: 0,
+                className: 'treegrid-control',
+                data: function (item) {
+                    if (item.children) {
+                        return '<span><i class="fas fa-caret-right"></i></span>';
+                    }
+                    return '';
+                }
+            },
+            {
+                title: 'Name',
+                target: 1,
+                width: 200,
+                render: {
+                    _: function (value, type, data) {
+                        return value;
+                    },
+                    sort: function (value, type, data) {
+                        if (data.children) {
+                            return data.id
+                        }
+                        return data.parent + data.name;
+                    },
+                },
+                data: function (item) {
+                    if (item.children || item.name === "Gross Margin") {
+                        return "<b>" + item.name + "</b>";
+                    }
+                    else {
+                        return '<span class="f-s-9">' + item.name + '</span>';
+                    }
+                    return item.name;
+                }
+            },
+            {
+                title: 'Current',
+                class: 'text-right',
+                target: 2,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.cgmp < 0)
+                        textClassColor = "text-danger ";
+                    else if (item.cgmp < 0.2)
+                        textClassColor = "text-warning ";
+
+                    if (item.children) {
+                        return '<div class="text-right"><b>' + item.camountstr + '</b></div>';
+                    }
+                    if ( item.name === "Gross Margin") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.camountstr + '</b></div>';
+                    }
+                    return '<div class="text-right ">' + item.camountstr + '</div>';
+                }
+            },
+            {
+                title: '',
+                class: 'text-right',
+                target: 3,
+                width: 35,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.cgmp < 0 && item.cgmp!= "")
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.cgmp < 0.2 && item.cgmp != "")
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children) {
+                        return '<div class="text-right"><b>' + item.cgmpstr + '</b></div>';
+                    }
+
+                    if (item.name === "Gross Margin") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.cgmpstr + '</b></div>';
+                    }
+
+                    return '<div class="text-right">' + item.cgmpstr + '</div>';
+                }
+            },
+            {
+                title: 'Total',
+                class: 'text-right',
+                target: 4,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.gmp < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.gmp < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children) {
+                        return '<div class="text-right"><b>' + item.amountstr + '</b></div>';
+                    }
+                    if (item.name === "Gross Margin") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.amountstr + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.amountstr + '</div>';
+                }
+            },
+            {
+                title: '',
+                class: 'text-right',
+                target: 5,
+                width: 35,
+                data: function (item) {
+                    textClassColor = "";
+                    if (item.gmp < 0)
+                        textClassColor = "text-danger font-weight-bold";
+                    else if (item.gmp < 0.2)
+                        textClassColor = "text-warning font-weight-bold";
+
+                    if (item.children) {
+                        return '<div class="text-right"><b>' + item.gmpstr + '</b></div>';
+                    }
+                    if (item.name === "Gross Margin") {
+                        return '<div class="text-right ' + textClassColor + '"><b>' + item.gmpstr + '</b></div>';
+                    }
+                    return '<div class="text-right">' + item.gmpstr + '</div>';
+                }
+            },
+        ];
+        //$("#treeGrid").height(h);
+        $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: false,
+            scrollY: 300,
+            //keys: true,
+            columns: columns,
+            data: data,
+            treeGrid: {
+                left: 5,
+                expandIcon: '<span><i class="fas fa-caret-right"></i></span>',
+                collapseIcon: '<span><i class="fas fa-caret-down"></i></span>'
+            },
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                if (!data.children) {
+                    if (data.name == "Total") {
+
+                    }
+                    else {
+                        var rowKey = "";// "JCCo=" + data.jcco + "&JobId=" + data.jobid;
+                        $(row).attr('data-entitykey', rowKey);
+                    }
+                }
+            }
+        });
+    });
+</script>

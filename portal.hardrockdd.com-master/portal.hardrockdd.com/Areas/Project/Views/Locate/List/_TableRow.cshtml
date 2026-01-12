@@ -1,0 +1,29 @@
+﻿@model portal.Areas.Project.Models.Locate.RequestViewModel
+
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    var classStr = "";
+}
+
+<tr data-entitykey="@entityKey">
+    <td class="@classStr">
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.RequestId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Description, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.AnticipatedStartDate, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.BidId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Owner, new { DisplayOnly = true })
+    </td>
+    <td>
+    </td>
+</tr>

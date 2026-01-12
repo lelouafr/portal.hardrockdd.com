@@ -1,0 +1,56 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyHolidayEntryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "DailyHolidayEntry")"
+       data-urldelete="@Url.Action("Delete", "DailyHolidayEntry")"
+       data-urlupdate="@Url.Action("Update", "DailyHolidayEntry")"
+       data-urlvalidate="@Url.Action("Validate", "DailyHolidayEntry")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Perdiem)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Value)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var Employees = Model.List.GroupBy(g => new { EmployeeId = (g.EmployeeId == null ? g.LineNum : g.EmployeeId), g.EmployeeName })
+                .Select(s => new { EmployeeId = s.Key.EmployeeId, EmployeeName = s.Key.EmployeeName, Lines = s.ToList() })
+                .OrderBy(f => f.EmployeeName)
+                .ToList();
+        }
+
+        @foreach (var emp in Employees)
+        {
+            @Html.Partial("../DT/Type/Holiday/Entry/List/Row/EmployeeRow", emp.Lines)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        //console.log(commentElem.html());
+        commentElem.show();
+        $(this).hide();
+    });
+
+</script>

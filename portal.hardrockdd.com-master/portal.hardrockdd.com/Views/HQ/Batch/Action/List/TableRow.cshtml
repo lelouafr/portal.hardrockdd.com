@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.HQ.Batch.ActionViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey" 
+    data-url="@Model.ActionUrl"
+    data-batchexist="@(Model.BatchId != null)"
+    data-ajaxtype ="@Model.ActionType"
+    data-co ="@Model.Co"
+    data-seqis ="@Model.SeqId"
+    data-mth ="@(Model.Mth.ToShortDateString())"
+    data-batchid ="@Model.BatchId"
+    data-seqid ="@Model.SeqId"
+    >
+    <td>
+        @Model.SubBatchId
+    </td>
+    <td>
+        @Model.Title
+    </td>
+    <td class="processStatus text-right">
+        @switch (Model.StatusId)
+        {
+            case DB.BatchStatusEnum.Open:
+                break;
+            case DB.BatchStatusEnum.ValidationInProcess:
+                <i class="fa fa-exclamation-circle text-yellow"></i>
+                break;
+            case DB.BatchStatusEnum.ValidationWarnings:
+                <i class="fa fa-exclamation-circle text-yellow"></i>
+                break;
+            case DB.BatchStatusEnum.ValidatedErros:
+                <i class="fa fa-times-circle text-red"></i>
+                break;
+            case DB.BatchStatusEnum.ValidationOK:
+                <i class="fa fa-check-circle text-green"></i>
+                break;
+            case DB.BatchStatusEnum.PostingInProgress:
+                <i class="fa fa-check-circle text-green"></i>
+                break;
+            case DB.BatchStatusEnum.PostingSuccessful:
+                <i class="fa fa-check-circle text-green"></i>
+                break;
+            case DB.BatchStatusEnum.Canceled:
+                break;
+            default:
+                break;
+        }
+    </td>
+</tr>

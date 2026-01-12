@@ -1,0 +1,36 @@
+﻿@model  portal.Models.Views.JC.Industry.Form.IndustryAssignedMarketListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlupdate="@Url.Action("Update", "JCIndustryMarket")"
+       data-urlcreate="@Url.Action("Add", "JCIndustryMarket")"
+       data-urldelete="@Url.Action("Delete", "JCIndustryMarket")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().MarketId)</th>
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("../JC/Industry/Forms/Market/TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

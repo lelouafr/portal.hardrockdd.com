@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Setup.SetupFormView
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-lg-4 p-r-3">
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/DayRounding/Panel", Model.RoundingDaySetup)
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/ProductionRate/Panel", Model.ProductionRates)
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/AllocatedCost/Panel", Model.AdditionalCostItems)
+    </div>
+    <div class="col-lg-4 p-r-3 p-l-3">
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/CostItem/Panel", Model.CostItems)
+    </div>
+    <div class="col-lg-4 p-l-3">
+        @Html.Partial("../BD/Bid/Forms/Package/Setup/CostItem/Panel", Model.RentalItems)
+    </div>
+</div>
+
+<script>
+    $('#@panelId').ready(function () {
+        initPanels($('#@panelId'));
+    });
+</script>

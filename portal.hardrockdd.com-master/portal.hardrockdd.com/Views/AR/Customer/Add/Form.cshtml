@@ -1,0 +1,86 @@
+﻿@model portal.Models.Views.AR.Customer.Forms.CustomerAddViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "Form_" + Guid.NewGuid();
+}
+<style>
+    .accordion > .card {
+        overflow: unset;
+    }
+
+    .card {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlvalidate="@Url.Action("ValidateAdd", "Customer")"
+      data-urlcreate="@Url.Action("Create", "Customer")">
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.CustGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CustomerId, new { @id = Guid.NewGuid() })
+    <div id="accordion" class="accordion">
+        <div class="card" style="overflow:visible;">
+            <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@(formId)_Info">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Info
+            </div>
+            <div id="@(formId)_Info" class="show">
+                <div class="card-body">
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.Name)
+                    </div>
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.Contact)
+                    </div>
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.Phone)
+                        @Html.EditorFor(m => m.Fax)
+                    </div>
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.EMail)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="overflow:visible;">
+            <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@(formId)_Address">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Address
+            </div>
+            <div id="@(formId)_Address" class="show">
+                <div class="card-body">
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.Address)
+                        @Html.EditorFor(m => m.Address2)
+                    </div>
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.City)
+                        @Html.EditorFor(m => m.State)
+                    </div>
+                    <div class="form-group has-feedback row">
+                        @Html.EditorFor(m => m.Zip)
+                        @Html.EditorFor(m => m.Country)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

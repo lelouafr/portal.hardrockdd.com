@@ -1,0 +1,25 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveEmployeeCodesViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.LeaveCodeId, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.StartBalHours, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.PostedHours, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.RequestedHours, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.AvailableHours, new { DisplayOnly = true })
+        </td>
+    </tr>

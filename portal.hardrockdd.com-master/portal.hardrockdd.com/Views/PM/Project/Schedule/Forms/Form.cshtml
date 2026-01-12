@@ -1,0 +1,38 @@
+﻿@model portal.Models.Views.PM.Project.Schedule.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+<div class="row">
+    <div class="col-6">
+        @Html.Partial("../PM/Project/Forms/Info/Form", Model.ProjectInfo)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../PM/Project/Forms/ProjectCrew/Panel", Model.Crews)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../PM/Project/Forms/JobPhaseSummary/Panel", Model.Jobs)
+    </div>
+</div>
+@*
+        <div class="row">
+            <div class="col-12">
+                @Html.Partial("../PM/Project/Schedule/Forms/TimeLine/Form", Model.TimeLine)
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../PM/Project/Schedule/Forms/Gantt/Form", Model)
+        </div>
+    </div>
+*@

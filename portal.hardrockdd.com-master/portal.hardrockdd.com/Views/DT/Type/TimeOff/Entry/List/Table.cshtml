@@ -1,0 +1,52 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyEmployeeTimeOffListViewModel
+@{
+    ViewBag.TableRow = "True";
+
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "DailyEmployeeTimeOffEntry")"
+       data-urldelete="@Url.Action("Delete", "DailyEmployeeTimeOffEntry")"
+       data-urlupdate="@Url.Action("Update", "DailyEmployeeTimeOffEntry")"
+       data-urlvalidate="@Url.Action("Validate", "DailyEmployeeTimeOffEntry")"
+       data-tablekey= "@tableKey"
+       >
+    <thead>
+        <tr class="">
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().EmployeeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().WorkDate)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().DayDescription)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().EarnCodeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.Entries.FirstOrDefault().Value)</th>
+            @if (!viewOnly)
+            {
+                <th width="30%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.Entries)
+        {
+            @Html.Partial("../DT/Type/TimeOff/Entry/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        commentElem.show();
+        $(this).hide();
+    });
+</script>

@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.Notification.NotificationViewModel
+
+<tr data-index="@Model.Id">
+    <td>
+        <span class="label @Model.NotificationLevelClass">
+            @Html.DisplayFor(l => l.NotificationLevel)
+        </span>
+    </td>
+    <td>
+        @Html.DisplayFor(l => l.Title)
+    </td>
+    <td>
+        @Html.DisplayFor(l => l.Notes)
+    </td>
+    <td>
+        @Html.DisplayFor(l => l.CreatedUser.FullName)
+    </td>
+    <td>
+        @Html.DisplayFor(l => l.CreatedOn)
+    </td>
+    <td>
+        <button type="button" class="btn btn-danger rowDelete" data-id="@Model.Id">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+
+</tr>

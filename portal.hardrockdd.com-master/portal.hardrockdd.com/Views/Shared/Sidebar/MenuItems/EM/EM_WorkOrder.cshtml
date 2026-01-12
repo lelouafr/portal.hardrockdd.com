@@ -1,0 +1,21 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em_workorder";
+}
+
+@if (User.HasAccess("EMWorkOrder"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Work Orders</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("WorkOrderIndex", "EMWorkOrder", new { Area = "" })"><i class="fas fa-plus text-success"></i> Create Work Order</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("WorkOrderIndex", "EMWorkOrder", new { Area = "" })">Open Work Orders</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("WorkOrderAllIndex", "EMWorkOrder", new { Area = "" })">All Work Orders</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("WorkOrderCompletedIndex", "EMWorkOrder", new { Area = "" })">Completed</a></li>
+        </ul>
+    </li>
+}

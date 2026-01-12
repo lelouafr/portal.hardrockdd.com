@@ -1,0 +1,77 @@
+﻿@model  portal.Models.Views.Bid.Wizard.Estimate.PackageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidPackageEstimateWizard")"
+       data-urldelete="@Url.Action("Delete", "BidPackageEstimateWizard")"
+       data-urlupdate="@Url.Action("Update", "BidPackageEstimateWizard")"
+       data-urlvalidate="@Url.Action("Validate", "BidPackageEstimateWizard")"
+       data-urlselect="@Url.Action("PackagePanel", "BidBoreLineEstimateWizard")"
+       data-dstselect="BidBoreLineSelect"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreTypeId)</th>
+            <th width="13%">@Html.LabelForRequired(model => model.List.FirstOrDefault().NumberOfBores)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GroundDensityId)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Wizard/Estimate/Package/TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+$('#@tableId').ready(function () {
+    var table = $('#@tableId');
+    var h = 42 * @(Model.List.Count);
+    if (h > 400) {
+        h = 400;
+        var parent = $(table).parent();
+        var contaner = $('<div></div>');
+        $(contaner).css("height", h + "px");
+        $(contaner).css("overflow-y", "scroll");
+        $(contaner).css("display", "block");
+
+        $(contaner).appendTo(parent);
+        $(table).appendTo(contaner);
+    }
+    $(table).show();
+    $(table).arrowTable();
+});
+</script>

@@ -1,0 +1,170 @@
+﻿@model portal.Models.Views.AP.CreditCard.Import.WexImportLinesViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    tableKey += "|";
+}
+
+<table class="table"
+       id="@tableId"
+       @*data-urldelete="@Url.Action("Delete", "APDocument")"
+       data-urlselect="@Url.Action("Form", "APDocument")"
+       data-dataurl="@Url.Action("Data", "APDocument", new { status = (int)Model.Status })"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+           *@
+       data-urldata="@Url.Action("WexData", "APCreditCardImport", new { co = Model.Co, importId = Model.ImportId })"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CMCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ImportId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ImportLineId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TransactionDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PostDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CardNumber)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EmbossLine2)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomVehicleAssetId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Units)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().UnitofMeasure)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().UnitCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TotalFuelCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ServiceCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().OtherCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TotalNonFuelCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().NetCost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Product)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ProductDescription)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantBrand)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantAddress)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantCity)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantStateProvince)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().MerchantPostalCode)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().VehicleDescription)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().VIN)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().InServiceDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().DriverLastName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().DriverFirstName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PRCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PREmployeeId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeID)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().TransactionTicketNumber)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().DriverPromptId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EMEquipmentId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().IsError)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+
+    $('#@tableId').ready(function () {
+        var h = 700;
+
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('urldata'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "CMCo" },
+                { data: "ImportId" },
+                { data: "ImportLineId" },
+                {
+                    data: "TransactionDate",
+                    render: function (data, type) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    data: "PostDate",
+                    render: function (data, type) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "CardNumber" },
+                { data: "EmbossLine2" },
+                { data: "CustomVehicleAssetId" },
+                { data: "Units" },
+                { data: "UnitofMeasure" },
+                { data: "UnitCost" },
+                { data: "TotalFuelCost" },
+                { data: "ServiceCost" },
+                { data: "OtherCost" },
+                { data: "TotalNonFuelCost" },
+                { data: "GrossCost" },
+                { data: "NetCost" },
+                { data: "Product" },
+                { data: "ProductDescription" },
+                { data: "MerchantBrand" },
+                { data: "MerchantName" },
+                { data: "MerchantAddress" },
+                { data: "MerchantCity" },
+                { data: "MerchantStateProvince" },
+                { data: "MerchantPostalCode" },
+                { data: "VehicleDescription" },
+                { data: "VIN" },
+                {
+                    data: "InServiceDate",
+                    render: function (data, type) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "DriverLastName" },
+                { data: "DriverFirstName" },
+                { data: "PRCo" },
+                { data: "PREmployeeId" },
+                { data: "EmployeeID" },
+                { data: "TransactionTicketNumber" },
+                { data: "DriverPromptId" },
+                { data: "EMCo" },
+                { data: "EMEquipmentId" },
+                { data: "IsError" },
+
+            ],
+            order: [[37, 'desc']],
+            columnDefs: [
+                { targets: [0], visible: false }
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+
+
+            },
+            createdRow: function (row, data, dataIndex) {
+                //var rowKey = "LocateId=" + data.LocateId;
+                //$(row).attr('data-entitykey', rowKey);
+                if (data.IsError == true) {
+                    $(row).addClass('bg-red-transparent-3');
+                }
+            }
+        });
+    });
+</script>

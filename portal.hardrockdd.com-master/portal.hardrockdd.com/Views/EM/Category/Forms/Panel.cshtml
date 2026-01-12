@@ -1,0 +1,58 @@
+﻿@model portal.Models.Views.Equipment.Category.EquipmentCategoryViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+<div class="panel panel-inverse"
+     data-sortable-id="EquipmentCategoryViewModel">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+
+        </div>
+        <h4 class="panel-title">Category (@Model.Description)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+
+        <div id="accordion" class="accordion">
+            <!-- begin card -->
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse1">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Category Info
+                </div>
+                <div id="collapse1" class="collapse show">
+                    <div class="card-body">
+                        @Html.Partial("../EM/Category/Forms/Form", Model)
+                    </div>
+                </div>
+            </div>
+            <!-- end card -->
+            <!-- begin card -->
+            <div class="card" style="overflow:visible;">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse2">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Assignment
+                </div>
+                <div id="collapse2" class="collapse">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-8">
+                                @Html.Partial("../EM/Equipment/Summary/BasicList/Panel", Model.AssignedEquipment)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

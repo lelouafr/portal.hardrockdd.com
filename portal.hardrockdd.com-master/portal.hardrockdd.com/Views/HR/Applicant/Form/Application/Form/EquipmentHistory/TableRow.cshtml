@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.WA.Application.EquipmentHistoryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.ApplicantId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ApplicationId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.SeqId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.TypeOfEquipment)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.FromDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ToDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Miliage)
+    </td>
+</tr>

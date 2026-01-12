@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.PM.Project.Form.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+
+<div class="row">
+    <div class="col-6">
+        @Html.Partial("../PM/Project/Forms/Info/Form", Model.ProjectInfo)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../PM/Project/Forms/ProjectCrew/Panel", Model.Crews)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../PM/Project/Forms/Job/Panel", Model.Jobs)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../PM/Project/Forms/JobPhaseSummary/Panel", Model.JobPhases)
+    </div>
+</div>

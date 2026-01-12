@@ -1,0 +1,85 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.PackageProposalViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var PerformString = "";
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("PackageProposalUpdate", "Bid")"
+      data-urlvalidate="@Url.Action("PackageProposalValidate", "Bid")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.MarketId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.IndustryId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.DivisionId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BoreTypeId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.NumberOfBores, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PipeSize, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RigCategoryId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.GroundDensityId, new { @id = Guid.NewGuid() })
+
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            @if (Model.BoreTypeId == 1)
+            {
+                PerformString = "Perform Horizontal Directional Drills and Pull";
+            }
+            @if (Model.BoreTypeId != 1)
+            {
+                PerformString = "Perform Road Bores by Horizontal Directional Drill Methods and Pull";
+            }
+            <div class="row">
+                <div class="col-8">
+                    <div class="form-inline">
+                        <h5 class="p-r-10" style="display: inline">
+                            @PerformString
+                        </h5>
+                        <div class="input-group" style="display: inline-block">
+                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control ", style = "width:300px;", id = "Description" + @Guid.NewGuid() })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row">
+                        @Html.EditorFor(m => m.IncludeOnProposal)
+                    </div>
+                </div>
+            </div>
+            @if (Model.RockLFPrice != Model.DirtLFPrice)
+            {
+                <h5>
+                    <br />Approximately @(string.Format(AppCultureInfo.CInfo(), "{0:N0}", Model.TotalFootage)) LF (@(Model.UniqueBoreCount) Drills) Dirt Price @string.Format(AppCultureInfo.CInfo(), "{0:C2}", Model.DirtLFPrice) Per LF
+                    <br />
+                    Rock / Mud motor Adder @string.Format(AppCultureInfo.CInfo(), "{0:C2}", Model.RockRevenueAdder) Per LF
+                </h5>
+            }
+            else
+            {
+                <h5>
+                    <br />Approximately @(string.Format(AppCultureInfo.CInfo(), "{0:N0}", Model.TotalFootage)) LF (@(Model.UniqueBoreCount) Drills) Price @string.Format(AppCultureInfo.CInfo(), "{0:C2}", Model.DirtLFPrice) Per LF
+                </h5>
+            }
+        </div>
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function () {
+        Form().init($('#@formId'));
+    });
+</script>

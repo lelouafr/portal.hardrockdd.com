@@ -1,0 +1,19 @@
+﻿@model portal.Areas.Project.Models.Locate.FormViewModel
+
+<div class="row">
+    <div class="col-7">
+        @Html.Partial("Form/Info/_Panel", Model.Info)
+        @if (Model.Import != null)
+        {
+            @Html.Partial("Form/Import/_Panel", Model.Import)
+        }
+        @Html.Partial("Form/Assignment/_Panel", Model.Assignments)
+    </div>
+    <div class="col-5">
+        @Html.Partial("Form/Sequence/_Panel", Model.Sequences)
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+        <div id="locate_map">
+            @Html.Action("Panel", "Map", new { Area = "Google", MapSetId = Model.MapSetId})
+        </div>
+    </div>
+</div>

@@ -1,0 +1,286 @@
+﻿@model portal.Models.Views.Payroll.PayrollReviewSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    var maxPREndingDate = Model.List.Max(max => max.PREndDate);
+}
+@if (Model.IsPayrollPeriodSetup == false)
+{
+    <h2 class="text-center text-danger">Payroll Period is not setup in VP!</h2>
+}
+<table class="table table-responsive"
+       id="@tableId"
+       data-urlselect="@Url.Action("Panel", "PayrollEmployeeEntryForm")"
+       data-urlupdatepayrollstatus="@Url.Action("UpdatePayrollStatus", "PayrollReview")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey"
+       >
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().CrewName)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().PREndDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeName)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            @foreach (var DayofWeek in Model.List.GroupBy(g => new { g.WorkDate.DayOfWeek }).Select(s => new { DayOfWeek = s.Key.DayOfWeek }).ToList())
+            {
+                <th data-datatable-filter-type="none"><label>@DayofWeek.DayOfWeek.ToString().Substring(0, 3)</label></th>
+            }
+            <th data-datatable-filter-type="none"><label>Total</label></th>
+            <th data-datatable-filter-type="none"></th>
+        </tr>
+    </thead>
+    <tbody >
+        @foreach (var empWeek in Model.List
+                                        .OrderBy(o => o.CrewName)
+                                        .ThenBy(o => o.EmployeeName)
+                                        .ThenBy(o => o.Status)
+                                        .GroupBy(g => new { g.PRCo, g.CrewName, g.EmployeeId, g.EmployeeName, g.PREndDate, g.WeekId })
+                                        .Select(s => new
+                                        {
+                                            PRCo = s.Key.PRCo,
+                                            EmployeeId = s.Key.EmployeeId,
+                                            CrewName = s.Key.CrewName,
+                                            EmployeeName = s.Key.EmployeeName,
+                                            PREndDate = s.Key.PREndDate,
+                                            WeekId = s.Key.WeekId,
+                                            TotalHours = s.Sum(sum => sum.Hour),
+                                            TotalDays = s.Sum(sum => ((int)(sum.PerdiemId ?? 0) >= 1 ? 1 : 0)),
+                                            List = s
+                                        })
+                                        .OrderBy(o => o.CrewName)
+                                        .ThenBy(o => o.EmployeeName)
+                                        .ThenBy(o => o.PREndDate)
+                                        .ToList())
+        {
+            var firstItem = empWeek.List.FirstOrDefault();
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "PRCo={0}&EmployeeId={1}&WeekId={2}", empWeek.PRCo, empWeek.EmployeeId, empWeek.WeekId);
+            var rowSpan = empWeek.List.GroupBy(g => g.Status).Count();
+            foreach (var hourStatus in empWeek.List.GroupBy(g => g.Status)
+                                                   .Select(s => new { Status = s.Key, PayrollStatus = s.Max(max => max.PayrollStatus), List = s })
+                                                   .ToList()
+                                                   .OrderBy(o => o.Status)
+                                                   .ToList())
+            {
+                var hoursClass = "";
+                if (hourStatus.Status == DB.PayrollReviewStatusEnum.Pending)
+                {
+                    hoursClass = "bg-yellow-lighter";
+                }
+                if (hourStatus.Status == DB.PayrollReviewStatusEnum.Posted)
+                {
+                    hoursClass = "bg-aqua-lighter";
+
+                }
+                <tr data-entitykey="@entityKey"
+                    data-prco="@empWeek.PRCo"
+                    data-employeeid="@empWeek.EmployeeId"
+                    data-weekid="@empWeek.WeekId"
+                    class="">
+                    <td>
+                        @firstItem.CrewName.Trim()
+                    </td>
+                    <td data-sort="@firstItem.PREndDate.ToString("yyyyMMdd")" data-search="@firstItem.PREndDate.ToShortDateString()">
+                        @if (firstItem.PREndDate < maxPREndingDate)
+                        {
+                            <span class="form-control bg-warning">@firstItem.PREndDate.ToShortDateString()</span>
+                        }
+                        else
+                        {
+                            <span class="form-control bg-success">@firstItem.PREndDate.ToShortDateString()</span>
+                        }
+                    </td>
+                    <td>
+                        <div>@firstItem.EmployeeName</div>
+                        <div class="p-r-5 f-s-8">(@firstItem.Postion)</div>
+                    </td>
+                    <td data-search="@hourStatus.Status.ToString()">@hourStatus.Status</td>
+                    @{
+                        var originalhoursClass = hoursClass;
+                    }
+                    @foreach (var DayofWeek in Model.List
+                                            .GroupBy(g => new { g.WorkDate.DayOfWeek })
+                                            .Select(s => new { DayOfWeek = s.Key.DayOfWeek })
+                                            .ToList())
+                    {
+                        var subItem = hourStatus.List.Where(f => f.WorkDate.DayOfWeek == DayofWeek.DayOfWeek).ToList();
+                        var entryCnt = empWeek.List.Where(f => f.WorkDate.DayOfWeek == DayofWeek.DayOfWeek && f.Hour != null).Count();
+                        <td>
+                            @if (entryCnt != 0)
+                            {
+                                var hours = subItem.Sum(sum => sum.Hour);
+                                if (firstItem.PREndDate < maxPREndingDate && hours == 0)
+                                {
+                                    hours = null;
+                                }
+                                if (hourStatus.Status == DB.PayrollReviewStatusEnum.Approved && firstItem.PREndDate < maxPREndingDate && hours != 0)
+                                {
+                                    hoursClass = "bg-purple-transparent-5";
+                                }
+                                else if (firstItem.PREndDate >= maxPREndingDate && hours > 12)
+                                {
+                                    hoursClass = "bg-red-transparent-5";
+                                }
+                                else
+                                {
+                                    hoursClass = originalhoursClass;
+                                }
+                                <div class="@hoursClass">
+                                    <b>
+                                        @string.Format(AppCultureInfo.CInfo(), "{0:F2}", hours)
+                                    </b>
+                                </div>
+                            }
+                            else if (entryCnt == 0)//hourStatus.Status == DB.PayrollReviewStatusEnum.Approved &&
+                            {
+                                if (firstItem.PREndDate == maxPREndingDate)
+                                {
+                                    <div class="text-red-lighter"><b>Empty</b></div>
+                                }
+                            }
+                            @if (subItem.Max(max => max.PerdiemId) != null)
+                            {
+                                var employeePerdiem = subItem.Max(max => max.PerdiemId);
+                                if (hourStatus.Status == DB.PayrollReviewStatusEnum.Approved && firstItem.PREndDate < maxPREndingDate && employeePerdiem != 0)
+                                {
+                                    hoursClass = "bg-purple-transparent-5";
+                                }
+                                else
+                                {
+                                    hoursClass = originalhoursClass;
+                                }
+                                <div class="@hoursClass">
+                                    <div><b>@string.Format(AppCultureInfo.CInfo(), "{0}", employeePerdiem)</b></div>
+                                </div>
+                            }
+                        </td>
+                    }
+
+                    <td>
+                        @if (firstItem.Status == hourStatus.Status)
+                        {
+                            var totalHours = Math.Round(empWeek.TotalHours ?? 0, 2);
+                            if (totalHours >= 60)
+                            {
+                                <div class="bg-red-transparent-5 f-s-16"><b> @String.Format("{0:F2}", totalHours)</b></div>
+                            }
+                            else
+                            {
+                                <div class="f-s-16"><b> @String.Format("{0:F2}", totalHours)</b></div>
+                            }
+                            <div class=""><b>@empWeek.TotalDays Days</b></div>
+                            @Html.HiddenFor(m => firstItem.EmployeeId, new { @id = Guid.NewGuid() })
+                        }
+                    </td>
+                    <td>
+                        @if (hourStatus.Status == DB.PayrollReviewStatusEnum.Approved)
+                        {
+                            var iconclass = "";
+                            var btnclass = "";
+                            switch (@hourStatus.PayrollStatus)
+                            {
+                                case DB.PayrollEntryStatusEnum.Accepted:
+                                    iconclass = "fa-check-circle";
+                                    btnclass = "btn-success";
+                                    break;
+                                case DB.PayrollEntryStatusEnum.Reversal:
+                                    iconclass = "fa-check-circle";
+                                    btnclass = "btn-success";
+                                    break;
+                                case DB.PayrollEntryStatusEnum.Review:
+                                    break;
+                                case DB.PayrollEntryStatusEnum.OnHold:
+                                    iconclass = "fa-times-circle";
+                                    btnclass = "btn-danger";
+                                    break;
+                                case DB.PayrollEntryStatusEnum.Pending:
+                                    break;
+                                case DB.PayrollEntryStatusEnum.Posted:
+                                    break;
+                                default:
+                                    break;
+                            }
+                            <div>
+                                @Html.AntiForgeryToken()
+                                <button type="button"
+                                        class="btn @btnclass btn-icon btn-circle payrollstatusBtn"
+                                        data-prco="@firstItem.PRCo"
+                                        data-employeeid="@firstItem.EmployeeId"
+                                        data-weekid="@firstItem.WeekId"
+                                        data-payrollstatus="@hourStatus.PayrollStatus">
+                                    <i class="far @iconclass"></i>
+                                </button>
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        var $table = $("#@tableId");
+        console.log('Doc Ready', $table);
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -50;
+        $table.DataTable({
+            order: [
+                [0, "asc"],
+                [1, "asc"],
+                [2, "asc"],
+                [3, "desc"]],
+            rowsGroup: [0, 1, 2],
+            paging: false,
+            //autoWidth: true,
+            ordering: false,
+            ////processing: true,
+            scrollY: 500,
+            fnInitComplete: function () {
+                console.log('init Table');
+                Table().init($table);
+            },
+        });
+
+        $('#@tableId').on('click', 'button.payrollstatusBtn', function (e) {
+            e.preventDefault();
+            var table = $(this).closest('table');
+            var row = $(this).closest('tr');
+            var url = $(table).data('urlupdatepayrollstatus');
+            var token = $(row).find('[name="__RequestVerificationToken"]');
+
+            var data = {
+                prco: $(this).data("prco"),
+                employeeId: $(this).data("employeeid"),
+                weekId:$(this).data("weekid"),
+            };
+            if (token.length != 0) {
+                data.__RequestVerificationToken = token.val();
+            }
+
+            if ($(this).hasClass('btn-success')) {
+                $(this).removeClass('btn-success').addClass('btn-danger');
+                $(this).find('i').removeClass('fa-check-circle').addClass('fa-times-circle');
+                data.payrollStatus = 2;
+            }
+            else if ($(this).hasClass('btn-danger')) {
+                $(this).removeClass('btn-danger').addClass('btn-success');
+                $(this).find('i').removeClass('fa-times-circle').addClass('fa-check-circle');
+                data.payrollStatus = 0;
+            }
+
+            //console.log(url, data);
+            $.post(url, data, function (res) {
+                if (res.success === "true") {
+
+                }
+                else {
+
+                }
+            });
+
+        })
+    });
+
+</script>

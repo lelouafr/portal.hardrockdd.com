@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.Web.ErrorLogViewModel
+
+
+<div class="error">
+    <div class="error-code m-b-10">500</div>
+    <div class="error-content">
+        <div class="error-message">Internal Server Error</div>
+        <div class="error-desc m-b-30">
+            The server encountered something unexpected that didn't allow it to complete the request. We apologize. <br />
+            Error Log Id: @Model.ErrorId<br />
+            You can go back to main page:<br />
+        </div>
+        <div>
+            <a href="@Url.Action("Index","Home", routeValues: new { Area = "" })" class="btn btn-success p-l-20 p-r-20">Return to Main page</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.DrivingInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("DrivingInfoUpdate", "Resource")"
+      data-urlvalidate="@Url.Action("DrivingInfoValidate", "Resource")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AuthDriver)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicNumber)
+        @Html.EditorFor(m => m.LicType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicState)
+        @Html.EditorFor(m => m.LicCountry)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LicClass)
+        @Html.EditorFor(m => m.LicExpDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DOTStatus)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

@@ -1,0 +1,51 @@
+﻿@model  portal.Areas.Project.Models.Bid.Proposal.BidScopeListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    var isTitleBlank = !Model.List.Any(f => !string.IsNullOrEmpty(f.Title));
+    ViewBag.IsTitleBlank = isTitleBlank;
+}
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("BidProposalScopeListAdd", "Bid")"
+       data-urldelete="@Url.Action("BidProposalScopeListDelete", "Bid")"
+       data-urlupdate="@Url.Action("BidProposalScopeUpdate", "Bid")"
+       @*data-urlvalidate="@Url.Action("BidProposalScopeValidate", "BidForm")"*@
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            @if (isTitleBlank)
+            {
+                <th width="5%">@Html.LabelFor(model => model.List.FirstOrDefault().LineId)</th>
+            }
+            else
+            {
+                <th width="25%">@Html.LabelFor(model => model.List.FirstOrDefault().Title)</th>
+            }
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Notes)</th>
+            @if (!viewOnly)
+            {
+                <th width="35px">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Proposal/Bid/ScopeList/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>

@@ -1,0 +1,26 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.RoundDayViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("PackageDayUpdate", "Bid")"
+      data-urlvalidate="@Url.Action("PackageDayValidate", "Bid")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PackageId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DayRounding)
+        @Html.EditorFor(m => m.RoundingPhaseId)
+    </div>
+</form>
+
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

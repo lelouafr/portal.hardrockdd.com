@@ -1,0 +1,9 @@
+﻿@model portal.Models.Views.Firm.FirmViewModel
+
+
+@Html.EditorForModel("Form/Form", new
+{
+    CreateUrl = @Url.Action("Create", "Firm"),
+    SaveUrl = @Url.Action("Update", "Firm"),
+    ValidateUrl = @Url.Action("Validate", "Firm")
+})

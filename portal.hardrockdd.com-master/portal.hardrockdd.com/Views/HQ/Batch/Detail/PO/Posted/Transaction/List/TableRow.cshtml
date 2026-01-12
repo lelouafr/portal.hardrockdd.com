@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APPostedTransViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.APTransId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Vendor)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.APReference)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Description)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.InvoiceDate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DueDate)
+    </td>
+    <td >
+        @Html.EditorFor(m => m.Amount, new { ViewOnly = true })
+    </td>
+</tr>

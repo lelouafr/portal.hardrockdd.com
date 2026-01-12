@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Payroll.Review.PayrollEmployeePerdiemListViewModel
+@{
+    var id = "a" + Guid.NewGuid().ToString().Replace("-", "");
+}
+
+
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@id">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Perdiem Summary
+    </div>
+    <div id="@id" class="show">
+        <div class="card-body">
+            @Html.Partial("../PR/Entries/Review/Forms/Perdiem/Table", Model)
+        </div>
+    </div>
+</div>

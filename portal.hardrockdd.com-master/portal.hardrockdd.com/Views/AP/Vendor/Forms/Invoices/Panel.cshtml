@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.AP.Invoice.InvoiceListViewModel
+@{ 
+    var id = "a_" + Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@id">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Invoices
+        </div>
+        <div id="@id" class="collapse">
+            <div class="card-body">
+                @Html.Partial("../AP/Vendor/Forms/Invoices/Table", Model)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

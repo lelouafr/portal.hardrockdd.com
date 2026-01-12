@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.HR.Position.PositionFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("PositionForm", "HRPosition", new { hrco = Model.HRCo, positionCode = Model.PositionCodeId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Position Form (@Model.Info.Description)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../HR/Position/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane($('#@panelId'));
+    });
+</script>

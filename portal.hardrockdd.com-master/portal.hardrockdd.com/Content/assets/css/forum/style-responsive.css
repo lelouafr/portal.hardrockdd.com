@@ -1,0 +1,162 @@
+/*
+Template Name: Color Admin - Responsive Admin Dashboard Template build with Twitter Bootstrap 3 & 4
+Version: 4.3.0
+Author: Sean Ngu
+Website: http://www.seantheme.com/color-admin-v4.3/frontend/forum/
+*/
+
+@media (min-width: 1200px) {
+
+    /* Container Setting */
+    
+    .container {
+        width: 1010px;
+    }
+}
+
+@media (min-width: 1920px) {
+    /* Forum List Setting */
+    
+	.forum-list > li + li, 
+	.threads-list > li + li {
+		border-top-width: 3px;
+	}
+	.forum-list .info-container .info .title {
+		font-size: 18px;
+	}
+	.forum-list .info-container .desc {
+		font-size: 16px;
+		line-height: 24px;
+	}
+	.forum-list .info-container .total-count {
+		font-size: 18px;
+	}
+	.forum-list .info-container .latest-post .title,
+	.forum-list .info-container .latest-post .time {
+		font-size: 16px;
+	}
+	.forum-list .media {
+		width: 72px;
+		line-height: 72px;
+	}
+	.forum-list .info-container {
+		margin-left: 89px;
+	}
+	.forum-list.forum-topic-list .info-start-end {
+		line-height: 24px;
+	}
+	.forum-list.forum-topic-list .info-container .date-replies .replies {
+		padding: 5px 15px;
+	}
+	.forum-list.forum-topic-list .info-container .date-replies .time {
+		line-height: 13px;
+		font-size: 13px;
+	}
+	.forum-list.forum-topic-list .info-container .date-replies .replies .total {
+		font-size: 18px;
+		line-height: 24px;
+	}
+	.forum-list.forum-topic-list .info-container .date-replies .replies .text {
+		font-size: 13px;
+		line-height: 17px;
+	}
+	.threads-list {
+		font-size: 14px;
+	}
+	.threads-list > li .title {
+		font-size: 16px;
+		line-height: 24px;
+	}
+	.forum-list.forum-detail-list .info-container {
+		margin-left: 92px;
+		-webkit-border-radius: 8px;
+		-moz-border-radius: 8px;
+		border-radius: 8px;
+	}
+	.forum-list.forum-detail-list .post-user{
+		font-size: 16px;
+	}
+	.forum-list.forum-detail-list .post-content {
+		font-size: 16px;
+		line-height: 28px;
+	}
+	.forum-list.forum-detail-list .post-content pre {
+		padding: 15px;
+		font-size: 16px;
+	}
+	
+    /* Tooltip Setting */
+    
+    .tooltip {
+    	font-size: 16px;
+    }
+}
+
+@media (min-width: 768px) {
+	
+	
+}
+
+@media (max-width: 767px) {
+    /* Forum List Element Setting */
+    
+    .forum-list .info-container .info,
+    .forum-list .info-container .total-count,
+    .forum-list .info-container .latest-post {
+        float: none;
+        width: auto;
+        text-align: left;
+    }
+    .forum-list .info-container > div + div {
+        margin-top: 10px;
+    }
+    
+    
+    /* Forum Topic List Setting */
+    
+    .forum-list.forum-topic-list .info-container .info {
+        padding-right: 0;
+    }
+    .forum-list.forum-topic-list .info-container .date-replies {
+        position: relative;
+        top: 0;
+        margin-top: 5px;
+        width: auto;
+        text-align: left;
+    }
+    .forum-list.forum-topic-list .info-container .date-replies .time,
+    .forum-list.forum-topic-list .info-container .date-replies .replies,
+    .forum-list.forum-topic-list .info-container .date-replies .replies .total,
+    .forum-list.forum-topic-list .info-container .date-replies .replies .text {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        font-size: 11px;
+        line-height: 11px;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+    }
+    .forum-list.forum-topic-list .info-container .date-replies .replies {
+        margin-left: 10px;
+        border-left: 1px solid #ddd;
+        padding-left: 10px;
+        background: none;
+    }
+    
+    
+    /* Forum Details Page Setting */
+    
+    .forum-list.forum-detail-list .media {
+        width: 40px;
+        line-height: 40px;
+    }
+    .forum-list.forum-detail-list .media .label {
+        font-size: 9px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .forum-list.forum-detail-list .info-container {
+        margin-left: 50px;
+    }
+}

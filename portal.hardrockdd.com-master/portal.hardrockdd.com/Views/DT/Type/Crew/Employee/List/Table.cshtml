@@ -1,0 +1,61 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyCrewEmployeeListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("CrewEmployeeAdd", "DailyTicketForm")"
+       data-urldelete="@Url.Action("CrewEmployeeDelete", "DailyTicketForm")"
+       data-urlupdate="@Url.Action("CrewEmployeeUpdate", "DailyTicketForm")"
+       data-urlvalidate="@Url.Action("CrewEmployeeValidate", "DailyTicketForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Perdiem)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Value)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EntryTypeId)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var Employees = Model.List.Where(w => w.EmployeeId != null).GroupBy(g => g.EmployeeId).Select(s => new { EmployeeId = s.Key, Lines = s.ToList() }).ToList();
+            var newLines = Model.List.Where(w => w.EmployeeId == null).GroupBy(g => g.LineNum).Select(s => new { Lines = s.ToList() }).ToList();
+        }
+
+        @foreach (var emp in Employees)
+        {
+            @Html.Partial("../DT/Type/Crew/Employee/List/Row/EmployeeRow", emp.Lines)
+        }
+        @foreach (var emp in newLines)
+        {
+            @Html.Partial("../DT/Type/Crew/Employee/List/Row/EmployeeRow", emp.Lines)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        //console.log(commentElem.html());
+        commentElem.show();
+        $(this).hide();
+    });
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+
+</script>

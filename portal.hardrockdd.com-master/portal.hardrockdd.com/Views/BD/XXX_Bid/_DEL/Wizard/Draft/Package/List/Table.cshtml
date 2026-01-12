@@ -1,0 +1,63 @@
+﻿@model  portal.Models.Views.Bid.Wizard.Sales.PackageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidPackageSalesWizard")"
+       data-urldelete="@Url.Action("Delete", "BidPackageSalesWizard")"
+       data-urlupdate="@Url.Action("Update", "BidPackageSalesWizard")"
+       data-urlvalidate="@Url.Action("Validate", "BidPackageSalesWizard")"
+       data-urlselect="@Url.Action("PackagePanel", "BidBoreLineSalesWizard")"
+       data-dstselect="BidBoreLineSelect"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreTypeId)</th>
+            <th width="13%">@Html.LabelForRequired(model => model.List.FirstOrDefault().NumberOfBores)</th>
+            <th width="13%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.List.FirstOrDefault().MarketId)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DivisionId)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Wizard/Draft/Package/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        $('#@tableId').arrowTable();
+    })
+</script>

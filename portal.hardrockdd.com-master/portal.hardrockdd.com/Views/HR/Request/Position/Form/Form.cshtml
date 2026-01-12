@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.HR.Request.Position.RequestFormViewModel
+
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("../HR/Request/Position/Form/Buttons", Model.Actions)
+        @Html.Partial("../HR/Request/Position/Form/Info/Panel", Model.Info)
+        @if ((Model.Info.Status == HRPositionRequestStatusEnum.ManagementReviewed ||
+                Model.Info.Status == HRPositionRequestStatusEnum.HRReview) &&
+                (User.IsInPosition("IT-DIR") ||
+                User.IsInPosition("HR-MGR") ||
+                User.IsInPosition("HR-MGR")))
+        {
+            @Html.Partial("../HR/Request/Position/Form/HRInfo/Panel", Model.PayrollInfo)
+        }
+        @if (Model.Info.Status == HRPositionRequestStatusEnum.HRApproved ||
+            Model.Info.Status == HRPositionRequestStatusEnum.ManagementReviewed)
+        {
+            @Html.Partial("../HR/Request/Position/Form/Applicants/Panel", Model.Applications)
+        }
+    </div>
+    <div class="col-4">
+        @Html.Partial("../HR/Request/Position/Form/StatusLog/Panel", Model.StatusLogs)
+    </div>
+</div>

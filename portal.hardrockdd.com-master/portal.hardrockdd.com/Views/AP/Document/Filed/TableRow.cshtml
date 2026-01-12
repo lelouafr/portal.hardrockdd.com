@@ -1,0 +1,49 @@
+﻿@model portal.Models.Views.AP.Document.vDocumentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+    <tr data-entitykey="@entityKey">
+        @*
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().APEntry.Vendor)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().DocumentName)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().APEntry.Amount)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().APEntry.InvoiceDate)</th>
+        <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().APEntry.APReference)</th>
+        *@
+        <td>
+            @Model.VendorIdDisplay
+            <div class="f-s-10">(@Model.VendorDescription)</div>
+        </td>
+        <td>
+            @Model.APReference
+           
+        </td>
+        <td>
+            @(string.Format("{C2:0", Model.Amount))
+        </td>
+        <td data-search="@Model.MthDate.ToString("MMMM")">
+            @Model.AllMth
+        </td>
+        <td>
+            @Model.InvoiceDate.Value.ToShortDateString()
+        </td>
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+
+            @if (Model.ContainsErrors)
+            {
+                <i class="fas fa-exclamation-triangle text-red pull-right "></i>
+                <div class="f-s-8 text-red"><p style="margin-bottom:0px;">@Model.ErrorMsg</p></div>
+            }
+            @if (!String.IsNullOrEmpty(Model.LastPostedCommentUser))
+            {
+                <i class="fa fa-comment text-blue pull-right "></i>
+                <div class="f-s-8 text-blue"><p style="margin-bottom:0px;">@Model.LastPostedCommentUser</p></div>
+            }
+        </td>
+    </tr>

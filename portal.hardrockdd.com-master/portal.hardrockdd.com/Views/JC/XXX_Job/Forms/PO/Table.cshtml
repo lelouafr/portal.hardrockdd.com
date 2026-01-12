@@ -1,0 +1,167 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.Purchase.Order.PurchaseOrderItemListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();
+    var vendorList = Model.List.GroupBy(g => new { g.VendorName, g.VendorId }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "v.{0}", s.Key.VendorId),
+        //parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "{0}: {1}", s.Key.VendorId, s.Key.VendorName),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.Cost ?? 0))
+    });
+    var refList = Model.List.GroupBy(g => new { g.VendorId, g.PO, g.Status }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "r.{0}.{1}", s.Key.VendorId, s.Key.PO),
+        parent = string.Format(AppCultureInfo.CInfo(), "v.{0}", s.Key.VendorId),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Key.PO),
+        status = s.Key.Status.ToString(),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.Cost ?? 0))
+    });
+    var transList = Model.List.Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "t.{0}.{1}", s.PO, s.POItem),
+        parent = string.Format(AppCultureInfo.CInfo(), "r.{0}.{1}", s.VendorId, s.PO),
+        name = string.Format(AppCultureInfo.CInfo(), "{0}", s.Description),
+        description = s.Description,
+        po = s.PO,
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Cost ?? 0)
+    }); ;
+
+    var totalList = Model.List.GroupBy(g => new { g.JobId }).Select(s => new
+    {
+        id = string.Format(AppCultureInfo.CInfo(), "t.{0}", s.Key.JobId),
+        parent = "",
+        name = string.Format(AppCultureInfo.CInfo(), "Total"),
+        amount = string.Format(AppCultureInfo.CInfo(), "{0:C2}", s.Sum(sum => sum.Cost ?? 0))
+    });
+    dataSet.AddRange(vendorList);
+    dataSet.AddRange(refList);
+    dataSet.AddRange(transList);
+    dataSet.AddRange(totalList);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+}
+@*<div class="btn-group center-block">
+        <button class="btn btn-default btn-sm" onclick="collapseAll()">Collapse All</button>
+        <button class="btn btn-default btn-sm" onclick="expandAll()">Expand All</button>
+    </div>*@
+<div id="treeGrid_@tableId" style="width:100%"
+     class="dhtmlx_treegrid f-w-500">
+</div>
+<script>
+
+    $("#treeGrid_@tableId").ready(function () {
+        var data = @Html.Raw(jsonData);
+        //$(document).ready(function () {
+        h = @((vendorList.Count()  * 24) + (24 *2));
+        if (h < 400) {
+            h = 400;
+        }
+
+        $("#treeGrid_@tableId").height(h);
+        var treeGrid = new dhx.TreeGrid("treeGrid_@tableId", {
+            selection: "row",
+            rowHeight: 24,
+            headerRowHeight: 15,
+            //autoWidth: true,
+            data: data,
+            sortable: false,
+            columns: [
+                {
+                    id: "name",
+                    adjust: "data",
+                    type: "string",
+                    autoWidth: true,
+                    minWidth:200,
+                    header: [
+
+                        { text: "Vendor" }
+                    ],
+                    mark: function (cell, data, row, col) {
+                        var result = "";
+                        if (row.$level == 0 || row.$level == 1) {
+                            result = "f-w-700";
+                        }
+                        if (row.name === "Total") {
+                            result = "f-w-700 f-s-14";
+                        }
+                        return result;
+                    },
+                },
+                {
+                    id: "status",
+                    adjust: "data",
+                    type: "string",
+                    autoWidth: true,
+                    header: [
+
+                        { text: "Status" },
+                        //{ content: "selectFilter" },
+                    ],
+                    mark: function (cell, data, row, col) {
+                        if (row.$level == 0 || row.$level == 1) {
+                            return "f-w-700";
+                        }
+                    },
+                },
+                //{
+                //    id: "description",
+                //    adjust: "data",
+                //    type: "string",
+                //    header: [
+                //
+                //        { text: "Description" },
+                //    ],
+                //    mark: function (cell, data, row, col) {
+                //        if (row.$level == 0 || row.$level == 1) {
+                //            return "f-w-700";
+                //        }
+                //    },
+                //},
+                {
+                    id: "amount",
+                    adjust: "data",
+                    type: "number",
+                    autoWidth: true,
+                    minWidth: 75,
+                    header: [
+
+                        { text: "Amount" },
+                    ],
+                    mark: function (cell, data, row, col) {
+                        var result = " "
+                        if (row.$level == 0 || row.$level == 1) {
+                            result += "f-w-700 ";
+                        }
+                        if (row.name === "Total") {
+                            result += "f-s-14 ";
+                        }
+                        return result;
+                    },
+                }]
+
+        });
+        //collapseAll();
+        //setTimeout(function () {
+        //    treegrid.expandAll();
+        //    //treegrid.collapseAll();
+        //}, 500);
+
+
+        //});
+        treeGrid.collapseAll();
+        //function expandAll() {
+        //    treeGrid.expandAll();
+        //}
+
+        //function collapseAll() {
+        //    treeGrid.data.forEach(function (d) {
+        //        if (d.$level != 0) {
+        //            treeGrid.collapse(d.id);
+        //        }
+        //    });
+        //    treeGrid.collapseAll();
+        //}
+    })
+</script>

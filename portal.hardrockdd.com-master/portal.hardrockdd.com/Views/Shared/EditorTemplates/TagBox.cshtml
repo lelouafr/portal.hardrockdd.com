@@ -1,0 +1,130 @@
+﻿@model object
+@{
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var idGuid = "group_" + Guid.NewGuid();
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+
+    var flushCache = bool.TryParse(ViewBag.FlushCache?.ToString(), out bool flushCasheOut) ? flushCasheOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow?.ToString(), out bool tableRowOut) ? tableRowOut : false;
+
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ?
+                            (FieldAttribute)fldAttribute :
+                            new FieldAttribute();
+    /**Define Html Attributes**/
+    var dic = new Dictionary<string, object>();
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    dic.Add("id", id);
+    dic.Add("Name", name);
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+        dic.Add("data-parsley-error-message", name + " is required");
+    }
+    dic.Add("data-flushcache", flushCache);
+    if (viewOnly)
+    {
+        dic.Add("disabled", "");
+    }
+    dic.Add("data-role", "tagsinput");
+    dic.Add("data-selectinit", "false");
+    if (!string.IsNullOrEmpty(attributes.ComboUrl))
+    {
+        dic.Add("data-combourl", attributes.ComboUrl);
+    }
+    if (!string.IsNullOrEmpty(attributes.ComboForeignKeys))
+    {
+        dic.Add("data-combokeys", attributes.ComboForeignKeys);
+    }
+
+    /**Define select list**/
+    var selectList = new List<SelectListItem>();
+    var item = new SelectListItem
+    {
+        Text = "",
+        Value = Model == null ? "" : Model.ToString(),
+        Selected = true
+    };
+    selectList.Add(item);
+    dic.Add("multiple", "");
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+
+@if (attributes.LabelSize != 0 && !tableRow )
+{
+        @Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+
+}
+@if (displayOnly)
+{
+    <span id="@idGuid">
+        <span Name="@name" id="@id" data-combourl="@attributes.ComboUrl" data-combokeys="@attributes.ComboForeignKeys">
+            @Html.DisplayTextFor(m => m)
+        </span>
+    </span>
+}
+else
+{
+<div class="@textSize input-group " id="@idGuid">
+    @*@Html.DropDownListFor(f => f, selectList, @attributes.Placeholder, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))*@
+
+    <select class="form-control" 
+            multiple 
+            data-role="tagsinput" 
+            data-selectinit="false"
+            data-combourl="@attributes.ComboUrl"
+            data-combokeys="@attributes.ComboForeignKeys"
+            name="@name" 
+            id="@id">
+    </select>
+    @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+</div>
+}
+
+<!--<script>-->
+    @*if (!$.isFunction(window.initTags)) {
+        $('#@idGuid').ready(function () {
+            var elem = $('#@idGuid #@id');
+            initTags(elem, '@Model');
+        });
+    }
+    else {
+        var elem = $('#@idGuid #@id');
+        initTags(elem, '@Model');
+
+    }*@
+    <!--$('#@idGuid').ready(function () {
+        var elem = $('#@id');
+        data = getComboData(elem)
+        var taglist = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Text'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            local: data
+        });
+        taglist.initialize();
+
+        var elt = $('#@id');
+        elt.tagsinput({
+            itemValue: 'Value',
+            itemText: 'Text',
+            typeaheadjs: {
+               // name: 'fdsafdas',
+                displayKey: 'Text',
+                source: taglist.ttAdapter()
+            }
+        });
+    });
+</script>-->

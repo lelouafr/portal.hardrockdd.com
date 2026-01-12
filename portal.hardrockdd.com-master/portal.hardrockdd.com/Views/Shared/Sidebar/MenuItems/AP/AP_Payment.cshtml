@@ -1,0 +1,22 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "ap_payment";
+}
+
+
+@if (User.HasAccess("APPayment"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub ">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Payment(s)</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("APPayment", "BatchListIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("BatchListIndex", "APPayment", routeValues: new { Area = "" })">Batches</a></li>
+            }
+        </ul>
+    </li>
+}

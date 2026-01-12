@@ -1,0 +1,104 @@
+﻿@model portal.Models.Views.AP.Document.vDocumentListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = "apDocumentTable";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    tableKey += "|";
+}
+
+@Html.Partial("../AP/Document/DropZone", Model)
+<br />
+<table class="table"
+       id="@tableId"
+       data-urldelete="@Url.Action("Delete", "APDocument")"
+       data-urlselect="@Url.Action("Form", "APDocument")"
+       data-dataurl="@Url.Action("Data", "APDocument")"
+       data-status="@((int)Model.Status)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false" *@
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th >@Html.LabelFor(model => model.List.FirstOrDefault().DocId)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Source)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Mth)</th>
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().DocumentName)</th>
+            <th data-datatable-filter-type="select">@Html.LabelFor(model => model.List.FirstOrDefault().CreatedByUser)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        //var h = tableHeight($("#@tableId"), 100, 43.2) -80;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth:true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            rowsGroup: [2],
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.status =  $('#@tableId').attr('data-status');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columns: [
+                { data: "APCo", visible: false },
+                { data: "DocId", visible: false },
+                {
+                    data: "Source",
+                    sortable: false
+                },
+                {
+                    data: "Mth",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = new Date(data);
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                    sortable: false
+                },
+                {
+                    data: "DocumentName",
+                    sortable: true
+                },
+                {
+                    data: "CreatedByUser",
+                    sortable: true
+                },
+                {
+                    render: function (data, type, row, meta) {
+                        var rowKey = "APCo=" + row.APCo + "&DocId=" + row.DocId;
+                        var result = '<button class="btn btn-sm btn-danger pull-right delRow" data-entitykey="' + rowKey + '"> <i class="fa fa-trash"></i></button>';
+                        return result;
+                    },
+                    sortable:false
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "APCo=" + data.APCo + "&DocId=" + data.DocId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    });
+
+</script>

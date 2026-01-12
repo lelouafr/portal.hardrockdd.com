@@ -1,0 +1,179 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("PartialIndex", "PORequest")"
+       data-dataurl="@Url.Action("Data", "PORequestApproval")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().POCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().OrderedDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendorName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().PO)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var request in Model.List)
+        {
+            @Html.Partial("../PO/Request/Approval/List/TableRow", request)
+        }*@
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        @*$('#@tableId').DataTable({
+            autoWidth: false
+        });*@
+
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -50;
+        $('#@tableId').DataTable({
+            autoWidth: true,
+            paging: false,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+               "url": $('#@tableId').data('dataurl'),
+               "type": "GET",
+               "datatype": "json",
+            },
+            columns: [
+                {
+                    data: "POCo",
+                    visible: false,
+                    render: function (data) {
+                        var result = data;
+                        result += '@Html.AntiForgeryToken()';
+
+                        return result;
+                    }
+                },
+                { data: "RequestId", visible: false },
+                {
+                    data: "StatusString",
+                    render: function (data, type, row, meta) {
+                        var result = '<span class="label ' + row.StatusClass + '">' + data + '</span>';
+                        return result;
+                    },
+                },
+                {
+                    data: "OrderedDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = data;
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                },
+                {
+                    data: "VendorName",
+                    //render: function (data, type) {
+                    //    var result = '<div class="f-s-9">' + data + '</div>';
+                    //    return result;
+                    //},
+                },
+                { data: "PO" },
+                {
+                    data: "Cost",
+                    render: function (data, type) {
+                        return type === 'sort' ? data : currencyFormat(data, 2);
+                    },
+                    className: "text-right",
+                },
+                {
+                    data: "CreatedUser.FullName",
+                    render: function (data, type, row, meta) {
+                        var result = '';
+                        var value = '';
+                        if (row.CreatedUser != null) {
+                            value = row.CreatedUser.FullName;
+                        }
+                        result = value;//'<div class="f-s-9">' + value + '</div>';
+                        return result;
+                    },
+                    visible: true,
+                    sortable: false
+                },
+                {
+                    render: function (data, type, row, meta) {
+                        var rowKey = "poco=" + row.POCo + "&requestId=" + row.RequestId;
+                        var result = '';
+                        result += '@Html.AntiForgeryToken()';
+                        result += '<div class="pull-right btn-group">';
+                        result += '     <button class="btn btn-success approveRow" data-entitykey="' + rowKey + '" data-approvalurl="@Url.Action("Approve","PORequest")" >';
+                        result += '         <i class="fa fa-thumbs-up"></i>';
+                        result += '     </button>';
+                        result += '     <button class="btn btn-danger rejectRow" data-entitykey="' + rowKey + '" data-toggle="modal" data-target="#rejectTicket">';
+                        result += '         <i class="fa fa-thumbs-down"></i>';
+                        result += '     </button>';
+                        result += '</div>';
+                        return result;
+                    },
+                    visible: true,
+                    sortable: false
+                }
+                //{ data: "CreatedUser.FullName" }
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "poco=" + data.POCo + "&requestId=" + data.RequestId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+
+        $('#@tableId tbody').on('click', '.approveRow', function (e) {
+            e.preventDefault();
+            var button = $(this);
+            var url = $(this).data("approvalurl");
+            var row = $(this).closest('tr');
+            var table = $(this).closest('table');
+            var data = $(row).data("entitykey");
+            var token = $(row).find('[name="__RequestVerificationToken"]');
+            if (token.length != 0) {
+                data += '&__RequestVerificationToken=' + token.val();
+            }
+
+            console.log(url, data);
+            var rowElem = $(this).closest('tr');
+
+
+            $(button).SetButtonBusy();
+            var data = data;
+            $.post(url, data, function (res) {
+                $(button).SetButtonNotBusy();
+                if (res.success === "true") {
+                    $(table).data('dstselectvalidate', false);
+                    var btnGroup = $(rowElem).find('.btn-group');
+                    $(btnGroup).remove();
+                }
+                else {
+                    $(table).data('dstselectvalidate', true);
+                    $(row).removeClass('active');
+                    rowElem.click();
+                }
+
+            });
+        });
+    });
+</script>

@@ -1,0 +1,46 @@
+﻿@model  portal.Models.Views.Bid.Forms.Package.PackageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageAdd", "BidForm")"
+       data-urldelete="@Url.Action("PackageDelete", "BidForm")"
+       data-urlupdate="@Url.Action("PackageUpdate", "BidForm")"
+       data-urlvalidate="@Url.Action("PackageValidate", "BidForm")"
+       data-urlselect="@Url.Action("PackageBoreListPanel", "BidForm")"
+       data-dstselect="BidBoreLineSelect"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="150px">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().MarketId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().BoreTypeId)</th>
+            <th width="8%">@Html.LabelFor(model => model.List.FirstOrDefault().NumberOfBores)</th>
+            <th width="8%">@Html.LabelFor(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="15%">@Html.LabelFor(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().GroundDensityId)</th>
+            @if (!viewOnly)
+            {
+                <th width="35px">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Forms/Package/List/TableRow", obj)
+        }
+    </tbody>
+</table>

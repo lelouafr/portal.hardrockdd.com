@@ -1,0 +1,18 @@
+﻿
+@{ 
+
+    var version = ViewContext.Controller.GetType().Assembly.GetName().Version;
+}
+
+<div id="sidebar" class="sidebar">
+    <!-- begin sidebar scrollbar -->
+    <div data-scrollbar="true" data-height="100%">
+        @Html.Partial("~/Views/Shared/Sidebar/_User.cshtml")
+        @Html.Partial("~/Views/Shared/Sidebar/_Menu.cshtml")
+    </div>
+    <!-- end sidebar scrollbar -->
+    <div class="fs-10px text-white-100 copyright" style="position: absolute; bottom: 0;">
+        v. @version
+    </div>
+</div>
+<div class="sidebar-bg"></div>

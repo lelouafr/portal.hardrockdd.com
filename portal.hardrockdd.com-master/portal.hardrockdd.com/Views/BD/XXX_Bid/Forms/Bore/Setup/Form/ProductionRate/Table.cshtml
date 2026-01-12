@@ -1,0 +1,59 @@
+﻿@model  portal.Models.Views.Bid.Forms.Bore.Setup.ProductionRateListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+
+
+}
+
+<table class="table"
+       id="@tableId"
+       data-urldelete="@Url.Action("BoreProductionRateDelete", "BidForm")"
+       data-urlupdate="@Url.Action("BoreProductionRateUpdate", "BidForm")"
+       data-urlvalidate="@Url.Action("BoreProductionRateValidate", "BidForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PhaseId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BoreSize)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CalcType)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtProductionValue)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockProductionValue)</th>
+            <th width="35px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/ProductionRate/TableRow", obj)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        function handleCalcTypeFormat(elem) {
+            val = $(elem).val();
+            //console.log('CalcType changed: ', val);
+            if (val == "1") {
+                $(elem).removeClass("bg-green-transparent-2");
+                $(elem).addClass("bg-blue-transparent-2");
+            }
+            if (val == "0") {
+                $(elem).removeClass("bg-blue-transparent-2");
+                $(elem).addClass("bg-green-transparent-2");
+            }
+        }
+
+        $('#@tableId').find('select.CalcType').each(function () {
+            handleCalcTypeFormat(this);
+        });
+
+        $('#@tableId').on('change', 'select.CalcType', function () {
+            handleCalcTypeFormat(this);
+        });
+    });
+</script>

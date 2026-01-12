@@ -1,0 +1,80 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("LineUpdate", "DailyEquipmentUsage")"
+      data-urlvalidate="@Url.Action("LineValidate", "DailyEquipmentUsage")"
+      data-relatedpanel="DailyEquipmentUsageListViewModel">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+    <div class="row">
+        <div class="col-xl-6">
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.EquipmentId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.RevCode)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.JobId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.PhaseId)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.JCCostType)
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-xl-6">
+            <fieldset>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.ActualDate)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.GLOffsetAcct)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.RevTimeUnits)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.RevWorkUnits)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.RevRate)
+                </div>
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.RevDollars)
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

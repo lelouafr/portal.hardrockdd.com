@@ -1,0 +1,143 @@
+﻿@model  portal.Models.Views.Equipment.Audit.EquipmentAuditListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+@Html.Partial("../EM/Audit/Reject/Modal")
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       @*data-urlcreate="@Url.Action("Add", "EMAuditSite")"*@
+       data-urldelete="@Url.Action("Delete", "EMAudit")"
+       data-dataurl="@Url.Action("Data", ViewBag.DataController)"
+       @*data-urlupdate="@Url.Action("Update", "EMAuditSite")"
+       data-urlvalidate="@Url.Action("Validate", "EMAuditSite")"*@
+       data-reloadurl="@Url.Action("Table", ViewBag.DataController)"
+       data-urlselect="@Url.Action("Form", "EMAuditForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-candelete="@User.HasAccess("EMAudit")"
+       data-emco="@Model.EMCo"
+       data-crewid="@Model.CrewId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().AuditId)</th>
+            <th data-datatable-filter-type="none"><label>Date</label></th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="multiselect"><label>Form</label></th>
+            <th data-datatable-filter-type="multiselect"><label>Type</label></th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().AssignedTo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().CompletedOn)</th>
+            <th data-datatable-filter-type="none">
+                <button class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#addModel">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EntityName)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EntityKeyString)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4);
+        h -= 65;
+        var canDelete = $('#@tableId').data('candelete') == "True";
+        console.log($('#@tableId').data('dataurl'));
+        var table = $('#@tableId').DataTable({
+            //orderCellsTop: true,
+            pageLength: 100,
+            paging: true,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            //scrollX: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "EMCo" },
+                { data: "AuditId" },
+                {
+                    data: "CreatedOn",
+                    render: function (data, type) {
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "StatusIdString" },
+                { data: "AuditFormIdString" },
+                { data: "AuditTypeIdString" },
+                { data: "Description" },
+                { data: "AssignedTo" },
+                {
+                    data: "CompletedOn",
+                    render: function (data, type) {
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "EMCo" },
+                { data: "EntityName" },
+                { data: "EntityKeyString" },
+            ],
+            order: [[2, "desc"]],
+            columnDefs: [
+                { targets: [0, 1, 7, 8, 10, 11], visible: false },//7,
+                {
+                    targets: [9], visible: true//visible: $('#@tableId').data('candelete') == "True"
+                },
+                { targets: [9], orderable: false },
+                {
+                    targets: [9],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        if (colIndex === 9 ) {
+                            $(cell).empty();
+                            if (canDelete) {
+                                var rowKey = "EMCo=" + rowData.EMCo + "&AuditId=" + rowData.AuditId;
+                                var btn = $('<div class="btn-group  pull-right"><button class="btn btn-danger  btn-sm delRow"data-entitykey="' + rowKey+ '"><i class="fa fa-trash"></i></button></div>');
+
+                                var EntityNameInput = $('<input value="' + rowData.EntityName + '" name="EntityName" type="hidden">');
+                                var EntityKeyStringInput = $("<input value='" + rowData.EntityKeyString + "' name='EntityKeyString' type='hidden'>");
+                                $(cell).empty();
+                                $(cell).append($(btn));
+                                $(cell).append($(EntityNameInput));
+                                $(cell).append($(EntityKeyStringInput));
+                                if (!(rowData.StatusId == @((int)DB.EMAuditStatusEnum.New) ||
+                                    rowData.StatusId == @((int)DB.EMAuditStatusEnum.Started) ||
+                                    rowData.StatusId == @((int)DB.EMAuditStatusEnum.Rejected))) {
+                                    $(btn).hide();
+                                }
+                            }
+                        }
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "EMCo=" + data.EMCo + "&AuditId=" + data.AuditId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+</script>

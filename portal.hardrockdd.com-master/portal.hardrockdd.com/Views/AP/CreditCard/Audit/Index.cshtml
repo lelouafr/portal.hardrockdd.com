@@ -1,0 +1,71 @@
+﻿@model portal.Models.Views.AP.CreditCard.Audit.FormViewModel
+
+@{
+    ViewBag.Title = "Credit Card Audit";
+}
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+
+<div class="row">
+    <div class="col-xl-6">
+        <form class="form-horizontal"
+              id="StatementPeriod">
+            <div class="form-group has-feedback row">
+                <h1 class="page-header">@ViewBag.Title </h1>
+                @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+                @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+                @Html.EditorFor(m => m.Mth)
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-4">
+        <div id="">
+        </div>
+        <div id="StatementTransactions">
+            @Html.Partial("../AP/CreditCard/Audit/List/Panel", Model)
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        $('#StatementPeriod').ready(function () { Form().init('#StatementPeriod'); });
+
+        $('#StatementPeriod').on('change', '.Mth', function () {
+                var data = $(this).closest('form').SerializeJson();
+                $('#StatementTransactions').find('.panel').each(function () {
+                    var url = String($(this).data('reloadurl'));
+                    var newURL = url.substring(0, url.indexOf('?'));
+                    /*Rebuild reload url */
+                    var urlRoute = "";
+                    $.each(data, function (key, value) {
+                        if (urlRoute !== "") {
+                            urlRoute += "&"
+                        }
+                        urlRoute += key + "=" + value;
+                    });
+                    var newURL = newURL + "?" + urlRoute;
+                    //console.log(newURL, url);
+                    $(this).ReloadPanel(newURL);
+                })
+            })
+    </script>
+}

@@ -1,0 +1,140 @@
+﻿@model portal.Models.Views.AP.Invoice.InvoiceSummaryListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+@if (Model.Status == DB.APStatusEnum.All)
+{
+    <div class="row tableFilter">
+        <div class="col-12">
+            <form class="form-horizontal" id="InvoiceSummaryListViewModelFilter">
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.TimeSelection, new { ViewOnly = false })
+                </div>
+            </form>
+        </div>
+    </div>
+    <br />
+}
+<style>
+    .form-inline .form-control {
+        width: 100%;
+    }
+</style>
+<table class="table"
+       id="@tableId"
+       data-timeselection="@((int)Model.TimeSelection)"
+       data-status="@((int)Model.Status)"
+       data-dataurl="@Url.Action("Data", ViewBag.Controller)"
+       data-urlselect="@Url.Action("Form", ViewBag.Controller)"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().KeyID)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Mth)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().APTransId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().SearchString)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelFor(model => model.List.FirstOrDefault().InvoiceDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().APRef)</th>
+            <th data-datatable-filter-type="multiselect" width="25%" class="hidden-xs hidden-sm">@Html.LabelFor(model => model.List.FirstOrDefault().VendorName)</th>
+            <th data-datatable-filter-type="input" class="hidden-xs hidden-sm">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().InvAmount)</th>
+            @*<th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#InvoiceSummaryListViewModelFilter'));
+        var tableElem = $('#@tableId');
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -40;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            lengthMenu: [[100, 500, 1000], [100, 500, 1000]],
+            lengthChange: false,
+            paging: true,
+            pageLength: 1000,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            //scrollX: false,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                "url": $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.timeSelection = $(tableElem).attr('data-timeselection');
+                    d.status = $(tableElem).attr('data-status');
+                },
+               "type": "GET",
+               "datatype": "json",
+            },
+            order: [
+                [0, "desc"]
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columns: [
+                { data: "KeyID", visible: false },
+                { data: "APCo", visible: false },
+                { data: "MthString", visible: false },
+                { data: "APTransId", visible: false },
+                { data: "SearchString", visible: false },
+                {
+                    data: "InvoiceDate",
+                    render: function (data, type) {
+                        if (data === null) {
+                            return null;
+                        }
+                        var date = data;
+                        return type === 'sort' ? moment(date).format("YYYY-MM-DD") : moment(date).format('L');
+                    },
+                },
+                { data: "APRef" },
+                {
+                    data: "VendorName",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-10">' + data + '</div>';
+                        return result;
+                    },
+                },
+                {
+                    data: "Description",
+                    render: function (data, type) {
+                        var result = '<div class="f-s-9">' + data + '</div>';
+                        return result;
+                    },
+                },
+                {
+                    data: "InvAmount",
+                    render: function (data, type) {
+                        return type === 'sort' ? data : currencyFormat(data, 2);
+                    },
+                    className: "text-right",
+                    sortable: true
+                },
+                //{ data: "CreatedUser.FullName" }
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "apco=" + data.APCo + "&mth=" + data.MthString + "&aPTransId=" + data.APTransId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        DataTablesMoveSearch(tableElem, $('.tableFilter'))
+    });
+
+
+    $(document).on('change', '[name="TimeSelection"]', function () {
+        var table = $('#@tableId');
+        $(table).attr('data-timeselection', $(this).val());
+        $('#@tableId').DataTable().ajax.reload();
+    })
+
+</script>

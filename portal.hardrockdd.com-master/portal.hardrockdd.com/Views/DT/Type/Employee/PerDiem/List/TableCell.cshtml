@@ -1,0 +1,6 @@
+﻿@model portal.Models.Views.DailyTicket.DailyEmployeePerdiemViewModel
+
+@Html.EditorForModel("Form/TDForm", new {
+                    UpdateUrl = @Url.Action("Update", "DailyWeeklyPerdiem"),
+                    ValidateUrl = @Url.Action("Validate", "DailyWeeklyPerdiem")
+                })

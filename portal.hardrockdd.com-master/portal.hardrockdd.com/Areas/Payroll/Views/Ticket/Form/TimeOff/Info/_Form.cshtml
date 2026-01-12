@@ -1,0 +1,127 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Job.TicketViewModel
+
+@*@Html.Partial("../DT/Type/Buttons")*@
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var employeePanelBodyId = string.Format("employeepanel_{0}_{1}", Model.DTCo, Model.TicketId);
+    var taskPanelBodyId = string.Format("taskpanel_{0}_{1}", Model.DTCo, Model.TicketId);
+
+    if (Model.Status == DB.DailyTicketStatusEnum.Processed)
+    {
+        viewOnly = true;
+    }
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("JobInfoUpdate", "Ticket")"
+      data-urlvalidate="@Url.Action("JobInfoValidate", "Ticket")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WorkDate, new { ViewOnly = viewOnly })
+        @Html.EditorFor(m => m.WorkDateDescription)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId, new { ViewOnly = viewOnly })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.JobId, new { ViewOnly = false })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RigId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.GroundCondition)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WeatherCondition)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RainOut)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.MudMotor)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+</form>
+<script>
+
+    $('#@formId').ready(function () {
+        var $form = $('#@formId');
+        Form().init($form);
+
+        var $employeePanelBody = $('#@employeePanelBodyId');
+        var $employeePanel = $employeePanelBody.closest('.panel');
+
+        var $taskPanelBody = $('#@taskPanelBodyId');
+        var $taskPanel = $taskPanelBody.closest('.panel');
+
+        function employeeView() {
+            var crewId = $form.find("[name='CrewId']").val();
+            if (crewId !== null && crewId !== "" && crewId !== "null") {
+                $employeePanelBody.show();
+            }
+            else {
+                $employeePanelBody.hide();
+            }
+        }
+        function crewChange() {
+            employeeView();
+            $employeePanel.ReloadPanel();
+        }
+        function taskView() {
+            var jobId = $form.find("[name='JobId']").val();
+            var rigId = $form.find("[name='RigId']").val();
+            if (jobId !== null && jobId !== "" && jobId !== "null" &&
+                rigId !== null && rigId !== "" && rigId !== "null") {
+                $taskPanelBody.show();
+            }
+            else {
+                $taskPanelBody.hide();
+            }
+        }
+        function jobChange() {
+            taskView();
+            $taskPanel.ReloadPanel();
+        }
+
+        employeeView();
+        taskView();
+
+        $form.on('change', '.JobId, .CrewId, .RigId', function () {
+            var elem = this;
+            function func() {
+                var elemName = $(elem).attr('name');
+                switch (elemName) {
+                    case "CrewId":
+                        crewChange();
+                        break;
+                    case "RigId":
+                        break;
+                    case "JobId":
+                        jobChange();
+                        break;
+                    default:
+                }
+            }
+            setTimeout(function () {
+                Form().isUpdating($("#@(formId)"), func);
+            }, 10);
+        });
+    });
+
+
+</script>
+

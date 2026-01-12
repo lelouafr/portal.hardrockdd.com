@@ -1,0 +1,25 @@
+﻿@{
+    var loggedinUser = StaticFunctions.GetLoggedInUser();
+}
+<ul class="nav">
+    <li class="nav-profile active">
+        <a href="javascript:;" data-toggle="nav-profile">
+            <div class="cover with-shadow"></div>
+            <div class="image">
+                <img src="@loggedinUser.ProfileUri" alt="" />
+            </div>
+            <div class="info">
+                <b class="caret pull-right"></b>
+                @loggedinUser.FullName
+                <small>@loggedinUser.JobTitle</small>
+            </div>
+        </a>
+    </li>
+    <li>
+        <ul class="nav nav-profile expand" style="display: block;">
+            @*<li><a href="javascript:;"><i class="fa fa-cog"></i> Settings</a></li>
+            <li><a href="javascript:;"><i class="fa fa-pencil-alt"></i> Send Feedback</a></li>*@
+            <li><a href="@Url.Action("Index", "Document", new { Area = "Help"})"><i class="fa fa-question-circle"></i>Help Documents</a></li>
+        </ul>
+    </li>
+</ul>

@@ -1,0 +1,81 @@
+﻿@model portal.Models.Views.AP.Payment.InvoicePaymentListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid()); 
+    var tableLayout = new TableLayoutModel(this);
+    string btnKey = tableLayout.TableKey;
+}
+
+
+<div class="row tableFilter2">
+    <div class="col-4">
+        @if (Model.CMAcct == 12)
+        {
+            <button data-key="@btnKey" 
+                    data-url="@Url.Action("DownloadZionCSV", "APPayment", new { apco= Model.APCo, mth= Model.Mth, batchId = Model.BatchId, cmAcct = Model.CMAcct })" 
+                    type="button" 
+                    class="btn btn-primary btnZionCsv">Create CSV For Zion</button>
+        }
+    </div>
+</div>
+
+<table class="table"
+       id="@tableId">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().APCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().CMCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().CMAcct)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().PayMethod)</th>
+            <th data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().CMRef)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().Vendor)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().Name)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().ChkType)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().PaidDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelFor(model => model.List.FirstOrDefault().Amount)</th>
+            @*<th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.List)
+        {
+            @Html.Partial("../AP/Payment/Posted/Transactions/TableRow", line)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var tableElem = $('#@tableId');
+        //var h = tableHeight($("#@tableId"), 100, 25.6) -40;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+
+            lengthChange: false,
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            order: [
+                [0, "desc"]
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                { targets: [1], visible: false },
+            ]
+        });
+        DataTablesMoveSearch(tableElem, $('.tableFilter2'))
+    });
+
+    $('.btnZionCsv').on('click', '', function () {
+
+        var url = $(this).data("url");
+
+
+        var a = document.createElement("a");
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+    });
+</script>

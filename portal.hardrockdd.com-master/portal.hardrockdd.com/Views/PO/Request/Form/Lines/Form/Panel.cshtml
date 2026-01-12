@@ -1,0 +1,121 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestLineViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div class="panel panel-inverse"
+
+     id="PORequestLineViewModel"
+     data-reloadurl="@Url.Action("Form", "PORequestLine", new { poco = Model.POCo, requestId = Model.RequestId, lineId = Model.LineId })"
+     data-initpane="initPane@(id)">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">PO Item #@Model.LineId Details</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../PO/Request/Form/Lines/Form/Form", Model)
+    </div>
+</div>
+<div id="poLinePanel">
+    @*@Html.Partial("../PORequest/Lines/Form", obj)*@
+</div>
+<script>
+    function initPane@(id)() {
+        setTimeout(function () {
+            $('#@panelId').find('form').each(function () {
+                handleTypeView(this);
+                handleCalcView(this);
+                handleTaxView(this);
+            });
+        }, 0);
+    }
+
+    function handleTaxView(form) {
+        var elem = $(form).find("[name='TaxTypeId']");
+        var val = $(elem).val();
+        var tax = $(form).find('.taxFieldSet');
+        var taxAmount = $(form).find('.TaxAmount');
+        var taxRate = $(form).find('.TaxRate');
+        var taxType = $(form).find('.TaxTypeId');
+        var taxCode = $(form).find('.TaxCodeId');
+
+        $(tax).hide();
+        $(form).find('.taxGroup').hide();
+        if ("@(User.IsInRole("Admin") ||
+                User.IsInPosition("FIN-APMGR") ||
+                User.IsInPosition("FIN-AP") ||
+                User.IsInPosition("FIN-CTRL") ||
+                User.IsInPosition("CFO"))" == "True") {
+            $(tax).show();
+            $(taxType).prop("disabled", false);
+            if (val != "0") {
+                $(form).find('.taxGroup').show();
+            }
+        }
+        else {
+            $(taxType).prop("disabled", true);
+            $(taxCode).prop("disabled", true);
+            if (val != "0") {
+                $(form).find('.taxGroup').show();
+                $(tax).show();
+            }
+        }
+        $(taxAmount).prop("disabled", true);
+        $(taxRate).prop("disabled", true);
+
+    }
+
+    function handleCalcView(form) {
+        var elem = $(form).find("[name='CalcType']");
+        var val = $(elem).val();
+        //console.log('handleCalcView change', val, @((int)DB.POCalcTypeEnum.Units), @((int)Model.Status));
+
+        $(cost).prop("disabled", false);
+        var cost = $(form).find('.Cost');
+        if (val == "@((int)DB.POCalcTypeEnum.Units)") {
+            $(form).find('.unitGroup').show();
+            $(form).find('.unitGroup').each(function () {
+                $(this).prop("disabled", false);
+            });
+            $(cost).prop("disabled", true);
+        }
+        else if (val == "@((int)DB.POCalcTypeEnum.LumpSum)") {
+            $(form).find('.unitGroup').hide();
+            $(cost).prop("disabled", false);
+        }
+
+
+         @*if (@((int)Model.Status) <= 2) {
+            $(form).find('.unitGroup').hide();
+            $(cost).prop("disabled", false);
+        }*@
+    }
+
+    function handleTypeView(form) {
+        var elem = $(form).find("[name='ItemTypeId']");
+        var val = $(elem).val();
+
+        $(form).find('.jobGroup').hide();
+        $(form).find('.eqpGroup').hide();
+        var gLAcct = $(form).find('.GLAcct');
+        $(gLAcct).prop("disabled", true);
+        if (val == "4") {
+            $(form).find('.eqpGroup').show();
+        }
+        else if (val == "1") {
+            $(form).find('.jobGroup').show();
+        }
+        else if (val == "3" && (@((int)Model.Status) == 1 || @((int)Model.Status) == 2) && "@(User.IsInRole("Admin") ||
+                                                                                                User.IsInPosition("FIN-APMGR") ||
+                                                                                                User.IsInPosition("FIN-AP") ||
+                                                                                                User.IsInPosition("FIN-CTRL") ||
+                                                                                                User.IsInPosition("CFO"))" == "True") {
+            $(gLAcct).prop("disabled", false);
+        }
+    }
+</script>

@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.Bid.BoreLine.CostItemViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (rowKey != string.Empty)
+            {
+                rowKey += "&";
+            }
+            rowKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+    <tr data-entitykey="@entityKey">
+        <td class="align-middle">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Multiplier, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DirtUnits, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.RockUnits, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.UM, new { @id = Guid.NewGuid() })
+            @Html.EditorFor(m => m.BudgetCodeId, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.Cost, new { ViewOnly = (Model.StdCost != 0 || viewOnly) })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.DirtCost, new { ViewOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(m => m.RockCost, new { ViewOnly = true })
+        </td>
+    </tr>

@@ -1,0 +1,50 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentMeterLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+
+<table class="table"
+       id="@tableId">
+    <thead>
+        <tr>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LoggedBy)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LogDate)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().HourReading)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().OdoReading)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Equipment/Forms/Meter/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        console.log('EquipmentMeterLogListViewModel Ready');
+
+        var recCnt = @(Model.List.Count);
+        var x = 0;
+        if (recCnt > 15) {
+            x = 150;
+        }
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: false,
+            ordering: true,
+            processing: true,
+            scrollY: x,
+            bInfo: false,
+            order: [[0, "desc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+
+
+    });
+</script>

@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+
+@if ((Model.DirectReportCnt > 0 ) ||
+    (
+    User.IsInPosition("IT-DIR") ||
+    User.IsInPosition("HR_MGR") ||
+    User.IsInPosition("HR_PRMGR") ||
+    User.IsInPosition("CFO") || 
+    User.HasAccess("PositionRequest", "AllIndex")
+    ))
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <!-- begin card -->
+        <div class="card card-inverse bg-blue-transparent-3">
+            <div class="card-block">
+                <h4 class="card-title m-t-5 m-b-10">Position Request</h4>
+                <p class="card-text m-b-15">Request new position @*/ term.*@</p>
+                @*<button class="btn btn-sm btn-danger termRequest" data-toggle="modal" data-target="#termination">
+                    Term Request
+                </button>*@
+                <button class="btn btn-sm btn-primary addPositionRequest" data-toggle="modal" data-target="#position">
+                    Add Position
+                </button>
+            </div>
+        </div>
+    </div>
+}

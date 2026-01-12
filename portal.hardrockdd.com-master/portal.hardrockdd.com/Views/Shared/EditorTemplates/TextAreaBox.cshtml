@@ -1,0 +1,93 @@
+﻿@model object
+@{
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var idGuid = "group_" + Guid.NewGuid();
+
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var required = this.ViewData.ModelMetadata.IsRequired ? "required" : "";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow?.ToString(), out bool tableRowOut) ? tableRowOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ? (FieldAttribute)fldAttribute : new FieldAttribute();
+
+    var dic = new Dictionary<string, object>();
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    dic.Add("id", id);
+    dic.Add("Name", name);
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+    }
+    if (viewOnly)
+    {
+        dic.Add("disabled", "");
+    }
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+@if (attributes.LabelSize != 0 && !tableRow)
+{
+    @Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+}
+@if (displayOnly)
+{
+    <span Name="@name">
+        @if (@Model != null)
+        {
+            @Html.DisplayTextFor(m => m)
+        }
+    </span>
+}
+else
+{
+    <div class="@textSize input-group " id="@idGuid">
+        @Html.TextAreaFor(m => m, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+        @if (!string.IsNullOrEmpty(attributes.InfoUrl))
+        {
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary btnInfo" data-urlinfo="@ViewBag.InfoUrl" data-infodata="@ViewBag.InfoData">
+                    <i class="fas fa-info"></i>
+                </button>
+            </div>
+        }
+        @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+        @if (!@attributes.IconClass.ToString().IsEmpty() && !tableRow && !viewOnly)
+        {
+            <div class="input-group-append">
+                <span class="input-group-text">
+                    <i class="@attributes.IconClass"></i>
+                </span>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    $('#@idGuid').ready(function () {
+        var elem = $('#@id');
+        var scrollHeight = $(elem).prop('scrollHeight');
+        var topBorderHeight = parseFloat($(elem).css("borderTopWidth"));
+        var bottomBorderHeight = parseFloat($(elem).css("borderBottomWidth"));
+        var insideHeight = scrollHeight + topBorderHeight + bottomBorderHeight;
+        var boxHeight = $(elem).outerHeight() + 1;
+
+        //console.log(boxHeight, insideHeight);
+        if (boxHeight < insideHeight && boxHeight > 45) {
+            $(elem).height(insideHeight + 1);
+        }
+        else {
+            $(elem).height(45);
+        }
+    });
+</script>

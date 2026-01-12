@@ -1,0 +1,34 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Holiday.TicketViewModel
+
+@*@Html.Partial("../DT/Type/Buttons")*@
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("HolidayInfoUpdate", "Ticket")"
+      data-urlvalidate="@Url.Action("HolidayInfoValidate", "Ticket")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.WorkDate, new { ViewOnly = viewOnly })
+        @Html.EditorFor(m => m.DateDescription, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Comments)
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        var $form = $('#@formId');
+        Form().init($form);
+    });
+</script>
+

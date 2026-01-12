@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Schedule.ScheduleListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-xl-6">
+        @Html.Partial("../BD/Bid/Forms/Package/Schedule/List/Panel", Model)
+    </div>
+    <div class="col-xl-6" id="PackageScheduleListViewModel">
+
+    </div>
+</div>
+<script>
+    $('#@panelId').ready(function () {
+        initPane($('#@panelId'));
+    });
+</script>

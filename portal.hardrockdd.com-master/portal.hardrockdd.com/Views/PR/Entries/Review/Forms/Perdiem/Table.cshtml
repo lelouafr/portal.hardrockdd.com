@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.Payroll.Review.PayrollEmployeePerdiemListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+        id="@tableId"
+        data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            @foreach (var DayofWeek in Model.Calendar)
+            {
+                <th width="@(100/7)%" class="text-center">
+                    <label>@DayofWeek.WeekDayName</label>
+                    <label>@DayofWeek.Date.ToShortDateString()</label>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            @foreach (var caledar in Model.Calendar)
+            {
+                var sublist = Model.List.Where(f => f.WorkDate == caledar.Date).ToList();
+                <td>
+                    @foreach (var perdeimItem in sublist)
+                    {
+                        @Html.Partial("../PR/Entries/Review/Forms/Perdiem/TableCell", perdeimItem)
+                    }
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+<script>
+$(document).ready(function () {
+    $('#@tableId').DataTable({
+        autoWidth: true,
+        "order": [],
+        "searching": false,
+        "paging": false,
+        "ordering": false,
+        "info": false,
+        fnInitComplete: function () {
+            Table().init($('#@tableId'));
+        },
+    });
+});
+</script>

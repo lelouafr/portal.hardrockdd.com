@@ -1,0 +1,22 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "hr_pos";
+}
+
+
+@if (User.HasAccess("Position") )
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Positions</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Position"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("PositionListIndex", "Position", routeValues: new { Area = "HumanResource" })">Position(s)</a></li>
+            }
+        </ul>
+    </li>
+}

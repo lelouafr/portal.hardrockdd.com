@@ -1,0 +1,57 @@
+﻿@model  portal.Models.Views.Bid.BidPackageRentalItemListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidPackageRental")"
+       data-urldelete="@Url.Action("Delete", "BidPackageRental")"
+       data-urlupdate="@Url.Action("Update", "BidPackageRental")"
+       @*data-urlvalidate="@Url.Action("Validate", "BidPackageRental")"*@
+       data-urlselect=""
+       data-dstselect=""
+       data-dstselectvalidate=""
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().BudgetCodeId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Multiplier)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Applied)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Package/Rental/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+
+</script>

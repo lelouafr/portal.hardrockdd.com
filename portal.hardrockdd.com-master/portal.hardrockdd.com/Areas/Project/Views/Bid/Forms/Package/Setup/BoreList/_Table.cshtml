@@ -1,0 +1,61 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.BoreLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       style="display:none"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageSetupBoreListAdd", "Bid")"
+       data-urldelete="@Url.Action("PackageSetupBoreListDelete", "Bid")"
+       data-urlupdate="@Url.Action("PackageSetupBoreListUpdate", "Bid")"
+       data-urlvalidate="@Url.Action("PackageSetupBoreListValidate", "Bid")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelFor(model => model.List.FirstOrDefault().BoreTypeId)</th>
+            <th width="10%">@Html.LabelFor(model => model.List.FirstOrDefault().Footage)</th>
+            <th width="10%">@Html.LabelFor(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="15%">@Html.LabelFor(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="10%">@Html.LabelFor(model => model.List.FirstOrDefault().CrewCount)</th>
+            @if (!viewOnly)
+            {
+                <th width="35px">
+                    <button class="btn btn-primary addRow pull-right" data-addrowlocation="top">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Package/Setup/BoreList/_TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        var table = $('#@tableId');
+        var h = 42 * @(Model.List.Count);
+        if (h > 400) {
+            h = 400;
+            var parent = $(table).parent();
+            var contaner = $('<div></div>');
+            $(contaner).css("height", h + "px");
+            $(contaner).css("overflow-y", "scroll");
+            $(contaner).css("display", "block");
+
+            $(contaner).appendTo(parent);
+            $(table).appendTo(contaner);
+        }
+        $(table).show();
+        Table().init($('#@tableId'));
+    });
+</script>

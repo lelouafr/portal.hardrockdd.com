@@ -1,0 +1,195 @@
+﻿@model portal.Areas.Attachment.Models.ExplorerListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var breadCrumbId = panelId.Replace('-', '_');
+    var tableId = string.Format("table_{0}_{1}", Model.UniqueAttchId, Model.FolderId);
+}
+<style>
+    .attachment.dropzone {
+        border: 0px !important;
+        padding: 0px !important;
+        background: inherit !important;
+        min-height: 75px !important;
+    }
+    .attachment.dropzone .dz-message {
+        margin: 5px 0 !important;
+        font-size: 16px;
+    }
+
+    .attachment.dropzone.dz-clickable:hover, .dropzone.dz-clickable:focus {
+        background: inherit !important;
+    }
+</style>
+
+<div id="dropzone_@tableId"
+     data-folderid="@Model.FolderId"
+     data-uniqueattchid="@Model.UniqueAttchId"
+     data-viewtype="@Model.ViewType"
+     data-preview="@Model.Preview"
+     data-folderurl="@Url.Action("Form", "Explorer", new { Area = "Attachment" })"
+     data-uploadurl="@Url.Action("Add", "Explorer", new { Area = "Attachment" })"
+     class="dropzone attachment"
+     method="post"
+     enctype="multipart/form-data">
+    <div class="dz-default" data-dz-message="">
+        @switch (Model.ViewType)
+        {
+            case DB.ExplorerViewTypeEnum.List:
+                @Html.Partial("Views/List/_Table", Model)
+                break;
+            case DB.ExplorerViewTypeEnum.Thumbnail:
+                @Html.Partial("Views/Thumbnail/_Panel", Model)
+                break;
+            case DB.ExplorerViewTypeEnum.Tree:
+                @Html.Partial(".Views/Tree/_Panel", Model)
+                break;
+            default:
+                break;
+        }
+    </div>
+    @Html.AntiForgeryToken()
+</div>
+<script>
+    function initDropZone(elem) {
+        //console.log('initDropZone');
+        $(elem).dropzone({
+            url: $(elem).data('uploadurl'),
+            uploadMultiple: true,
+            parallelUploads: 1,
+            maxFiles: 1000,
+            resizeWidth: 1200,
+            timeout: 180000,
+            maxFilesize: 256, // MB
+            accept: function (file, done) {
+                 if (file.name.indexOf(".heic") > 0) {
+                     done("transforming HEIC");
+                 }
+                 else {
+                     done();
+                 }
+            },
+            init: function () {
+                dpzMultipleFiles = this;
+                this.on('completemultiple', function (file, json) {
+                    $('.sortable').sortable('enable');
+                });
+                this.on('success', function (file, json) {
+                    //console.log('success');
+                });
+                this.on('resetFiles', function() {
+                    //console.log('resetFiles');
+                    dpzMultipleFiles.removeAllFiles();
+                });
+                this.on("sending", function (file, xhr, data) {
+                    //var token = $('dropzone_@tableId').find('[name="__RequestVerificationToken"]').val();
+                    var uniqueId = $(elem).data('uniqueattchid');
+                    //console.log('sending', uniqueId, folderId, file.fullPath);
+                    //data.append("__RequestVerificationToken", token);
+                    data.append("folderId", $(elem).data('folderid'));
+                    data.append("uniqueAttchID", $(elem).data('uniqueattchid'));
+                    data.append("folderPath", file.fullPath);
+                    data.append("IsThumbnail", file.IsThumbnail);
+                    xhr.ontimeout = (() => {
+                        alert("File upload timed out!");
+                    });
+                    //console.log(data);
+                    var dst = $('#panel_' + uniqueId);
+                    if (!$(dst).hasClass('panel-loading')) {
+                        var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+                        $(dst).addClass('panel-loading');
+                        $(dst).append(spinnerHtml);
+                    }
+                    else {
+                        //var status = '<div> Success' + file.fullPath + '</div>';
+                        //$(dst).find('div.panel-loader').first().append('Success');
+
+                    }
+                    //console.log('sending',data);
+                });
+                this.on('queuecomplete', function (data) {
+                    //console.log('queuecomplete', data);
+
+                    var folderId = $(elem).data('folderid');
+                    var uniqueId = $(elem).data('uniqueattchid');
+                    var viewType = $(elem).data('viewtype');
+                    var preview = $(elem).data('preview');
+                    var url = $(elem).data('folderurl');
+                    var dst = $('#panel_' + uniqueId);
+
+                    var data = {};
+                    data.uniqueAttchID = uniqueId;
+                    data.folderId = folderId;
+                    data.viewType = viewType;
+                    data.preview = preview;
+
+                    loadFolder(dst, data, url);
+                })
+                this.on("addedfile", function (file) {
+                    //console.log('addedfile');
+                    file.IsThumbnail = false;
+                    //console.log('file.IsThumbnail', file.IsThumbnail);
+                    //file.name = CreateGuid() + file.name;
+                    if (file.type === 'image/heic' || file.name.indexOf(".heic") > 0) {
+                        var fileGif = ConvertHEICFileToGif(file);
+                        if (fileGif !== null) {
+                            dpzMultipleFiles.handleFiles(fileGif);
+
+                            GenerateThumbnail(fileGif).then(function (canvas) {
+                                canvas.toBlob(resultBlob => {
+                                    var name = fileGif.name;
+                                    var fileExt = name.substring(name.lastIndexOf('.'), name.length) || name;
+                                    name = name.replace(fileExt, "_THUMBNAIL" + fileExt);
+                                    resultBlob.lastModifiedDate = file.lastModifiedDate;
+                                    resultBlob.name = name;
+                                    resultBlob.type = fileGif.type;
+                                    resultBlob.IsThumbnail = true;
+                                    dpzMultipleFiles.handleFiles([resultBlob]);
+                                })
+                            })
+                        }
+                        dpzMultipleFiles.removeFile(file);
+                    }
+                    else if (file.name.indexOf('.pdf') > 0) {
+                        getArrayBuffer(file).then(function (buffer) {
+                            convertPdfToThumbnailForDropZone(buffer, file);
+                        });
+                    }
+                    else if (file.type.startsWith('image/') && !file.name.includes('_THUMBNAIL')) {
+                        //GenerateThumbnail(file).then(function (canvas) {
+                        //    console.log('canvas', canvas);
+                        //    canvas.toBlob(resultBlob => {
+                        //        var name = file.name;
+                        //        var fileExt = name.substring(name.lastIndexOf('.'), name.length) || name;
+                        //        console.log(fileExt, name);
+                        //        name = name.replace(fileExt, "_THUMBNAIL" + fileExt);
+                        //        resultBlob.lastModifiedDate = file.lastModifiedDate;
+                        //        resultBlob.name = name;
+                        //        resultBlob.type = file.type;
+                        //        resultBlob.IsThumbnail = true;
+                        //        dpzMultipleFiles.handleFiles([resultBlob]);
+                        //    })
+                        //})
+
+                    }
+                })
+                    .on('error', function (file, responseText) {
+                    if (file.type !== undefined && file.type === "image/heic") {
+                        var message = document.createElement('div');
+                        message.className = 'extra-message';
+                        message.appendChild(document.createTextNode(responseText));
+                        file.previewTemplate.appendChild(message);
+                    }
+                });
+                this.on('drop', function (file) {
+                    //console.log('drop');
+                });
+                this.on("maxfilesexceeded", function (file) {
+                    //console.log('maxfilesexceeded');
+                });
+            }
+        });
+    }
+
+    initDropZone($('#dropzone_@tableId'));
+</script>

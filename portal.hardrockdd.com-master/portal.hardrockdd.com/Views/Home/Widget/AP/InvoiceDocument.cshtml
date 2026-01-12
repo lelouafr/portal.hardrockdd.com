@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.InvoiceCount > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-lime">
+            <div class="stats-info">
+                <h4>
+                    Invoice Documents Ready
+                </h4>
+                <p>
+                    @Model.InvoiceCount<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", Model.InvoiceTotal))</span>
+                    @if (@Model.InvoicePendingCount > 0)
+                    {
+                        <br />
+                        <div class="f-s-10">
+                            @Model.InvoicePendingCount Pending<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", Model.InvoicePendingTotal))</span>
+                        </div>
+                    }
+                </p>
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("FiledIndex", "Document", routeValues: new { Area = "AccountsPayable" })">Goto Review<i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

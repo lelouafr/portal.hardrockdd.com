@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.CostItemViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td class="align-middle">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RockLineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.DirtLineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Multiplier, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.DirtUnits, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RockUnits, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.UM, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.BudgetCodeId, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Cost, new { ViewOnly = (Model.StdCost != 0 || viewOnly) })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.DirtCost, new { ViewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.RockCost, new { ViewOnly = true })
+    </td>
+</tr>

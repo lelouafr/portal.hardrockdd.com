@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.HR.Resource.ResourceListViewModel
+<div class="panel panel-inverse"
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table", ViewBag.DataController)"
+     style="margin-bottom: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-sm btn-icon btn-primary" data-click="panel-excel"><i class="fa fa-file-excel"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">@ViewBag.Title</h4>
+    </div>
+    <div class="panel-body" id="ResourceListViewModel">
+        @Html.Partial("../HR/Employee/Summary/Table", Model)
+    </div>
+</div>
+
+<script>
+
+</script>

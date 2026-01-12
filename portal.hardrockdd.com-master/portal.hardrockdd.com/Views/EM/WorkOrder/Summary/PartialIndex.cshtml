@@ -1,0 +1,48 @@
+﻿@model portal.Models.Views.EM.WorkOrder.WorkOrderListViewModel
+
+<div class="row mb-3">
+    <div class="col-12">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModel">
+            <i class="fas fa-plus"></i> Create Work Order
+        </button>
+        <a href="@Url.Action("WorkOrderAllIndex", "EMWorkOrder")" class="btn btn-secondary ml-2">
+            <i class="fas fa-list"></i> View All
+        </a>
+        <a href="@Url.Action("WorkOrderCompletedIndex", "EMWorkOrder")" class="btn btn-secondary ml-2">
+            <i class="fas fa-check"></i> Completed
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        @Html.Partial("../EM/WorkOrder/Summary/List/Panel", Model)
+    </div>
+</div>
+
+<div class="modal fade" id="addModel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#addModel").on("show.bs.modal", function (event) {
+            var modal = $(this);
+            modal.find(".modal-body").load("@Url.Action("Create", "EMWorkOrder")", function() {
+                // Initialize form after content is loaded
+                var form = modal.find('form');
+                if (form.length > 0) {
+                    Form().init(form);
+                }
+            });
+        });
+        $("#addModel").on("hide.bs.modal", function (event) {
+            $(this).find(".modal-body").html("");
+        });
+    });
+</script>

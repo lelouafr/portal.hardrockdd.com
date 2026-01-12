@@ -1,0 +1,22 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "sf_emp";
+}
+
+
+@if (User.HasAccess("Safety"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Employees</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Safety", "EmployeeIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("EmployeeIndex", "Safety", routeValues: new { Area = "Safety" })">Active Employees</a></li>
+            }
+        </ul>
+    </li>
+}

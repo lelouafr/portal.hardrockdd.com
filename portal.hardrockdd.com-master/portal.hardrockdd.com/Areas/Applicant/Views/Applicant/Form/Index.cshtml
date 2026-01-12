@@ -1,0 +1,41 @@
+﻿@model portal.Areas.Applicant.Models.FormViewModel
+
+@{
+    ViewBag.Title = "Applicant Application";
+    if (ViewBag.LayOut != null)
+    {
+        Layout = ViewBag.LayOut;
+    }
+    ViewBag.ExpandAllPanels = true;
+}
+
+
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+@if (ViewBag.LayOut == null)
+{
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
+        <li class="breadcrumb-item active">@ViewBag.Title</li>
+    </ol>
+    <h1 class="page-header">@ViewBag.Title </h1>
+}
+@Html.Partial("Form/_Panel", Model)
+
+
+@section scripts {
+    <script src="~/Content/lib/ajax.js"></script>
+    <script src="~/Content/lib/combo.js"></script>
+    <script src="~/Content/lib/form.js"></script>
+    <script src="~/Content/lib/func.js"></script>
+    <script src="~/Content/lib/inputPlugins.js"></script>
+    <script src="~/Content/lib/jsext.js"></script>
+    <script src="~/Content/lib/table.js"></script>
+    <script src="~/Content/lib/tree.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    
+}

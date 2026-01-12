@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.Payroll.Review.PayrollEmployeeTicketListViewModel
+@{
+    var id = "a" + Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@id">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Submission History
+    </div>
+    <div id="@id" class="show">
+        <div class="card-body">
+            @Html.Partial("../PR/Entries/Review/Forms/Ticket/Table", Model)
+        </div>
+    </div>
+</div>
+
+<div class="card ticketPanelCard" style="overflow:visible; display:none">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#ticket_@id">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Ticket Details
+    </div>
+    <div id="ticket_@id" class="show">
+        <div class="card-body">
+            <div class="ticketPanel" id="ticketPanel">
+            </div>
+        </div>
+    </div>
+</div>

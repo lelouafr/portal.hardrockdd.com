@@ -1,0 +1,30 @@
+﻿@model  portal.Models.Views.HR.Resource.Form.ResourceAssignedAssetListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Date)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Category)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Id)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Serial)</th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../HR/Employee/Forms/Assets/TableRow", request)
+        }
+    </tbody>
+</table>

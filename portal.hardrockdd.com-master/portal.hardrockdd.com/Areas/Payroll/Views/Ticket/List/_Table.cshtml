@@ -1,0 +1,134 @@
+﻿
+@model portal.Areas.Payroll.Models.Ticket.TicketListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+<div class="row tableFilter">
+    <div class="col-12">
+        <form class="form-horizontal" id="@(tableId)_Filter">
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.TimeSelection, new { ViewOnly = false })
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table pageResize"
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table", ViewBag.DataController)"
+       data-dataurl="@Url.Action(ViewBag.DataAction, ViewBag.DataController)"
+       data-urlselect="@Url.Action("TicketPanel", "Ticket")"
+       data-timeselection="@((int)Model.TimeSelection)"
+       data-dstselect="ticketPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().DTCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().TicketId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusString)</th>
+            <th data-datatable-filter-type="daterange">@Html.LabelForRequired(model => model.List.FirstOrDefault().WorkDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().FormName)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().SearchString)</th>
+            <th data-datatable-filter-type="checkbox" width="15px"><label><i class="fas fa-paperclip"></i></label></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Form().init($('#@(tableId)_Filter'));
+
+
+        h = 100;
+        var table = $('#@tableId');
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            lengthMenu: [[100, 500, 1000], [100, 500, 1000]],
+            lengthChange: false,
+            paging: true,
+            pageLength: 1000,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                    d.timeSelection = $(table).attr('data-timeselection');
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            order: [
+                [3, "desc"]
+            ],
+            columns: [
+                { data: "DTCo" },
+                { data: "TicketId" },
+                { data: "StatusString" },
+                {
+                    data: "WorkDate",
+                    render: function (data, type) {
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "FormName" },
+                { data: "Description" },
+                { data: "CreatedUser" },
+                { data: "SearchString" },
+                { data: "HasAttachment" },
+            ],
+            columnDefs: [
+                { targets: [0, 1, 7], visible: false },
+                { targets: [8], orderable: false },
+                {
+                    targets: [2],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+
+                        $(cell).html('<span class="label ' + rowData.StatusClass + '">' + cellData + '</span>');
+                    }
+                },
+                {
+                    targets: [8],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        if (cellData === true) {
+                            $(cell).html('<i class="fas fa-paperclip"></i>');
+                        }
+                        else {
+                            $(cell).html(cellData);
+                        }
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                DataTablesMoveSearch($('#@tableId'), $('.tableFilter'));
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "DTCo=" + data.DTCo + "&TicketId=" + data.TicketId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+
+
+    $(document).on('change', '[name="TimeSelection"]', function () {
+        var table = $('#@tableId');
+        $(table).attr('data-timeselection', $(this).val());
+        $('#@tableId').DataTable().ajax.reload(function () {
+            Table().init($(table));
+        });
+
+    })
+</script>

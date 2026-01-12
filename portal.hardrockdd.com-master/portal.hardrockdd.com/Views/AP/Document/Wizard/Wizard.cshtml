@@ -1,0 +1,154 @@
+﻿@model portal.Models.Views.AP.Document.DocumentFormViewModel
+@{ 
+    var seq = Model.Sequences.List.FirstOrDefault();
+}
+<div id="smartwizard_@Model.Document.DocId">
+    <ul class="nav">
+        <li>
+            <a class="nav-link" href="#step-1">
+                Step 1 - Vendor/Invoice Info
+            </a>
+        </li>
+        <li>
+            <a class="nav-link" href="#step-2" data-url="">
+                Step 2 - Invoice Line(s) Info
+            </a>
+        </li>
+        <li>
+            <a class="nav-link" href="#step-3">
+                Step 3 - Review
+            </a>
+        </li>
+        <li>
+            <a class="nav-link" href="#step-4">
+                Step 4 - Submit
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="padding: 0px; margin-bottom: 0px; overflow:unset;">
+        <div id="step-1" class="tab-pane" role="tabpanel" style="padding: 0px;">
+            @Html.Partial("../AP/Document/Header/Form", seq)
+        </div>
+        <div id="step-2" 
+             class="tab-pane" 
+             role="tabpanel" 
+             style="padding: 0px;"
+             data-urlload="@Url.Action("LineTablePanel", "APDocument", new { apco = seq.APCo, docId = seq.DocId, seqId = seq.SeqId })"
+             >
+        </div>
+        <div id="step-3" 
+             class="tab-pane" 
+             role="tabpanel" 
+             style="padding: 0px;"
+             data-urlload="@Url.Action("ReviewPanel", "APDocument", new { apco = seq.APCo, docId = seq.DocId})">
+            Step content
+        </div>
+        <div id="step-4" class="tab-pane" role="tabpanel" style="padding: 0px;">
+            @Html.Partial("../AP/Document/Wizard/Submit", Model)
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        // SmartWizard initialize
+        $('#smartwizard_@Model.Document.DocId').smartWizard({
+            //selected: 0, // Initial selected step, 0 = first step
+            theme: 'arrows', // theme for the wizard, related css need to include for other than default theme
+            useURLhash: false,
+            showStepURLhash: false,
+            enableURLhash: false,
+            anchorSettings: {
+                anchorClickable: true, // Enable/Disable anchor navigation
+                enableAllAnchors: true, // Activates all anchors clickable all times
+                markDoneStep: true, // Add done state on navigation
+                markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+                removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
+                enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+            },
+            //justified: true, // Nav menu justification. true/false
+            autoAdjustHeight: false, // Automatically adjust content height
+            //cycleSteps: false, // Allows to cycle the navigation of steps
+            //backButtonSupport: true, // Enable the back button support
+            //enableURLhash: true, // Enable selection of the step based on url hash
+            //transition: {
+            //    animation: 'none', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+            //    speed: '400', // Transion animation speed
+            //    easing: '' // Transition animation easing. Not supported without a jQuery easing plugin
+            //},
+            //toolbarSettings: {
+            //    toolbarPosition: 'bottom', // none, top, bottom, both
+            //    toolbarButtonPosition: 'right', // left, right, center
+            //    showNextButton: true, // show/hide a Next button
+            //    showPreviousButton: true, // show/hide a Previous button
+            //    toolbarExtraButtons: [] // Extra buttons to show on toolbar, array of jQuery input/buttons elements
+            //},
+            //anchorSettings: {
+            //    anchorClickable: true, // Enable/Disable anchor navigation
+            //    enableAllAnchors: false, // Activates all anchors clickable all times
+            //    markDoneStep: true, // Add done css
+            //    markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+            //    removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
+            //    enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+            //},
+            //keyboardSettings: {
+            //    keyNavigation: false, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+            //    //keyLeft: [37], // Left key code
+            //    //keyRight: [39] // Right key code
+            //},
+            //lang: { // Language variables for button
+            //    next: 'Next',
+            //    previous: 'Previous'
+            //},
+            //disabledSteps: [], // Array Steps disabled
+            //errorSteps: [], // Highlight step with errors
+            //hiddenSteps: [] // Hidden steps
+        });
+        $('#smartwizard_@Model.Document.DocId').on('leaveStep', function (e, anchorObject, stepNumber, stepDirection) {
+            var res = true;
+            $('#step-' + (stepNumber + 1)).find('form').each(function () {
+                res = $(this).parsley().validate();
+            })
+            //console.log(res);
+            return res;
+        });
+
+        $("#smartwizard_@Model.Document.DocId").on("stepContent", function (e, anchorObject, stepIndex, stepDirection) {
+            var step = $('#step-' + (stepIndex + 1));
+            // Read data value from the anchor element
+            var repo = anchorObject.data('repo');
+            var ajaxURL = $(step).data('urlload');
+            //console.log(repo, ajaxURL);
+            if (stepIndex == 0 || stepIndex == 3) {
+                return true;
+            }
+            // Return a promise object
+            return new Promise((resolve, reject) => {
+                // Ajax call to fetch your content
+                $.ajax({
+                    method: "GET",
+                    url: ajaxURL,
+                    beforeSend: function (xhr) {
+                        // Show the loader
+                        $('#smartwizard_@Model.Document.DocId').smartWizard("loader", "show");
+                    }
+                }).done(function (res) {
+                    // Resolve the Promise with the content
+                    resolve(res);
+                    // Hide the loader
+                    $('#smartwizard_@Model.Document.DocId').smartWizard("loader", "hide");
+                }).fail(function (err) {
+
+                    // Reject the Promise with error message to show as content
+                    reject("An error loading the resource");
+
+                    // Hide the loader
+                    $('#smartwizard_@Model.Document.DocId').smartWizard("loader", "hide");
+                });
+
+            });
+        });
+    });
+</script>

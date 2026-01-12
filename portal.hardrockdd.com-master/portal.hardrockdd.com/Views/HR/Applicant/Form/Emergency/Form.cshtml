@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.WA.Applicant.EmergencyContactViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("EmergencyContactUpdate", "WebApplication")"
+      data-urlvalidate="@Url.Action("EmergencyContactValidate", "WebApplication")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EmergencyContact)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EmegencyRelationship)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ContactPhone)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.EmegencyContactPhone)
+    </div>
+</form>

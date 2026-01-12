@@ -1,0 +1,68 @@
+﻿@model portal.Models.Views.HQ.Batch.PR.PRPostedTransListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.ViewOnly = true;
+    ViewBag.DisplayOnly = true;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("PRPostedTransactionPanel", "Batch")"
+       data-dstselect="transform"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="1px" data-datatable-filter-type="none"></th>
+            <th width="120px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="50px" data-datatable-filter-type="dateinput">@Html.LabelFor(model => model.List.FirstOrDefault().PostDate)</th>
+            <th width="300px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().JobId)</th>
+            <th width="100px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().PhaseId)</th>
+            <th width="100px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th width="100px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().CostCode)</th>
+            <th width="130px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().CrewId)</th>
+            <th width="100px" data-datatable-filter-type="multiselect">@Html.LabelFor(model => model.List.FirstOrDefault().EarnCodeId)</th>
+            <th width="50px" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Hours)</th>
+            <th width="50px" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Rate)</th>
+            <th width="50px" data-datatable-filter-type="none">@Html.LabelFor(model => model.List.FirstOrDefault().Amt)</th>
+        </tr>
+    </thead>
+    <tbody 
+       style="display: none;">
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../HQ/Batch/Detail/PR/Posted/Transaction/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+$('#@tableId').ready(function () {
+    var itemCnt = @(Model.List.Count());
+    h = tableHeight($('#@tableId'), itemCnt, 42.4) - 5;
+    var table = $('#@tableId').DataTable({
+        paging: false,
+        autoWidth: true,
+        ordering: true,
+        processing: false,
+        scrollCollapse: true,
+        scrollY: 250,
+        scrollX: true,
+        info: false,
+        columnDefs: [
+            { targets: [0], visible: false },
+        ],
+        fnInitComplete: function () {
+            $('#@(tableId)_filter').hide();
+            Table().init($('#@tableId'));
+        },
+        fnDrawCallback: function (settings) {
+            var table = $('#@tableId');
+            Table().setTableHeight($(table).closest('.dataTables_wrapper'));
+        }
+    });
+    $($('#@tableId')).find('tbody').show();
+});
+</script>

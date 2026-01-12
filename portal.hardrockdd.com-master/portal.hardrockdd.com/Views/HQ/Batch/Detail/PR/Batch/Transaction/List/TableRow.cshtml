@@ -1,0 +1,107 @@
+﻿@model portal.Models.Views.HQ.Batch.PR.PRBatchTransViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+@if (false)
+{
+
+
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchSeq, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    </td>
+    <td data-seach="@Model.PaySeq">
+        @Html.EditorFor(m => m.PaySeq)
+    </td>
+    <td data-seach="@Model.EmployeeName">
+        @Html.EditorFor(m => m.EmployeeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.PostDate)
+    </td>
+    <td data-seach="@Model.JobName">
+        @Html.EditorFor(m => m.JobId)
+    </td>
+    <td data-seach="@Model.PhaseName">
+        @Html.EditorFor(m => m.PhaseId)
+    </td>
+    <td data-seach="@Model.EquipmentName">
+        @Html.EditorFor(m => m.EquipmentId)
+    </td>
+    <td data-seach="@Model.EMCostCodeName">
+        @Html.EditorFor(m => m.CostCode)
+    </td>
+    <td data-seach="@Model.CrewName">
+        @Html.EditorFor(m => m.CrewId)
+    </td>
+    <td data-seach="@Model.EarnCodeDescription">
+        @Html.EditorFor(m => m.EarnCodeId)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Hours)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Rate)
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Amt)
+    </td>
+</tr>
+}
+
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchSeq, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    </td>
+    <td class="">
+        @Model.BatchSeq
+    </td>
+    <td class="f-s-10">
+        @Model.EmployeeName
+    </td>
+    <td>
+        @Model.PostDate.ToShortDateString()
+    </td>
+    <td class="f-s-9">
+        @Model.JobName
+    </td>
+    <td class="f-s-9">
+        @Model.PhaseName
+    </td>
+    <td class="f-s-9">
+        @Model.EquipmentName
+    </td>
+    <td class="f-s-9">
+        @Model.EMCostCodeName
+    </td>
+    <td class="f-s-9">
+        @Model.CrewName
+    </td>
+    <td>
+        @Model.EarnCodeDescription
+    </td>
+    <td class="text-right">
+        @Model.Hours
+    </td>
+    <td class="text-right">
+        @(Math.Round(Model.Rate, 2))
+    </td>
+    <td class="text-right">
+        @Model.Amt
+    </td>
+</tr>
+

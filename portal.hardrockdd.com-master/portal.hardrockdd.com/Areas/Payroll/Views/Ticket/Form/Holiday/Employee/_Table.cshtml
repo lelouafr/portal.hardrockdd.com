@@ -1,0 +1,51 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.EmployeeEntryListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("JobEmployeeAdd", "Ticket")"
+       data-urldelete="@Url.Action("JobEmployeeDelete", "Ticket")"
+       data-urlupdate="@Url.Action("JobEmployeeUpdate", "Ticket")"
+       data-urlvalidate="@Url.Action("JobEmployeeValidate", "Ticket")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="1px"></th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EmployeeId)</th>
+            <th width="18%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Perdiem)</th>
+            <th width="22%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Value)</th>
+            @if (!viewOnly)
+            {
+                <th width="45px">
+                    <button class="btn btn-xs btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Form/Holiday/Employee/_EmployeeRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        Table().init($('#@tableId'));
+    });
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        commentElem.show();
+        $(this).hide();
+    });
+</script>

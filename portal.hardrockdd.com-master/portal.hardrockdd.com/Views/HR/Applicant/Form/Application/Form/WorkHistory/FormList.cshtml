@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.WA.Application.WorkHistoryListViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+
+    var tableLayout = new TableLayoutModel(this);
+    string formKey = tableLayout.TableKey;
+}
+
+<div id="@formId"
+     data-urlcreate="@Url.Action("ApplicationWorkHistoryAdd", "WebApplication")"
+     data-urldelete="@Url.Action("ApplicationWorkHistoryDelete", "WebApplication")"
+     data-formkey="@formKey"
+     class="formList">
+
+    @if (!viewOnly)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-primary float-right addRow ">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    }
+<div class="formRows">
+    @foreach (var entry in Model.List)
+    {
+        <div class="card formRow b-2" style="overflow:visible;">
+            <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#workhistory_@(entry.SeqId)">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Work History #@(entry.SeqId)
+            </div>
+            <div id="workhistory_@(entry.SeqId)" class="collapse m-4">
+                <div class="card-body">
+                    @Html.Partial("../HR/Applicant/Form/Application/Form/WorkHistory/Form", entry)
+                </div>
+            </div>
+        </div>
+    }
+</div>
+</div>

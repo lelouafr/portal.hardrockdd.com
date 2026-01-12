@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.AP.CreditCard.CreditImportViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "form_" + Guid.NewGuid();
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ImportId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Source, new { ViewOnly = true })
+        @Html.EditorFor(m => m.FileName)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

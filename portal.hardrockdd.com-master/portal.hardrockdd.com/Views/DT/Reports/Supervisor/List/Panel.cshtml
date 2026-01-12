@@ -1,0 +1,30 @@
+﻿@*@model portal.Models.Views.Dashboard.DirectReportSummaryListViewModel*@
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse" 
+     id="@panelId"
+     data-sortable-id="@panelId"
+     data-reloadurl="@Url.Action("Table", "DirectReportSummary")"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Your Employee Weekly Summary</h4>
+    </div>
+    <div class="panel-body" id="DirectReportSummaryListViewModel">
+        @*@Html.Partial("Table", Model)*@
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            var panel = $('#@panelId');
+            var reloadBtn = $(panel).find('[data-click=panel-reload]');
+            $(reloadBtn).click();            
+        }, 1000);
+    });
+</script>

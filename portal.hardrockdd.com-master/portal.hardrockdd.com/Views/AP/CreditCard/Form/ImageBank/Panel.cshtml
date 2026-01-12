@@ -1,0 +1,41 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionFormViewModel
+@{
+    var panelId = "imageBank";
+    var statusclass = "";
+    switch (Model.BasicInfo.PictureStatusId)
+    {
+        case DB.CMPictureStatusEnum.Empty:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+        case DB.CMPictureStatusEnum.Attached:
+            statusclass = "fa-circle text-blue  mr-2 f-s-8";
+            break;
+        case DB.CMPictureStatusEnum.Approved:
+            statusclass = "fa-circle text-blue  mr-2 f-s-8";
+            break;
+        case DB.CMPictureStatusEnum.Rejected:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+        case DB.CMPictureStatusEnum.NotNeeded:
+            statusclass = "fa-circle text-blue  mr-2 f-s-8";
+            break;
+        default:
+            statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+            break;
+    }
+}
+
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa @statusclass"></i>  Image(s)
+        </div>
+        <div id="@panelId" class="show">
+            <div class="card-body">
+                @Html.Partial("../AP/CreditCard/Form/ImageBank/List/Images", Model.Images)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+</div>

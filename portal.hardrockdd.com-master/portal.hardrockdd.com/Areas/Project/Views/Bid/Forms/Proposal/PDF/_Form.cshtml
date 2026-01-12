@@ -1,0 +1,17 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.FormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var url = Url.Action("BidProposalPDFPreview", "Bid", new { bdco = Model.BDCo, bidId = Model.BidId, lineId = Model.Customer.LineId, guid = Guid.NewGuid() });
+    url += "#toolbar=0&navpanes=0&scrollbar=0";
+}
+
+<iframe id="pdf_@panelId" pdfurl="@(url)" src="" frameborder="0" style="width: 100%; height: 800px;" allowfullscreen>
+</iframe>
+<script>
+    $('#pdf_@panelId').ready(function (e) {
+        var url = $(('#pdf_@panelId')).attr('pdfurl');
+        var iframeElem = ('#pdf_@panelId');
+        $(iframeElem).attr('src', '');
+        setTimeout(function () { $(iframeElem).attr('src', url); }, 200);
+    });
+</script>

@@ -1,0 +1,21 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageListViewModel
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-xl-12" id="LineFormPanel">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-xl-12" id="LineTablePanel">
+                @Html.Partial("../EM/EMUsage/Lines/Panel", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.AR.Customer.CustomerViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse"
+     data-sortable-id="CustomerViewModel"
+     data-reloadurl="@Url.Action("Form", "Customer", new { custGroupId = Model.CustGroupId, customerId = Model.CustomerId })"
+     data-initpane="initPane@(id)">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Info (@Model.Name)</h4>
+    </div>
+    <div class="panel-body" id="customerinfo">
+        @Html.Partial("../AR/Customer/Form", Model)
+    </div>
+</div>

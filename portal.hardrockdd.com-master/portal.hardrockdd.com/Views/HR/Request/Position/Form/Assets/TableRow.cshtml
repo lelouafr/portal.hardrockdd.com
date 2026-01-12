@@ -1,0 +1,24 @@
+﻿@model  portal.Models.Views.HR.Resource.Form.ResourceAssignedAssetViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = "";
+    ViewBag.TableRow = "True";
+
+    ViewBag.DisplayOnly = true;
+    rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ResourceId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.AssetId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.Date)
+    </td>
+    <td> @Html.EditorFor(m => m.Category) </td>
+    <td> @Html.EditorFor(m => m.Description) </td>
+    <td> @Html.EditorFor(m => m.Id) </td>
+    <td> @Html.EditorFor(m => m.Serial) </td>
+    <td> @Html.EditorFor(m => m.Status) </td>
+</tr>

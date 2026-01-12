@@ -1,0 +1,56 @@
+﻿<!--@model  portal.Models.Views.Bid.BidProposalScopeListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+<h3>Proposal Clarifications</h3>
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("AddClarification", "BidProposalScope")"
+       data-urldelete="@Url.Action("Delete", "BidProposalScope")"
+       data-urlupdate="@Url.Action("Update", "BidProposalScope")"
+       data-urlvalidate="@Url.Action("Validate", "BidProposalScope")"-->
+       @*data-urlselect="@Url.Action("Panel", "BidBoreLinePass"), @Url.Action("Panel", "BidBoreLineCostItem")"
+       data-dstselect="BidBoreLineInfo"
+       data-dstselectvalidate="false"*@
+       <!--data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Title)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Notes)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List.Where(f => f.ScopeTypeId == (byte)DB.ScopeTypeEnum.Clarification).ToList())
+        {
+            @Html.Partial("../BD/Bid/Proposal/Form/Bid/Scopes/Clarifications/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+
+</script>-->

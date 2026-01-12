@@ -1,0 +1,107 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.ProductionRateListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = "panel_body_" + Guid.NewGuid();
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+
+    DB.Infrastructure.ViewPointDB.Data.BDCompanyParm bidParms;
+    using (var db = new DB.Infrastructure.ViewPointDB.Data.VPContext())
+    {
+        bidParms = db.BDCompanyParms.FirstOrDefault(f => f.BDCo == Model.BDCo);
+    }
+}
+
+<div class="panel panel-default"
+     data-reloadurl="@Url.Action("BoreProductionRateListTable", "BidForm", new { bdco = Model.BDCo, bidId = Model.BidId, boreId = Model.BoreId })"
+     data-urlapplydefault="@Url.Action("BoreProductionRateListApplyDefault", "BidForm", new { bdco = Model.BDCo, bidId = Model.BidId, boreId = Model.BoreId })"
+     data-urladdphase="@Url.Action("BoreProductionRateAdd", "BidForm")"
+     id="@(panelId)"
+     data-key="@tableKey">
+    <div class="panel-heading pointer-cursor" data-target="#@(panelBodyId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="btn-group pull-right pr-2">
+            <button type="button" class="btn btn-success btn-xs">Menu</button>
+            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="javascript:;" class="applyDefaultRates">Apply Default Production Rates</a></li>
+                <li class="divider"></li>
+                <li><a href="javascript:;" class="addPhasebtn" data-phaseid="@bidParms.PilotPhaseId">Add Pilot</a></li>
+                <li><a href="javascript:;" class="addPhasebtn" data-phaseid="@bidParms.ReamPhaseId">Add Ream Pass</a></li>
+                <li><a href="javascript:;" class="addPhasebtn" data-phaseid="@bidParms.SwabPhaseId">Add Swab</a></li>
+                <li><a href="javascript:;" class="addPhasebtn" data-phaseid="@bidParms.TripInOutPhaseId">Add Trip in-out</a></li>
+                <li><a href="javascript:;" class="addPhasebtn" data-phaseid="@bidParms.PullPipePhaseId">Add Pull Pipe</a></li>
+            </ul>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Bore Line Production Rate(s)
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/ProductionRate/Table", Model)
+    </div>
+</div>
+
+<script>
+    $('#@(panelId)').ready(function () {
+
+        var panel = $('#@(panelId)');
+        $(panel).on('click', 'a.applyDefaultRates', function () {
+            var panel = $('#@(panelId)');
+            var url = $(panel).data("urlapplydefault");
+            //var data = $(panel).data("key");
+            var dst = $(panel).find('.panel-body');
+            console.log('applyDefaultRates', url);
+
+            $.ajax({
+                method: "GET",
+                url: url,
+                //data: data,
+                beforeSend: function (xhr) {
+                    var controllerToken = $(document).find('#controllerTokenId')[0];
+                    xhr.setRequestHeader('ControllerTokenId', $(controllerToken).val());
+                },
+                success: function (res) {
+                    //console.log(res);
+                    dst.html(res);
+                    handleTableAutoUpdate($(panel));
+                },
+                error: function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $(panel).on('click', 'a.addPhasebtn', function () {
+            var panel = $('#@(panelId)');
+            var url = $(panel).data("urladdphase");
+            var data = $(panel).data("key");
+            var phaseId = $(this).data('phaseid');
+            var dst = $(panel).find('.panel-body');
+
+            data = data + "&phaseId=" + phaseId;
+
+            console.log('addPhaseBtn', url, data);
+
+            $.ajax({
+                method: "GET",
+                url: url,
+                data: data,
+                beforeSend: function (xhr) {
+                    var controllerToken = $(document).find('#controllerTokenId')[0];
+                    xhr.setRequestHeader('ControllerTokenId', $(controllerToken).val());
+                },
+                success: function (res) {
+                    //console.log(res);
+                    dst.html(res);
+                    handleTableAutoUpdate($(panel));
+                },
+                error: function (res) {
+                    console.log(res);
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,58 @@
+﻿@model object
+@using System.Collections.Generic;
+@using System;
+@using System.Collections;
+@using System.Linq;
+
+@{
+    IList list = (IList)Model;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    //tableLayout.Controller = ViewBag.Controller;
+    string tableKey = "";
+    foreach (var item in list)
+    {        
+        foreach (var prp in tableLayout.Properties)
+        {
+            if (prp.IsKey)
+            {
+                var myData = Model.GetType().GetProperty(prp.Property);
+                var myVal = myData.GetValue(item, null);
+                if (tableKey != string.Empty)
+                {
+                    tableKey += "&";
+                }
+                tableKey += prp.Property + "=" + myVal.ToString();
+            }
+        }
+        break;
+    }
+}
+
+
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", tableLayout.ControllerInfo.Controller)"
+       data-urltablerow="@Url.Action("TableRow", tableLayout.ControllerInfo.Controller)"
+       data-urldelete="@Url.Action("Delete", tableLayout.ControllerInfo.Controller)"
+       data-urlupdate="@Url.Action("Update", tableLayout.ControllerInfo.Controller)"
+       data-urlvalidate="@Url.Action("Validate", tableLayout.ControllerInfo.Controller)"
+       data-tablekey="@tableKey">
+    <thead>
+        @foreach (var item in list)
+        {
+            @Html.EditorFor(m => item, "Table/TableHeader", new { TableRow = true })
+            break;
+        }
+    </thead>
+    <tbody>
+        @{
+        }
+        @foreach (var item in list)
+        {
+            @Html.EditorFor(m => item, "Table/TableRow", new { TableRow = true })
+        }
+    </tbody>
+</table>

@@ -1,0 +1,35 @@
+﻿<!-- begin #header -->
+<div id="header" class="header navbar-default">
+    @Html.Partial("~/Views/Shared/Navbar/Header/_Header.cshtml")
+    <ul class="navbar-nav navbar-left"
+        style="padding:0px 5px;">
+        <li>
+            @Html.Partial("~/Views/Shared/Navbar/Header/_CompanyChange.cshtml")
+
+        </li>
+
+    </ul> 
+    <!-- begin header-nav -->
+    <ul class="navbar-nav navbar-right">
+        @*
+        <li>
+            @Html.Partial("~/Views/Shared/Navbar/Header/_Search.cshtml")
+        </li>
+        *@
+        @*@Html.Action("IndexMenu", "Notification")*@
+        @*<li class="dropdown">
+            @Html.Partial("~/Views/Shared/Navbar/Header/_Notification.cshtml")
+        </li>*@
+        @*<li class="dropdown navbar-user">
+            @Html.Partial("~/Views/Shared/Navbar/Header/_UserOverride.cshtml", new portal.Models.Views.Web.WebUserOverrideViewModel())
+        </li>*@
+        <li class="dropdown navbar-user">
+            @Html.Partial("~/Views/Shared/Navbar/Header/_User.cshtml")
+        </li>
+        <li class="dropdown navbar-user">
+            @Html.Partial("~/Views/Shared/Navbar/Header/_Users.cshtml")
+        </li>
+    </ul>
+    <!-- end header navigation right -->
+</div>
+<!-- end #header -->

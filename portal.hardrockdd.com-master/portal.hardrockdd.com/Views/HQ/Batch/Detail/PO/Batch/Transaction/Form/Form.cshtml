@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APBatchTransViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("APBatchTransactionUpdate", "Batch")"
+      data-urlvalidate="@Url.Action("APBatchTransactionValidate", "Batch")">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BatchSeq, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.VendorId)
+        @Html.EditorFor(m => m.APReference)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.InvoiceDate)
+        @Html.EditorFor(m => m.DueDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Amount)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

@@ -1,0 +1,42 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Job.JobPhaseListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var panelBodyId = string.Format("taskpanel_{0}_{1}", Model.DTCo, Model.TicketId);
+}
+
+<div id="@panelId"
+     class="panel panel-default"
+     data-reloadurl="@Url.Action("JobPhaseTable", "Ticket", new { dtco = Model.DTCo, ticketId = Model.TicketId })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Tasks
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelBodyId">
+        @Html.Partial("Form/Job/Task/_Table", Model)
+    </div>
+</div>
+
+
+<script>
+    $('#@panelBodyId').off("click", ".addPhaseRow")
+        .on("click", ".addPhaseRow", function () {
+            var form = $(this).closest('form');
+            var table = $('#tasks').find('table');
+            var data = form.serialize();
+            var url = $(table).data('urlcreate');
+            var tbody = $('#tasks tbody');
+            $.ajax({
+                type: "Get",
+                dataType: "html",
+                url: url,
+                data: data,
+                success: function (data) {
+                    tbody.append(data);
+                }
+            });
+        });
+</script>

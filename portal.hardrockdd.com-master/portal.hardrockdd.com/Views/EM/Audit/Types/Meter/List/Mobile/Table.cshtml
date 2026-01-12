@@ -1,0 +1,225 @@
+﻿@model  portal.Models.Views.Equipment.Audit.EquipmentAuditMeterLineListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("AddMobile", "EMAuditMeterForm")"
+       data-urldelete="@Url.Action("Delete", "EMAuditMeterForm")"
+       data-urlupdate="@Url.Action("Update", "EMAuditMeterForm")"
+       data-urlvalidate="@Url.Action("Validate", "EMAuditMeterForm")"
+       data-reloadurl="@Url.Action("TableMobile", "EMAuditMeterForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="5%"><label>Completed</label></th>
+            <th width="35%">@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th width="15%"><label>Odo</label></th>
+            <th width="15%"><label>Hours</label></th>
+            <th width="10%">
+                @if (viewOnly != true)
+                {
+                    <button data-addrowlocation="top" class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+
+                }
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../EM/Audit/Types/Meter/List/Mobile/Row/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').closest('.panel').find('button').each(function () { $(this).prop("disabled", true) });
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        var table = $('#@tableId');
+        handleMobileTableEvents($(table));
+        $(table).find('.meter').each(function () {
+            $(this).find('[name="ActionId"]').each(function () { handleMobileActionView(this) });
+            $(this).find('[name="MeterTypeId"]').each(function () { handleMobileMeterView(this) });
+            $(this).find('.Completed').each(function () { handleMobileCompletedView(this) });
+        }).promise().done(function () {
+            $('#@tableId').closest('.panel').find('button').each(function () { $(this).prop("disabled", false) });
+        });
+
+    })
+
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var row = $(this).closest('tr');
+        var seqid = $(this).data('seqid');
+        //console.log('Seq Id:', seqid);
+        var commentElem = $('#@tableId').find('#commentRow_' + seqid);
+        commentElem.show();
+        $(this).hide();
+    });
+
+    function handleMobileTableEvents(tableElem) {
+        $(tableElem)
+            .off('change', '.EquipmentId')
+            .on('change', '.EquipmentId', function () {
+                var elem = this;
+                setTimeout(function () {
+                    handleMobileMeterView(elem);
+                }, 100);
+            });
+        $(tableElem)
+            .off('click', '.transfer')
+            .on('click', '.transfer', function () {
+                var button = this;
+                $(button).SetButtonBusy();
+                handleMobileActionBtnView(this);
+                $(button).SetButtonNotBusy();
+            });
+        $(tableElem)
+            .off('click', '.untransfer')
+            .on('click', '.untransfer', function () {
+                var button = this;
+                $(button).SetButtonBusy();
+                handleMobileActionBtnView(this);
+                $(button).SetButtonNotBusy();
+            });
+        $(tableElem)
+            .off('change', '.Completed')
+            .on('change', '.Completed', function () {
+                handleMobileCompletedView(this);
+            });
+    }
+
+    function handleMobileMeterView(elem) {
+        var row = $(elem).closest('tr');
+        var meterElem = $(row).find('[name="MeterTypeId"]');
+        var stringVal = $(meterElem).val();
+        var val = stringVal == "Hours" ? 0 : stringVal == "Odometer" ? 1 : stringVal == "Both" ? 2 : stringVal;
+        var actionId = $(row).find('[name="ActionId"]').val();
+        val = parseInt(val);
+        //console.log('Meter type:', val, stringVal, actionId);
+        $(row).find('.OdoReading').hide();
+        $(row).find('.HourReading').hide();
+        if (actionId === "Update" || actionId === "Add" || actionId === "0" || actionId === "2") {
+            switch (val) {
+                case 0:
+                    $(row).find('.HourReading').show();
+                    break;
+                case 1:
+                    $(row).find('.OdoReading').show();
+                    break;
+                case 2:
+                    $(row).find('.OdoReading').show();
+                    $(row).find('.HourReading').show();
+                    break;
+                default:
+            }
+        }
+    }
+
+    function handleMobileCompletedView(elem) {
+        var row = $(elem).closest('tr');
+        var rowKey = $(row).data('entitykey');
+        var table = $(row).closest('table');
+
+        var val = $(elem).is(':checked');
+        //$(row).find('.ActionId').prop('disabled', val);
+        //$(row).find('.MeterTypeId').prop('disabled', val);
+        $(row).find('.OdoReading').prop('disabled', val);
+        $(row).find('.HourReading').prop('disabled', val);
+
+        $(row).find('.ToCrewId').prop('disabled', val);
+        $(row).find('.ToCrewId').selectpicker('refresh');
+
+        $(row).find('.ToLocationId').prop('disabled', val);
+        $(row).find('.ToLocationId').selectpicker('refresh');
+
+        $(row).find('.ToEmployeeId').prop('disabled', val);
+        $(row).find('.ToEmployeeId').selectpicker('refresh');
+        if (val) {
+            $(row).find('.transfer').hide();
+            $(row).find('.untransfer').hide();
+            $(row).find('.delRow').hide();
+        }
+        else {
+            $(row).find('.transfer').show();
+            $(row).find('.untransfer').show();
+            $(row).find('.delRow').show();
+        }
+
+        $(row).find('[name="ActionId"]').each(function () { handleActionView(this) });
+    }
+
+    function handleMobileActionView(elem) {
+        var row = $(elem).closest('tr');
+        var rowKey = $(row).data('entitykey');
+        var table = $(row).closest('table');
+
+        //console.log(transferRow);
+        var val = $(elem).val();
+        //console.log('Action type:', val);
+        switch (val) {
+            case "Remove":
+            case "Transfer":
+                $(row).find('.meterGrp').hide();
+                $(row).find('.transferGrp').show();
+                var complete = $(row).find('.Completed');
+                var elemSwitch = $(row).find('.Completed').next();
+                $(complete).attr('data-theme', "orange");
+                $(complete).data('theme', "orange");
+                $(complete).attr('data-switcheryinit', "false");
+                $(elemSwitch).remove();
+                $(complete).InitSwitchery();
+                break;
+            case "Update":
+                $(row).find('.meterGrp').show();
+                $(row).find('.transferGrp').hide();
+                break;
+            case "Add":
+                $(row).find('.meterGrp').show();
+                $(row).find('.transferGrp').hide();
+                var complete = $(row).find('.Completed');
+                var elemSwitch = $(row).find('.Completed').next();
+                $(complete).attr('data-theme', "blue");
+                $(complete).data('theme', "blue");
+                $(complete).attr('data-switcheryinit', "false");
+                $(elemSwitch).remove();
+                $(complete).InitSwitchery();
+                break;
+            default:
+        }
+    }
+
+    function handleMobileActionBtnView(elem) {
+        var row = $(elem).closest('tr');
+
+        if ($(elem).hasClass("transfer")) {
+            $(row).find('.meterGrp').hide();
+            $(row).find('.transferGrp').show();
+            $(row).find('[name="ActionId"]').val(3);
+            $(row).find('[name="ActionId"]').change();
+            var complete = $(row).find('.Completed');
+            var elemSwitch = $(row).find('.Completed').next();
+            $(complete).attr('data-theme', "orange");
+            $(complete).data('theme', "orange");
+            $(elemSwitch).remove();
+            $(complete).InitSwitchery();
+        }
+        else if ($(elem).hasClass("untransfer")) {
+            $(row).find('.meterGrp').show();
+            $(row).find('.transferGrp').hide();
+            $(row).find('[name="ActionId"]').val(2);
+            $(row).find('[name="ActionId"]').change();
+            var complete = $(row).find('.Completed');
+            var elemSwitch = $(row).find('.Completed').next();
+            $(complete).attr('data-theme', "green");
+            $(complete).data('theme', "green");
+            $(elemSwitch).remove();
+            $(complete).InitSwitchery();
+        }
+    }
+</script>

@@ -1,0 +1,115 @@
+﻿@model portal.Models.Views.EM.WorkOrder.Forms.FormViewModel
+@{
+    var formId = "actionForm_" + Guid.NewGuid().ToString().Replace("-", "");
+}
+
+<div id="@formId">
+    @if (!Model.Info.Complete)
+    {
+        <div class="mb-3">
+            <button type="button" class="btn btn-success btn-block" onclick="completeWorkOrder()">
+                <i class="fas fa-check"></i> Complete Work Order
+            </button>
+        </div>
+        <div class="mb-3">
+            <button type="button" class="btn btn-danger btn-block" onclick="deleteWorkOrder()">
+                <i class="fas fa-trash"></i> Delete Work Order
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <span class="badge badge-success p-2 d-block">
+                <i class="fas fa-check-circle"></i> Completed
+            </span>
+        </div>
+        <div class="mb-3">
+            <button type="button" class="btn btn-warning btn-block" onclick="reopenWorkOrder()">
+                <i class="fas fa-undo"></i> Reopen Work Order
+            </button>
+        </div>
+    }
+    
+    <hr />
+    
+    <div class="mb-3">
+        <a href="@Url.Action("WorkOrderIndex", "EMWorkOrder")" class="btn btn-secondary btn-block">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<script>
+    function completeWorkOrder() {
+        if (confirm('Are you sure you want to complete this work order?')) {
+            $.ajax({
+                url: '@Url.Action("Complete", "EMWorkOrder")',
+                type: 'POST',
+                data: {
+                    emco: @Model.EMCo,
+                    workOrderId: '@Model.WorkOrderId',
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Error completing work order');
+                    }
+                },
+                error: function () {
+                    alert('Error completing work order');
+                }
+            });
+        }
+    }
+
+    function reopenWorkOrder() {
+        if (confirm('Are you sure you want to reopen this work order?')) {
+            $.ajax({
+                url: '@Url.Action("Reopen", "EMWorkOrder")',
+                type: 'POST',
+                data: {
+                    emco: @Model.EMCo,
+                    workOrderId: '@Model.WorkOrderId',
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        alert('Error reopening work order');
+                    }
+                },
+                error: function () {
+                    alert('Error reopening work order');
+                }
+            });
+        }
+    }
+
+    function deleteWorkOrder() {
+        if (confirm('Are you sure you want to DELETE this work order? This cannot be undone.')) {
+            $.ajax({
+                url: '@Url.Action("Delete", "EMWorkOrder")',
+                type: 'POST',
+                data: {
+                    emco: @Model.EMCo,
+                    workOrderId: '@Model.WorkOrderId',
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = '@Url.Action("WorkOrderIndex", "EMWorkOrder")';
+                    } else {
+                        alert('Error deleting work order');
+                    }
+                },
+                error: function () {
+                    alert('Error deleting work order');
+                }
+            });
+        }
+    }
+</script>

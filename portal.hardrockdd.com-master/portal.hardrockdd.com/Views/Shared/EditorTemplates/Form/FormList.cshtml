@@ -1,0 +1,68 @@
+﻿@model object
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var tableLay = new TableLayoutModel(this);
+    var entityKey = tableLay.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+        id="@formId"
+        data-entitykey="@entityKey"
+        data-urlupdate="@ViewBag.UpdateUrl"
+        data-urlvalidate="@ViewBag.ValidateUrl"
+        data-urlsubmit="@ViewBag.SubmitUrl">
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach (var prp in this.ViewData.ModelMetadata.Properties.Where(p => p.TemplateHint == "HiddenInput").Select(s => s.PropertyName))
+    {
+        @Html.Hidden(prp, Model.GetType().GetProperty(prp).GetValue(Model, null), new { @id = Guid.NewGuid() })
+    }
+    @foreach (var grp in formLayout.FormGroups.ToList())
+    {
+        <div class="row">
+            <div class="col-xl-12 ml-xl-auto">
+                @foreach (var grpRow in grp.FormGroupRows)
+                {
+                    <div class="form-group has-feedback row">
+                        @foreach (var prp in grpRow.Properties)
+                        {
+                            if (!string.IsNullOrEmpty(prp.Attributes.ForeignKeys))
+                            {
+                                var infoData = "";
+                                var fKeys = prp.Attributes.ForeignKeys.Split(',').ToList();
+                                foreach (var fk in fKeys)
+                                {
+                                    infoData += string.Format(AppCultureInfo.CInfo(), "{0}={1}&", fk, Html.Value(fk));
+                                }
+                                @Html.Editor(prp.Property, new { InfoUrl = prp.Attributes.InfoUrl, InfoData = infoData })
+                            }
+                            else
+                            {
+                                @Html.Editor(prp.Property)
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</form>
+
+@if (!viewOnly)
+{
+    <script>
+        $(document).ready(function () {
+            Form().init('#@formId');
+        });
+    </script>
+
+}

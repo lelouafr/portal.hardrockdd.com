@@ -1,0 +1,51 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.FormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 5px 0px 0px 0px;
+        overflow: visible;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-12">
+                @Html.Partial("Forms/Info/_Form", Model.Info)
+            </div>
+            <div class="col-12">
+                @Html.Partial("Forms/DrivingInfo/_Panel", Model.DivingInfo)
+            </div>
+            @if (User.HasAccess("PayrollReview", "Index"))
+            {
+                <div class="col-12">
+                    @Html.Partial("Forms/ADInfo/_Panel", Model.ADInfo)
+                </div>
+
+            }
+            <div class="col-12">
+                @Html.Partial("Forms/Assignment/_Panel", Model.PayrollAssignment)
+            </div>
+            @if (User.HasAccess("PayrollReview", "Index"))
+            {
+                <div class="col-12">
+                    @Html.Partial("Forms/History/_Panel", Model.PayrollHistory)
+                </div>
+                <div class="col-12">
+                    @Html.Partial("Forms/PayrollInfo/_Panel", Model.PayrollPayInfo)
+                </div>
+            }
+            <div class="col-12">
+                @Html.Partial("Forms/Assets/_Panel", Model.AssignedAssets)
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+    </div>
+</div>

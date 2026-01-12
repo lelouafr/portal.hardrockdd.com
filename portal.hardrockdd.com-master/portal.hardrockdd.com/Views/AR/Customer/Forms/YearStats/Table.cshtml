@@ -1,0 +1,47 @@
+﻿@model portal.Models.Views.AR.Customer.Forms.CustomerStatListViewModel
+@{
+    ViewBag.TableRow = "True";
+    ViewBag.DisplayOnly = true;
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Year)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Revenue)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossProfit)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossMargin)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Paid)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Balance)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../AR/Customer/Forms/YearStats/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function() {
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            bInfo: false,
+            order: [[0, "desc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+</script>

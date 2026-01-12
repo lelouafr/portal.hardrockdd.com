@@ -1,0 +1,12 @@
+﻿@model portal.Areas.Project.Models.Bid.Bore.DetailListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-lg-7">
+        @Html.Partial("Forms/Package/BoreSetup/BoreList/_Panel", Model)
+    </div>
+    <div class="col-lg-5" id="BoreSetupReview_@(Model.PackageId)">
+        
+    </div>
+</div>

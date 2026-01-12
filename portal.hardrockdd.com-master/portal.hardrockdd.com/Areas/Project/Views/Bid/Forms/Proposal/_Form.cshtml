@@ -1,0 +1,36 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.FormViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="row" id="@panelId">
+    <div class="col-lg-6" id="form_@panelId">
+        @Html.Partial("Forms/Proposal/Bid/Header/_Panel", Model.Bid)
+        @Html.Partial("Forms/Proposal/Package/_PanelList", Model.Packages)
+        @Html.Partial("Forms/Proposal/Bid/ScopeList/_Panel", Model.Bid.Clarifications)
+        @Html.Partial("Forms/Proposal/Bid/ScopeList/_Panel", Model.Bid.ScopeofWork)
+        @Html.Partial("Forms/Proposal/Bid/ScopeList/_Panel", Model.Bid.OutofScope)
+    </div>
+    <div class="col-lg-6" id="pdf_@panelId">
+        @Html.Partial("Forms/Proposal/Customer/_Panel", Model.Customers)
+        <div id="pdfPreView_@(Model.BidId)">
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#@panelId').ready(function () {
+        var elemform = $('#form_@panelId');
+        var elem = $('#pdf_@panelId');
+
+        var iframeElem = $(elem).find('iframe');
+
+        h = (elemform).height();
+        $(iframeElem).css("height", h + "px");
+        $(elem).show();
+    });
+</script>

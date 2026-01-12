@@ -1,0 +1,170 @@
+﻿
+<div class="modal fade" id="comboAdd">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="margin: 10px 5px 0px 5px; padding: 0px;">
+
+            </div>
+            <div class="modal-body" style="margin: 0px 5px 0px 5px; padding: 0px;">
+            </div>
+            <div class="modal-footer" style="margin: 0px 5px 0px 5px; padding: 0px;">
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+                    <button type="button" class="btn btn-primary btnComboCreate">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addUser">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="margin: 10px 5px 0px 5px; padding: 0px;">
+
+            </div>
+            <div class="modal-body">
+                @{
+                    var controller = (portal.Models.Views.Web.ControllerViewModel)ViewBag.ControllerViewModel;
+                }
+                @if (controller != null)
+                {
+                    @Html.Partial("../Administration/Web/Access/Users/Add/Index", controller.AddUser)
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="overrideUser">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                @Html.Partial("~/Views/Shared/Navbar/Header/_UserOverride.cshtml", new portal.Models.Views.Web.WebUserOverrideViewModel())
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="comboEdit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="margin: 10px 5px 0px 5px; padding: 0px;">
+
+            </div>
+            <div class="modal-body" style="margin: 0px 5px 0px 5px; padding: 0px;">
+            </div>
+            <div class="modal-footer" style="margin: 0px 5px 0px 5px; padding: 0px;">
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+                    <button type="button" class="btn btn-primary btnComboEdit">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="comboSearch">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body" style="margin: 0px 0px 0px 0px; padding: 0px;">
+            </div>
+            <div class="modal-footer" style="margin: 0px 0px 0px 0px; padding: 0px;">
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+                    <button type="button" class="btn btn-primary btnComboSearchSelect">
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="auditLog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body" style="margin: 0px; padding: 0px;">
+            </div>
+            <div class="modal-footer" style="margin: 0px; padding: 0px;">
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="position">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style=" padding: 0px 0px 5px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="termination">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" style=" padding: 0px 0px 5px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addRowPopUp">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#termination").ready(function () {
+        $("#termination").on("show.bs.modal", function (event) {
+            if (event.target == this) {
+
+                console.log("termination.show.bs.modal", event, this);
+                var button = $(event.relatedTarget);
+                $(button).SetButtonBusy();
+                if (true) {
+                    var url = "@Url.Action("Create", "TermRequest", new { Area = "HumanResource" })";
+                    //console.log(url);
+                    $(this).find(".modal-body").load(url);
+                    $(button).SetButtonNotBusy();
+                }
+            }
+        });
+        $("#termination").on("hide.bs.modal", function (event) {
+            if (event.target == this) {
+                var button = $(event.relatedTarget);
+                console.log("termination.hide.bs.modal", event, this);
+
+                // Place the returned HTML into the selected element
+                $(this).find(".modal-body").html("");
+            }
+        });
+    });
+    $("#position").ready(function () {
+        $("#position").on("show.bs.modal", function (event) {
+            if (event.target == this) {
+
+                console.log("position.show.bs.modal", event, this);
+                var button = $(event.relatedTarget);
+                $(button).SetButtonBusy();
+                if (true) {
+                    var url = "@Url.Action("Create", "PositionRequest", new { Area = "HumanResource" })";
+                    $(this).find(".modal-body").load(url);
+                    $(button).SetButtonNotBusy();
+                }
+            }
+        });
+        $("#position").on("hide.bs.modal", function (event) {
+            if (event.target == this) {
+                var button = $(event.relatedTarget);
+                console.log("position.hide.bs.modal", event, this);
+
+                // Place the returned HTML into the selected element
+                $(this).find(".modal-body").html("");
+            }
+        });
+    });
+</script>

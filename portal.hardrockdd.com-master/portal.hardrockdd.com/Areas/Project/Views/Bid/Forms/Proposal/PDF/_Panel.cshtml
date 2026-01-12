@@ -1,0 +1,29 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.FormViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-default pdfPanel"
+     data-reloadurl="@Url.Action("BidProposalPDFForm", "Bid", new { bdco = Model.BDCo, bidId = Model.BidId, lineId = Model.Customer?.LineId ?? 0 })">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Preview: (@Model.BidId)
+        </div>
+    </div>
+    <div class="panel-body show" style="padding:0px;" id="@panelId">
+        @Html.Partial("Forms/Proposal/PDF/_Form", Model)
+    </div>
+</div>
+<script>
+    $('.pdfPanel').on('show.bs.collapse', function (e) {
+        var elem = $('#@panelId');
+        $(elem).find('iframe').each(function () {
+            var url = $(this).attr('pdfurl');
+            var iframeElem = this;
+            $(iframeElem).attr('src', '');
+            setTimeout(function () { $(iframeElem).attr('src', url); }, 200);            
+        });
+    });
+</script>

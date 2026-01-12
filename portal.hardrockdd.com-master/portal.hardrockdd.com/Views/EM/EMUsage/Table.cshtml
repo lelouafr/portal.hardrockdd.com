@@ -1,0 +1,174 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table table-responsive"
+       id="@tableId"
+       data-urlselect="@Url.Action("EquipmentWeekIndex", "DailyEquipmentUsage")"
+       data-urlupdatepayrollstatus="@Url.Action("UpdateStatus", "DailyEquipmentUsage")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Crew)</th>
+            @*<th>@Html.LabelForRequired(model => model.List.FirstOrDefault().RevRate)</th>*@
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            @foreach (var DayofWeek in Model.List.GroupBy(g => new { g.ActualDate.DayOfWeek, g.ActualDate.Date }).Select(s => new { DayOfWeek = s.Key.DayOfWeek, Date = s.Key.Date }).ToList())
+            {
+                <th><label>@DayofWeek.DayOfWeek.ToString().Substring(0, 3)</label> <div class="f-s-10 text-center">(@DayofWeek.Date.ToString("M/d"))</div></th>
+            }
+            <th><label>Total</label></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rigWeek in Model.List
+                                        .OrderBy(o => o.EquipmentName)
+                                        .ThenBy(o => o.Status)
+                                        .GroupBy(g => new { g.DTCo, g.EquipmentId, g.EquipmentName, g.Crew })
+                                        .Select(s => new
+                                        {
+                                            DTCo = s.Key.DTCo,
+                                            EquipmentId = s.Key.EquipmentId,
+                                            EquipmentName = s.Key.EquipmentName,
+                                            Crew = s.Key.Crew,
+                                            WeekId = Model.WeekId,
+                                            TotalUnits = s.Sum(sum => sum.RevWorkUnits),
+                                            List = s
+                                        })
+                                        .OrderBy(o => o.EquipmentName)
+                                        .ToList())
+         {
+            var firstItem = rigWeek.List.FirstOrDefault();
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "DTCo={0}&EquipmentId={1}&WeekId={2}", rigWeek.DTCo, rigWeek.EquipmentId, rigWeek.WeekId);
+            var rowSpan = rigWeek.List.GroupBy(g => g.Status).Count();
+            foreach (var usageStatus in rigWeek.List.GroupBy(g => g.Status)
+                                                   .Select(s => new { Status = s.Key, EMStatus = s.Max(max => max.Status), List = s })
+                                                   .ToList()
+                                                   .OrderBy(o => o.Status)
+                                                   .ToList())
+            {
+                var hoursClass = "";
+                if (usageStatus.Status == DB.EMUsageTransStatusEnum.New)
+                {
+                    hoursClass = "";
+                }
+                if (usageStatus.Status == DB.EMUsageTransStatusEnum.Posted)
+                {
+                    hoursClass = "bg-aqua-lighter";
+
+                }
+        <tr data-entitykey="@entityKey"
+            data-dtco="@rigWeek.DTCo"
+            data-equipmentid="@rigWeek.EquipmentId"
+            data-weekid="@rigWeek.WeekId"
+            data-status="@((int)usageStatus.Status)"
+            class="">
+            @{
+                var originalhoursClass = hoursClass;
+            }
+            <td>
+                @firstItem.EquipmentId
+                <div class="f-s-8">(@firstItem.EquipmentName)</div>
+            </td>
+            <td>
+                <div class="f-s-9">@rigWeek.Crew</div>
+            </td>
+            @*<td>
+            <div>@Html.EditorFor(l => firstItem.RevRate, new { DisplayOnly = true })</div>
+        </td>*@
+            <td>
+                <div class="@originalhoursClass" name="Status">
+                    @usageStatus.Status
+                </div>
+            </td>
+            @foreach (var DayofWeek in Model.List
+                                    .GroupBy(g => g.ActualDate.DayOfWeek)
+                                    .Select(s => new { DayOfWeek = s.Key, List = s })
+                                    .ToList())
+            {
+                var subItem = usageStatus.List.Where(f => f.ActualDate.DayOfWeek == DayofWeek.DayOfWeek).ToList();
+                var entryCnt = DayofWeek.List.Count();
+
+                if (entryCnt != 0)
+                {
+                    <td style="padding-left:1px; padding-right:1px; border-right: 1px; border-color: #e2e7eb;">
+                        <table class="table-borderless table-condensed">
+
+                            @foreach (var item in subItem.GroupBy(g => g.JobId).Select(s => new { JobId = s.Key, units = s.Sum(sum => sum.RevWorkUnits) }).ToList())
+                            {
+                                <tr>
+                                    <td width="100%" class="no-padding f-s-9 " style="padding-left:0px; padding-right:0px; white-space:nowrap;">
+                                        @if (item.units != 1)
+                                        {
+                                            @item.JobId<span class="f-s-8 pull-right bg-yellow-lighter" style="padding-left:2px;">@string.Format(AppCultureInfo.CInfo(), " {0:P0}", item.units) </span>
+                                        }
+                                        else
+                                        {
+                                            <div style="white-space:nowrap;" class="">@item.JobId</div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                }
+                else if (entryCnt == 0)//usageStatus.Status == DB.PayrollReviewStatusEnum.Approved &&
+                {
+                    <td>
+                        <div class="text-red-lighter"><b>Empty</b></div>
+                    </td>
+                }
+
+            }
+            <td>
+                @if (firstItem.Status == usageStatus.Status)
+                {
+                    var totalHours = Math.Round(rigWeek.TotalUnits ?? 0, 2);
+                    if (totalHours > 7)
+                    {
+                        <div class="bg-red-transparent-5 f-s-12"><b> @String.Format("{0:F2}", totalHours)</b></div>
+                    }
+                    else
+                    {
+                        <div class="f-s-12"><b> @String.Format("{0:F2}", totalHours)</b></div>
+                    }
+                    @Html.HiddenFor(m => firstItem.EquipmentId, new { @id = Guid.NewGuid() })
+                }
+            </td>
+        </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        InitTable();
+    });
+    function InitTable() {
+        //$('#@tableId').DataTable().destroy();
+        if ($.fn.dataTable.isDataTable('#@tableId')) {
+            //console.log('Destroy Table');
+            $('#@tableId').DataTable().destroy();
+        }
+        //console.log('Create Table');
+        $('#@tableId').DataTable({
+            destroy: true,
+            responsive: true,
+            'order': [
+                [0, "asc"],
+                [1, "asc"],
+                [2, "asc"],
+                [3, "desc"]],
+            'rowsGroup': [0, 1],
+            'pageLength': 25,
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    }
+</script>

@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentAssignmentLogListViewModel
+@{
+    var panelId = "panelId_" + Guid.NewGuid();
+}
+
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Assignment Logs
+    </div>
+    <div id="@panelId" class="show">
+        <div class="card-body">
+            @Html.Partial("../EM/Equipment/Forms/Assignment/List/Table", Model)
+        </div>
+    </div>
+</div>

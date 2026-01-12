@@ -1,0 +1,73 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.GLCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EmplopyeeId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.LineTypeId)
+    </td>
+    <td class="jobGroup">
+        @Html.EditorFor(m => m.JobId)
+    </td>
+    <td class="jobGroup">
+        @Html.EditorFor(m => m.PhaseId)
+    </td>
+    <td class="jobGroup">
+        @Html.EditorFor(m => m.JobCostTypeId)
+    </td>
+    <td class="eqpGroup" style="display: none;">
+        @Html.EditorFor(m => m.EquipmentId)
+    </td>
+    <td class="eqpGroup" style="display: none;">
+        @Html.EditorFor(m => m.CostCodeId)
+    </td>
+    <td class="eqpGroup" style="display: none;">
+        @Html.EditorFor(m => m.CostTypeId)
+    </td>
+    <td class="glGroup" style="display: none;">
+    </td>
+    <td class="glGroup" style="display: none;">
+    </td>
+    <td class="glGroup" style="display: none;">
+    </td>
+
+    <td colspan="4" class="noType" style="display: none;">
+        <span class="text-danger text-center"><b>SELECT TYPE!</b></span>
+    </td>
+    <td class="glGroupAcct">
+        @Html.EditorFor(m => m.GLAcct, new { viewOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.GrossAmt)
+    </td>
+    @if (!viewOnly)
+    {
+        <td>
+            <button class="btn btn-danger pull-right delRow"
+                    data-entitykey="@entityKey">
+                <i class="fa fa-xs fa-trash"></i>
+            </button>
+        </td>
+    }
+</tr>
+
+<script>
+    $('tr').ready(function () {
+        
+        var elem = $(this).find('.LineTypeId');
+        handleTypeView($(elem));
+    });
+</script>

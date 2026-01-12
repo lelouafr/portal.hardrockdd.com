@@ -1,0 +1,32 @@
+﻿@model portal.Models.Views.Equipment.Location.EquipmentLocationListViewModel
+
+<div class="row">
+    <div class="col-xl-5">
+        @Html.Partial("../EM/Location/Summary/List/Panel", Model)
+    </div>
+    <div class="col-xl-7">
+        <div class="reviewPanel" id="reviewPanel">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="createModel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPanels();
+        $("#createModel").on("show.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            $(this).find(".modal-body").load("@Url.Action("Create","EquipmentLocation")");
+        });
+        $("#createModel").on("hide.bs.modal", function (event) {
+            // Place the returned HTML into the selected element
+            $(this).find(".modal-body").html("");
+        });
+    });
+</script>

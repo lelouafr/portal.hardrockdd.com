@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.Web.ErrorLogViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-sortable-id="ErrorLogViewModel"
+     data-reloadurl="@Url.Action("Form", "ErrorLog", new { Area = "",errorId = Model.ErrorId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+
+        </div>
+        <h4 class="panel-title">Portal Error Details (@Model.ErrorId)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../Administration/ErrorLog/Form/Form", Model)
+    </div>
+</div>

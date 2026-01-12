@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantGroupCodingViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Form", "MerchantGroupCoding", new { vendGroupId = Model.VendGroupId, categoryGroup = Model.CategoryGroup })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Coding Defaults</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../AP/Vendor/MerchantGroup/Forms/Coding/Form", Model)
+    </div>
+</div>

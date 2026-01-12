@@ -1,0 +1,372 @@
+/*
+Template Name: Color Admin - Responsive Admin Dashboard Template build with Twitter Bootstrap 3 & 4
+Version: 4.3.0
+Author: Sean Ngu
+Website: http://www.seantheme.com/color-admin-v4.3/frontend/forum/
+
+::  1.0 General Reset & Setup
+-------------------------------------------
+    1.1 Reset and overrides
+	1.2 Font Awesome Version Control
+    
+::  2.0 Header Navbar Setting
+-------------------------------------------
+    2.1 Navbar Element Setting
+    2.2 Small Navbar Setting
+    
+::  3.0 Search Banner Setting
+-------------------------------------------
+    3.1 Search Banner Element Setting
+    3.2 Search Banner Popular Tags Setting
+    
+::  4.0 Content Setting
+-------------------------------------------
+    4.1 Content Element Setting
+    4.2 Content Has Background Setting
+    4.3 Section Container Setting
+    4.4 Breadcrumb Setting
+    4.5 Page Title Setting
+    
+::  5.0 Forum Setting
+-------------------------------------------
+    5.1 Panel Forum Setting
+    5.2 Forum List Setting
+    5.3 Forum Topic List Setting
+    5.4 Forum Threads List Setting
+    5.5 Forum Detail List Setting
+    
+::  6.0 Footer Setting
+-------------------------------------------
+    6.1 Footer Element Setting
+    6.2 Footer Copyright Setting
+    
+::  7.0 Pace Loader Setting
+-------------------------------------------
+    7.1 Pace Loader Element Setting
+    
+::  8.0 Predefined CSS Setting
+-------------------------------------------
+    8.1 Predefined Classes
+    
+::  9.0 Basic Element Setting
+-------------------------------------------
+	9.1  Component - Form Elements
+	9.2  Component - Dropdown Menu
+	9.3  Component - Tooltip
+	9.4  Component - Alert
+	9.5  Component - Note Setting
+	9.6  Component - Badge & Label Setting
+	9.7  Component - Pagination & pager
+	9.8  Component - Progress bar
+	9.9  Component - Nav Setting
+	9.10 Component - Nav Tabs
+	9.11 Component - Nav Pills
+	9.12 Component - Tab Content
+	9.13 Component - Accordion Panel
+	9.14 Component - Button
+		 9.14.1 Component - Button - Default
+		 9.14.2 Component - Button - White
+		 9.14.3 Component - Button - Inverse
+		 9.14.4 Component - Button - Primary
+		 9.14.5 Component - Button - Success
+		 9.14.6 Component - Button - Warning
+		 9.14.7 Component - Button - Danger
+		 9.14.8 Component - Button - Info
+		 9.14.9 Component - Button - Purple
+		 9.14.10 Component - Button - Yellow
+		 9.14.11 Component - Button - Grey
+		 9.14.12 Component - Button - Lime
+		 9.14.13 Component - Button - Pink
+		 9.14.14 Component - Button - Indigo
+		 9.14.15 Component - Button - Green
+	9.15 Component - Panel
+	9.16.Component - Panel - Panel Expand
+	9.17 Component - Panel - Panel loading
+	9.18 Component - Modal Setting
+	9.19 Component - Media Object
+	9.20 Component - Table
+	9.21 Component - Well
+	9.22 Component - Jumbotron
+	9.23 Component - List Group
+	9.24 Component - Carousel
+	9.25 Component - Theme Panel
+*/
+
+
+/* -------------------------------
+   5.0 Forum Setting
+------------------------------- */
+
+/* 5.1 Panel Forum Setting */
+
+.panel.panel-forum,
+.card.card-forum {
+    border: 2px solid #e2e7eb;
+}
+.panel.panel-forum .panel-heading,
+.card.card-forum .card-header {
+    background: #e2e7eb;
+}
+.card.card-forum .card-header {
+	border-color: #e2e7eb;
+	font-weight: bold;
+	line-height: 22px;
+}
+
+
+/* 5.2 Forum List Setting */
+
+.forum-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.forum-list > li {
+    padding: 15px;
+}
+.forum-list > li:before,
+.forum-list > li:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+.forum-list > li + li {
+    border-top: 2px solid #e2e7eb;
+}
+.forum-list .media {
+    font-size: 28px;
+    float: left;
+    width: 64px;
+    text-align: center;
+    color: rgba(0,0,0,0.4);
+    line-height: 64px;
+}
+.forum-list .media img {
+    max-width: 100%;
+    display: block;
+}
+.forum-list .media .fa {
+    display: block;
+    line-height: 64px;
+    background: #00acac;
+}
+.forum-list .info-container {
+    margin-left: 79px;
+    padding-top: 5px;
+}
+.forum-list .info-container > div {
+    float: left;
+}
+.forum-list .info-container .info {
+    width: 50%;
+}
+.forum-list .info-container .total-count {
+    width: 20%;
+    text-align: center;
+}
+.forum-list .info-container .total-count .divider {
+    margin: 0 8px;
+}
+.forum-list .info-container .latest-post {
+    width: 30%;
+}
+.forum-list .info-container .info .title {
+    font-size: 16px;
+    margin: 0 0 5px;
+    font-weight: 600;
+}
+.forum-list .info-container .info .title a {
+    color: #242a30;
+}
+.forum-list .info-container .latest-post .title {
+    margin: 0 0 4px;
+    font-size: 12px;
+}
+.forum-list .info-container .latest-post .title a {
+    color: #242a30;
+}
+.forum-list .info-container .latest-post .time {
+    font-size: 12px;
+}
+.forum-list .info-container .desc {
+    margin-bottom: 0;
+    font-size: 12px;
+    color: #666;
+    line-height: 16px;
+}
+.total-post {
+    color: #242a30;
+    font-weight: bold;
+}
+
+
+/* 5.3 Forum Topic List Setting */
+
+.forum-list.forum-topic-list .info-container {
+    position: relative;
+}
+.forum-list.forum-topic-list .info-start-end {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    line-height: 20px;
+}
+.forum-list.forum-topic-list .info-container .info {
+    width: auto;
+    float: none;
+    padding-right: 100px;
+}
+.forum-list.forum-topic-list .info-container .date-replies {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    text-align: center;
+    width: 80px;
+}
+.forum-list.forum-topic-list .info-container .date-replies .time {
+    font-size: 11px;
+    line-height: 11px;
+    margin-bottom: 7px;
+}
+.forum-list.forum-topic-list .info-container .date-replies .replies {
+    background: #e2e7eb;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.forum-list.forum-topic-list .info-container .date-replies .replies .total {
+    font-size: 16px;
+    color: #242a30;
+    line-height: 18px;
+    margin-bottom: 2px;
+}
+.forum-list.forum-topic-list .info-container .date-replies .replies .text {
+    font-size: 10px;
+    line-height: 12px;
+    font-weight: normal;
+    color: #999;
+    margin-bottom: 2px;
+}
+
+
+/* 5.4 Forum Threads List Setting */
+
+.threads-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+}
+.threads-list > li:before,
+.threads-list > li:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+.threads-list > li {
+    margin: 0 15px;
+    padding: 15px 0;
+}
+.threads-list > li + li {
+    border-top: 2px solid #e2e7eb;
+}
+.threads-list > li .title {
+    font-size: 12px;
+    margin: 0 0 3px;
+    line-height: 16px;
+    font-weight: 600;
+}
+
+
+/* 5.5 Forum Detail List Setting */
+
+.forum-list .media .fa {
+    background: #00acac;
+}
+.forum-list.forum-detail-list {
+    border: none;
+    margin-bottom: 20px;
+}
+.forum-list.forum-detail-list > li {
+    padding: 0;
+}
+.forum-list.forum-detail-list > li + li {
+    border: none;
+    margin-top: 20px;
+}
+.forum-list.forum-detail-list .media {
+		display: block;
+}
+.forum-list.forum-detail-list .media img {
+    margin-bottom: 10px;
+}
+.forum-list.forum-detail-list .media .label {
+    font-size: 12px;
+    display: block;
+    padding: 3px 6px;
+    line-height: 16px;
+    border-radius: 4px;
+    color: #fff;
+}
+.forum-list.forum-detail-list .info-container {
+    margin-left: 80px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: 2px solid #e2e7eb;
+    padding: 15px 20px;
+    background: #f3f5f7;
+    position: relative;
+}
+.forum-list.forum-detail-list .info-container:before,
+.forum-list.forum-detail-list .info-container:after {
+    content: '';
+    position: absolute;
+    left: -15.5px;
+    top: 15px;
+    border: 7px solid transparent;
+    border-right-color: #e2e7eb;
+}
+.forum-list.forum-detail-list .info-container:after {
+    left: -12.5px;
+    border-right-color: #f3f5f7;
+}
+.forum-list.forum-detail-list .info-container > div {
+    float: none;
+}
+.forum-list.forum-detail-list .post-user {
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+.forum-list.forum-detail-list .post-user small {
+    font-weight: bold;
+    color: #9fa2a5;
+    font-size: 16px;
+    margin-left: 5px;
+}
+.forum-list.forum-detail-list .post-content {
+    font-size: 14px;
+    line-height: 23px;
+    color: #242a30;
+    margin-bottom: 15px;
+}
+.forum-list.forum-detail-list .post-content pre {
+    background: #d6dbdf;
+    border: none;
+    margin-bottom: 23px;
+    padding: 15px;
+    border-radius: 4px;
+}
+.forum-list.forum-detail-list .post-time {
+    color: #a7aaac;
+}
+.comment-banner-msg {
+    border: 2px solid #e2e7eb;
+    padding: 15px 20px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+

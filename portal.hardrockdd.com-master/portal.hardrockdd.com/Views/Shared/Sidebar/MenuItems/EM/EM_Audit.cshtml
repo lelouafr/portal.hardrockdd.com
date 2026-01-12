@@ -1,0 +1,46 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "em_audit";
+}
+
+@if (User.HasAccess("EMAuditSite") ||
+               User.HasAccess("EMAuditUser") ||
+               User.HasAccess("EMAudit"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Audit</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+                <a href="javascript:;">
+                    <b class="caret"></b>
+                    <span>Reports</span>
+                </a>
+                <ul class="sub-menu">
+                    @*<li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAuditSubmissionReport", new { Area = "",  })">Week Submission</a></li>*@
+                    <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAuditWeeklySubmissionReport", new { Area = ""})">Weekly Submission</a></li>
+                </ul>
+
+            </li>
+            @if (User.HasAccess("EMAuditSite", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAuditSite", new { Area = ""})">Site Audit</a></li>
+            }
+            @if (User.HasAccess("EMAuditUser", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAuditUser", new { Area = "" })">Your Audit</a></li>
+            }
+            @if (User.HasAccess("EMAudit", "ApprovalIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ApprovalIndex", "EMAudit", new { Area = "" })">Your Approvals</a></li>
+            }
+            @if (User.HasAccess("EMAudit", "Index"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "EMAudit", new { Area = "" })">All Audit</a></li>
+            }
+        </ul>
+    </li>
+}

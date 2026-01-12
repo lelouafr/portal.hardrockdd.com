@@ -1,0 +1,32 @@
+﻿@model portal.Areas.HumanResource.Models.PositionRequest.ApplicationViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    ViewBag.TableRow = "True";
+
+    entityKey  = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.SeqId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.ApplicationId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.ApplicantName, new { DisplayOnly = true })
+    </td>
+    <td data-sort="@Model.ApplicationDate.Value.ToString("yyyyMMdd")"> 
+        @Html.EditorFor(m => m.ApplicationDate, new { DisplayOnly = true }) 
+    </td>
+    <td> @Html.EditorFor(m => m.Status) </td>
+    <td>
+        <button class="btn btn-xs btn-primary btnPopup" 
+                type="button" 
+                data-url="@Url.Action("ApplicationPopup", "Applicant", new { Area = "Applicant" })" 
+                data-applicantid="@Model.ApplicantId" >
+            <i class="fas fa-eye"></i>
+        </button>
+    </td>
+</tr>

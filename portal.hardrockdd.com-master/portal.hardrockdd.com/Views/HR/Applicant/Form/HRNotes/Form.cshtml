@@ -1,0 +1,45 @@
+﻿@model portal.Models.Views.WA.Applicant.ApplicantInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-urlupdate="@Url.Action("ApplicantInfoUpdate", "WebApplication")"
+      data-urlvalidate="@Url.Action("ApplicantInfoValidate", "WebApplication")">
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.ApplicantId, new { @id = Guid.NewGuid() })
+
+    @Html.HiddenFor(m => m.FirstName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LastName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.MiddleName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Nickname, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Address, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Address2, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.City, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.State, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Zip, new { @id = Guid.NewGuid() })
+
+    @Html.HiddenFor(m => m.BirthDate, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Phone, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Email, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CellPhone, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.WorkPhone, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EmergencyContact, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EmegencyRelationship, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EmegencyContactPhone, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicNumber, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicType, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicState, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicCountry, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicClass, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.LicExpDate, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Notes)
+    </div>
+
+</form>

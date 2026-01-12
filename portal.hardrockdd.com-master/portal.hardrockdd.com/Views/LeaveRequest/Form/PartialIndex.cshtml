@@ -1,0 +1,28 @@
+﻿@model portal.Models.Views.Payroll.Leave.LeaveRequstFormViewModel
+
+<div class="row validationContaner">
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../LeaveRequest/Summary/Panel", Model.Summary)
+            </div>
+            <div class="col-xl-12">
+                @Html.Partial("../LeaveRequest/Header/Panel", Model)
+            </div>
+            <div class="col-xl-12">
+                @Html.Partial("../LeaveRequest/Lines/Panel", Model)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../LeaveRequest/StatusLog/Panel", Model.StatusLogs)
+            </div>
+            @*<div class="col-xl-12">
+                @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+            </div>*@
+        </div>
+    </div>
+</div>

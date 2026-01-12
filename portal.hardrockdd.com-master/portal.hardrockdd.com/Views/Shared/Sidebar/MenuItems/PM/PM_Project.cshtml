@@ -1,0 +1,20 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "pm_project";
+}
+
+@if (User.HasAccess("Locate") ||
+     User.HasAccess("Request"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ListIndex", "PMProject", routeValues: new { Area = "" })">Projects</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "PMProjectSchedule", routeValues: new { Area = "" })">Project Schedule</a></li>
+            @*<li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "PMProjectGantt")">Project Gantt</a></li>*@
+        </ul>
+    </li>
+}

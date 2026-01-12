@@ -1,0 +1,13 @@
+﻿@model portal.Models.Views.AP.Payment.PostedBatchListViewModel
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("BatchListTable", "APPayment")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">AP Payment Batches</h4>
+    </div>
+    <div class="panel-body" id="PostedBatchListViewModel">
+        @Html.Partial("../AP/Payment/Posted/Table", Model)
+    </div>
+</div>

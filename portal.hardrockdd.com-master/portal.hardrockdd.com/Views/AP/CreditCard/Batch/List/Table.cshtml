@@ -1,0 +1,74 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.AP.CreditCard.Batch.BatchListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var dataSet = new List<dynamic>();    
+    dataSet.AddRange(Model.List);
+    var jsonData = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+}
+<div style="width:100%">
+    @Html.AntiForgeryToken()
+    <table class="table "
+           id="@tableId"
+           data-urlselect="@Url.Action("Panel", "APCreditCardBatchLine")"
+           data-dstselect="reviewPanel"
+           data-dstselectvalidate="false">
+    </table>
+</div>
+<script>
+    var data = @Html.Raw(jsonData);
+    $(document).ready(function () {
+        //var h = tableHeight($("#@tableId"), @(Model.List.Count), 25.6);
+        //h -= 75;
+        var columns = [
+            {
+                title: 'Status',
+                target: 1,
+                data: function (item) {
+                    return item.Description;
+                }
+            },
+            {
+                title: 'Batch Date',
+                target: 2,
+                data: function (item) {
+                    return item.BatchDateStr;
+                }
+            },
+            {
+                title: 'Trans Cnt',
+                target: 3,
+                data: function (item) {
+                    return numberFormat(item.TransCnt, 0);
+                }
+            },
+            {
+                title: 'Amount',
+                target: 4,
+                data: function (item) {
+                    return currencyFormat(item.PostAmount, 2);
+                }
+            },
+        ];
+        $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: false,
+            ordering: false,
+            scrollY: 250,
+            columns: columns,
+            data: data,
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            columnDefs: [
+                { targets: [2, 3], className: 'text-right' },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "co=" + data.Co + "&mth=" + data.Mth + "&source=" + data.Source + "&batchId=" + data.BatchId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    });
+</script>

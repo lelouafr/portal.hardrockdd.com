@@ -1,0 +1,32 @@
+﻿@model  portal.Models.Views.Forums.ForumLineListViewModel
+@{
+//ViewBag.TableRow = "True";
+
+//var tableId = string.Format("table_{0}", Guid.NewGuid());
+//var tableLayout = new TableLayoutModel(this);
+//var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+//string tableKey = "";
+//foreach (var prp in tableLayout.Properties)
+//{
+//    if (prp.IsKey)
+//    {
+//        var myData = Model.GetType().GetProperty(prp.Property);
+//        var myVal = myData.GetValue(Model, null);
+//        if (tableKey != string.Empty)
+//        {
+//            tableKey += "&";
+//        }
+//        if (myVal != null)
+//        {
+//            tableKey += prp.Property + "=" + myVal.ToString();
+//        }
+//    }
+//}
+}
+<ul class="forum-list forum-detail-list" style="margin-bottom:5px;">
+    @foreach (var obj in Model.List)
+    {
+        @Html.Partial("../Forum/TableRow", obj)
+    }
+</ul>
+@Html.Partial("../Forum/Add", Model.Add)

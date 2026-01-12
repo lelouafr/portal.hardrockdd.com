@@ -1,0 +1,55 @@
+﻿@model portal.Areas.Applicant.Models.ApplicationListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+
+}
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("ApplicationPanel", "Applicant"), @Url.Action("AppliedPositionsPanel", "Applicant")"
+       data-dstselect="applicationReviewPanel, appliedPositionReviewPanel"
+       data-dstselectvalidate="false"
+       data-entitykey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicantId)</th>
+            <th data-datatable-filter-type="none" style="max-width: 35px;">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicationId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().ApplicationDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("Application/List/_TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var itemCnt = @(Model.List.Count());
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: false,
+            ordering: true,
+            processing: true,
+            bInfo: false,
+
+            order: [[2, 'asc']],
+            columnDefs: [
+                { targets: [0], visible: false },
+            ],
+            initComplete: function (settings, json) {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+                Table().selectFirstRow($('#@tableId'));
+            },
+
+        });
+    })
+</script>

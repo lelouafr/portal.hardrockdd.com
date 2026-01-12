@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <title>@ViewBag.Title </title>
+
+    <!-- Favicon -->
+    <link id="shortcuticon" rel="shortcut icon" href="~/Content/assets/img/logo/hardrock-footer-logo-dark.svg">
+
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-9ZfPnbegQSumzaE7mks2IYgHoayLtuto3AS6ieArECeaR8nCfliJVuLh/GaQ1gyM" crossorigin="anonymous">
+    @Styles.Render("~/cssbase/font-google")
+    @Styles.Render("~/cssbase/theme")
+    @Styles.Render("~/cssbase/style")
+    @Styles.Render("~/cssbase/notifications")
+
+    <!-- ================== END BASE CSS STYLE ================== -->
+    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+    @Styles.Render("~/csspage/dropzone")
+    <link href="~/Content/assets/plugins/jstree/themes/default/style.min.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/magnify/jquery.magnify.css" rel="stylesheet" />
+    @if (IsSectionDefined("Styles"))
+    {
+        @RenderSection("Styles", required: false)
+    }
+    <!-- ================== END PAGE LEVEL STYLE ================== -->
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/pageloader")
+    @Scripts.Render("~/jsbase/jquery")
+    @Scripts.Render("~/jspage/dropZone")
+    <!-- ================== END BASE JS ================== -->
+
+</head>
+<body>
+    <div id="page-loader" class="fade show"><span class="spinner"></span></div>
+
+    <div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
+        @Html.Partial("~/Views/Shared/Navbar/Header/_Navbar.cshtml")
+        @Html.Partial("~/Views/Shared/Sidebar/_Sidebar.cshtml")
+        <div id="content" class="content">
+            @Html.AntiForgeryToken()
+            @RenderBody()
+        </div>
+        <!-- begin scroll to top btn -->
+        @*<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>*@
+        <!-- end scroll to top btn -->
+        <!-- Notifications -->
+        @Html.Partial("_Notification")
+        <div class="ControllerId">
+            <input type="hidden" id="controllerTokenId" name="controllerTokenId" value="@ViewBag.ControllerActionToken">
+        </div>
+    </div>
+    @Html.Partial("_Modals")
+
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/bootstrap")
+    <!--[if lt IE 9]>
+        @Scripts.Render("~/jsbase/ie9")
+    <![endif]-->
+    @Scripts.Render("~/jsbase/slimScroll")
+    @Scripts.Render("~/jsbase/lsCache")
+    @Scripts.Render("~/jsbase/jscookie")
+    @Scripts.Render("~/jsbase/theme")
+    @Scripts.Render("~/jsbase/notifications")
+    @Scripts.Render("~/jsbase/inputmask")
+    @Scripts.Render("~/jsbase/custom")
+    @if (!HttpContext.Current.IsDebuggingEnabled)
+    {
+    }
+    <!-- ================== END BASE JS ================== -->
+    <!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="~/Content/assets/plugins/jstree/jstree.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="~/Content/assets/plugins/magnify/jquery.magnify.js"></script>
+    <script src="~/Content/assets/plugins/pdfjs/pdf.js"></script>
+    @*<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACLxAZGOMS6O8Ia4K1UYPTStNt28OVpJ4"></script>*@
+    @RenderSection("scripts", required: false)
+    <!-- ================== END PAGE LEVEL JS ================== -->
+
+    <script>
+        var origin = window.location.origin;
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            $('#shortcuticon').attr('href', origin + '/Content/assets/img/logo/hardrock-footer-logo.svg');
+        }
+        else {
+            $('#shortcuticon').attr('href', origin + '/Content/assets/img/logo/hardrock-footer-logo-dark.svg');
+        }
+        Dropzone.autoDiscover = false;
+        $(document).ready(function () {
+            App.init();
+            App.initControllerToken();
+            lscache.enableWarnings(true);
+            $('#page-container').addClass(lscache.get('SideBar'));
+            $("#auditLog").draggable({
+                handle: ".modal-dialog"
+            });
+
+        });
+        function LogOff() {
+            var url = '@Url.Action("LogOff", "Account", new { Area = "" })'
+            $.post(url).done(function (res) {
+                window.location.href = res.url;
+            });
+        }
+    </script>
+</body>
+</html>

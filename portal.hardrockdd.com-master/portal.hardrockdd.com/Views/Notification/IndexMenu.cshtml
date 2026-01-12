@@ -1,0 +1,66 @@
+﻿@model List<portal.Models.Views.Notification.NotificationViewModel>
+
+<li class="dropdown">
+    <a href="#" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+        <i class="fa fa-bell"></i>
+        <span class="label">@Model.Where(f => f.IsRead == DB.YesNoEnum.No).Count()</span>
+    </a>
+    <ul class="dropdown-menu media-list dropdown-menu-right">
+        <li class="dropdown-header">NOTIFICATIONS (@Model.Where(f => f.IsRead == DB.YesNoEnum.No).Count())</li>
+
+        @foreach (var note in Model.OrderByDescending(f => f.CreatedOn).Take(5).ToList())
+        {
+            <li class="media" id="note">
+                <a class="noteLink" data-id="@note.Id" href="@note.Url">
+                    <div class="media-left">
+                        @if (note.NotificationMediaLeft != string.Empty)
+                        {
+                            <i class="@note.NotificationMediaLeft media-object bg-silver-darker"></i>
+                        }
+                    </div>
+                    <div class="media-body">
+                        <h6 class="media-heading">@note.Title <i class="@note.NotificationLevelClass"></i></h6>
+                        <p>@note.Notes</p>
+                        <div class="text-muted f-s-11">@note.TimeSpanString</div>
+                    </div>
+                </a>
+                @*<a href="javascript:;" class="removeLink" data-noteid="@note.Id">
+                    <div class="media-right">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </a>*@
+            </li>
+
+        }
+        <li class="dropdown-footer text-center">
+            <a href="@Url.Action("Index","Notification")">
+                <strong>See All Alerts</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+</li>
+<script>
+    function Delete(elem) {
+        //console.log('delete clicked');
+    }
+    $('.noteLink').click(function () {
+        var urlAction = "@Url.Action("GotoNotificationObjectURL", "Notification")";
+        var data = {
+            id: $(this).data('id')
+        };
+        $.post(urlAction, data).done(function (res) {
+            window.location.href = res;
+        });
+    });
+    $('.removeLink').click(function () {
+        //console.log('delete clicked');
+        @*var urlAction = "@Url.Action("GotoNotificationObjectURL", "Notification")";
+        var data = {
+            id: $(this).data('id')
+        };
+        $.post(urlAction, data).done(function (res) {
+            window.location.href = res;
+        });*@
+    });
+</script>

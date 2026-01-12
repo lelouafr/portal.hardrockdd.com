@@ -1,0 +1,71 @@
+﻿@model portal.Areas.Project.Models.Bid.Proposal.PackageListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div id="accordion_@(panelId)" class="accordion">
+    @foreach (var package in Model.List)
+    {
+        <div class="panel @(package.IncludeOnProposal ? "panel-primary": "panel-danger") ajaxpanel"
+             data-reloadurl="@Url.Action("PackageProposalPanel", "Bid", new { bdco = package.BDCo, bidId = package.BidId, packageId = package.PackageId })">
+            <div class="panel-heading pointer-cursor packageSetup" data-toggle="collapse" data-target="#@(panelId)_@(package.PackageId)">
+                <div class="panel-heading-btn">
+                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                </div>
+                @if (package.IncludeOnProposal)
+                {
+                    <div class="panel-title">
+                        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> (@package.PackageId) - @package.Description
+                    </div>
+                }
+                else
+                {
+                    <div class="panel-title">
+                        <i class="fas fa-times fa-fw text-red mr-2 f-s-8"></i> (@package.PackageId) - @package.Description
+                    </div>
+                }
+            </div>
+            <div class="panel-body collapse panel-loading" id="@(panelId)_@(package.PackageId)">
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $('#accordion_@(panelId)').ready(function () {
+        var accordion = $('#accordion_@(panelId)');
+
+        //$('.ajaxpanel').on('show.bs.collapse',  function (e) {
+        //    var ajaxURL = $(this).data('reloadurl');
+        //    var dst = $(e.target);
+        //    LoadPanel(dst, ajaxURL);
+        //});
+
+        $('#accordion_@(panelId)').find('.ajaxpanel').each(function () {
+            var ajaxURL = $(this).data('reloadurl');
+            var dst = $(this).find('.panel-body');
+            setTimeout(function () {
+                LoadPanel(dst, ajaxURL);
+            }, 1000);
+        });
+
+        function LoadPanel(dst, ajaxURL) {
+            if ($(dst).data('ajaxLoaded') !== "true") {
+                var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+                $(dst).addClass('panel-loading');
+                $(dst).append(spinnerHtml);
+                $(dst).data('ajaxLoaded', "true");
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: ajaxURL,
+                    success: function (data) {
+                        $(dst).html(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    }
+                });
+            }
+        }
+    })
+</script>

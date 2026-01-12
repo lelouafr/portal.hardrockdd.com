@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.Bid.BidViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+}
+<div class="panel panel-inverse"
+     data-sortable-id="BidViewModel"
+     data-reloadurl="@Url.Action("Form", "BidForm", new { co = Model.Co, bidId = Model.BidId })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Info (@Model.BidId)</h4>
+    </div>
+    <div class="panel-body" id="forminfo">
+        @Html.Partial("../BD/Bid/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+    });
+</script>

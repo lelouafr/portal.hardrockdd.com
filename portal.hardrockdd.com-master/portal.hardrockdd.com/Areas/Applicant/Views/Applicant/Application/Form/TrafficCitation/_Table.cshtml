@@ -1,0 +1,39 @@
+﻿@model portal.Areas.Applicant.Models.TrafficCitationListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+
+}
+<table class="table "
+       id="@tableId"
+       data-urlvalidate="@Url.Action("TrafficCitationValidate", "Applicant")"
+       data-urlupdate="@Url.Action("TrafficCitationUpdate", "Applicant")"
+       data-urldelete="@Url.Action("TrafficCitationDelete", "Applicant")"
+       data-urlcreate="@Url.Action("TrafficCitationAdd", "Applicant")"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none" width="45px">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().IncidentDate)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Penalty)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            @Html.Partial("Application/Form/TrafficCitation/_TableRow", item)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    })
+</script>

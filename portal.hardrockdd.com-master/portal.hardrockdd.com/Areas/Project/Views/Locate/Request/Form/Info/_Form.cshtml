@@ -1,0 +1,46 @@
+﻿@model portal.Areas.Project.Models.Locate.RequestViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+@Html.Partial("Request/Form/_Buttons", Model.Actions)
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("RequestInfoUpdate", "Locate")"
+      data-urlvalidate="@Url.Action("RequestInfoValidate", "Locate")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestedOn, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.RequestedName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedBy, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedOn, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CreatedName, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Comments, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.BidId)
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.AnticipatedStartDate)
+        @Html.EditorFor(m => m.Owner, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.GPS)
+        @Html.EditorFor(m => m.PiggyBackLocateId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.LocateType)
+        @Html.EditorFor(m => m.StateId, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.RequestedBy)
+        @Html.EditorFor(m => m.RequestedOn, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

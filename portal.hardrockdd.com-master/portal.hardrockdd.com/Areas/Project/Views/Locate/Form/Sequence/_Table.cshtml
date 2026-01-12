@@ -1,0 +1,63 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateSequenceListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey"
+       data-urlcreate="@Url.Action("LocateSequenceAdd", "Locate", new { locateId = Model.LocateId })"
+       data-urldelete="@Url.Action("LocateSequenceDelete", "Locate")">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateRefId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ExpDate)</th>
+            <th>
+                <button class="btn btn-xs btn-success addRow pull-right">
+                    <i class='fas fa-plus'></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("Form/Sequence/_TableRow", request)
+        }
+    </tbody>
+</table>
+<div id="tempatt">
+
+</div>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+
+        $('#@(tableId)').on('click', '.btnOpenFile', function () {
+            console.log("I WAS CLICKED");
+            var row = $(this).closest('tr');
+
+            $.ajax({
+                url: $(row).data('filedataurl'),
+                datatype: "json",
+                success: function (data) {
+                    data = data.data;
+                    data.url = $(row).data('fileurl');
+                    console.log(data);
+                    AttachmentLoadDoc($('#tempatt'), data, true);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+
+        });
+    });
+</script>

@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.AR.Invoice.InvoiceFormViewModel
+@{ 
+
+    ViewBag.ViewOnly = true;
+}
+<div class="row">
+    <div class="col-xl-8">
+        @Html.Partial("../AR/Invoice/Form/Header/Panel", Model)
+    </div>
+    <div class="col-xl-4">
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchId })
+    </div>
+    <div class="col-xl-12">
+        @Html.Partial("../AR/Invoice/Form/Lines/Panel", Model)
+    </div>
+</div>

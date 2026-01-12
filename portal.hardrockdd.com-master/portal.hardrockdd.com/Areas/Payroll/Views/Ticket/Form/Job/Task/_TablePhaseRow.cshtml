@@ -1,0 +1,20 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Job.JobPhaseViewModel
+@{
+    var isFirstRow = true;
+}
+@foreach (var cost in Model.Costs)
+{
+    if (isFirstRow)
+    {
+        @Html.Partial("Form/Job/Task/_TableRowFirst", cost)
+    }
+    else
+    {
+        @Html.Partial("Form/Job/Task/_TableRow", cost)
+    }
+    isFirstRow = false;
+}
+@if (Model.Costs.Any())
+{
+    @Html.Partial("Form/Job/Task/_TableCommentRow", Model.Costs.FirstOrDefault())
+}

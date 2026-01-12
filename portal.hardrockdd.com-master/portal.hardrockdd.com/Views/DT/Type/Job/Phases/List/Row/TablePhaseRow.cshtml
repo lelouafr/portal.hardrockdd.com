@@ -1,0 +1,20 @@
+﻿@model portal.Models.Views.DailyTicket.Job.DailyJobPhaseViewModel
+@{
+    var isFirstRow = true;
+}
+@foreach (var cost in Model.Costs)
+{
+    if (isFirstRow)
+    {
+        @Html.Partial("../DT/Type/Job/Phases/List/Row/TableRowFirst", cost)
+    }
+    else
+    {
+        @Html.Partial("../DT/Type/Job/Phases/List/Row/TableRow", cost)
+    }
+    isFirstRow = false;
+}
+@if (Model.Costs.Any())
+{    
+    @Html.Partial("../DT/Type/Job/Phases/List/Row/TableCommentRow", Model.Costs.FirstOrDefault())
+}

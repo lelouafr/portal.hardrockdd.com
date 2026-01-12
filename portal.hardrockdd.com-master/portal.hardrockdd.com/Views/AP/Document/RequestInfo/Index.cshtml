@@ -1,0 +1,49 @@
+﻿@model portal.Models.Views.AP.Document.DocumentPendingInfoViewModel
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../AP/Document/RequestInfo/Form/Form", Model)
+    </div>
+</div>
+<hr />
+<div class="pull-right">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <a href="javascript:;"
+       class="btn btn-success btnRequeastInfo">Request Info</a>
+</div>
+
+<script>    
+    $('.btnRequeastInfo')
+        .on('click', function () {
+            var func = function (button, form) {
+                $(button).SetButtonBusy();
+                data = $(form).SerializeForm();
+                url = $(form).data('urlcreate');
+                //console.log(data, url);
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        var rowKey = "APCo=" + data.APCo + '&DocId=' + data.DocId;
+                        $(document).find("[data-entitykey='" + rowKey + "']").each(function () {
+                            $(this).hide();
+                        });
+                        $('#reviewPanel').html('');
+                        $('#requestInfoModel').modal('hide');
+                    }
+                    else {
+                        $(button).SetButtonNotBusy();
+                    }
+                });
+
+
+            }
+            var button = this;
+            var modal = $(button).closest('.modal-body');
+            var form = $(modal).find('form');
+            
+            $(form).PostValidate(button, function (valid) {
+                if (valid) {
+                    func(button, form);
+                }
+            });
+    });
+</script>

@@ -1,0 +1,9 @@
+﻿@model List<portal.Models.Views.HQ.Batch.ActionViewModel>
+
+@if (Model.Count > 0)
+{
+    foreach (var obj in Model)
+    {
+        @Html.Partial("../HQ/Batch/Action/List/TableRow", obj)
+    }
+}

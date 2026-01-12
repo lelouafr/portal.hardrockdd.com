@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "merchant";
+
+    var statusclass = "";
+    statusclass = "fa-circle text-blue  mr-2 f-s-8";
+    if (Model.Info.VendorId == null)
+    {
+        statusclass = "fas fa-exclamation-triangle text-red mr-2 f-s-14";
+    }
+}
+<div class="accordion">
+    <!-- begin card -->
+    <div class="card" style="overflow:visible;">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+            <i class="fa @statusclass"></i> Merchant
+        </div>
+        <div id="@panelId" class="collapse ">
+            <div class="card-body">
+                @*@Html.Partial("../AP/CreditCard/Form/Merchant/Form", Model)*@
+                @Html.Partial("../AP/Vendor/Merchant/Forms/Info/Form", Model.Info)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+    @if (User.HasAccess("Merchant", "Index"))
+    {
+    <!-- begin card -->
+    <div class="card">
+        <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#collapse4">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Default Coding
+        </div>
+        <div id="collapse4" class="collapse">
+            <div class="card-body">
+                @Html.Partial("../AP/Vendor/Merchant/Forms/Coding/Form", Model.Coding)
+            </div>
+        </div>
+    </div>
+    <!-- end card -->
+    }
+</div>
+<script>
+    $('#@panelId').ready(function () {
+        var width = window.innerWidth;
+        //console.log('Merchant Window Width: ', width);
+        if (width < 1200 ) {
+            $('#@panelId').removeClass('show');
+        }
+    });
+
+</script>

@@ -1,0 +1,96 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+}
+
+<div id="@panelId">
+    @foreach (var form in Model.List)
+    {
+        @Html.Partial("../AP/CreditCard/Form/Coding/Form/Form", form)
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        initPane@(id)();
+    });
+
+    function initPane@(id)() {
+        setTimeout(function () {
+            $('#@panelId').find('form').each(function () {
+                //console.log('change');
+                handleTypeFormView(this);
+            });
+        }, 0);
+    }
+
+    function handleTypeFormView(form) {
+        var elem = $(form).find("[name='LineTypeId']");
+        var calcType = $(form).find("[name='CalcType']")
+        var taxType = $(form).find("[name='TaxTypeId']");
+        var um = $(form).find("[name='UM']");
+
+        var lineTypeId = $(elem).val();
+        //console.log('lineTypeId', lineTypeId);
+
+        $(form).find('.unitGroup').each(function () {
+            $(this).prop("disabled", false);
+        });
+
+        $(calcType).prop("disabled", false);
+        $(taxType).prop("disabled", false);
+        $(um).prop("disabled", false);
+
+        $(form).find('.jobGroup').hide();
+        $(form).find('.eqpGroup').hide();
+        $(form).find('.poGroup').hide();
+        $(form).find('.glGroup').hide();
+        if (lineTypeId == "4") {
+            $(form).find('.eqpGroup').show();
+            $(form).find('.jobGroup').each(function () {
+                $(this).prop("disabled", false);
+            });
+        }
+        else if (lineTypeId == "1") {
+            $(form).find('.jobGroup').show();
+            $(form).find('.jobGroup').each(function () {
+                $(this).prop("disabled", false);
+            });
+        }
+        else if (lineTypeId == "3") {
+            $(form).find('.glGroup').show();
+        }
+        else if (lineTypeId == "6") {
+            $(form).find('.poGroup').show();
+            var elem = $(form).find("[name='POItemTypeId']");
+            var itemTypeId = $(elem).val();
+
+            $(calcType).prop("disabled", true);
+            $(taxType).prop("disabled", true);
+            $(um).prop("disabled", true);
+
+            //$(form).find('.unitGroup').each(function () {
+            //    $(this).prop("disabled", true);
+            //});
+
+            if (itemTypeId == "4" || itemTypeId == "Equipment") {
+                $(form).find('.eqpGroup').show();
+                $(form).find('.eqpGroup').each(function () {
+                    $(this).prop("disabled", true);
+                });
+            }
+            else if (itemTypeId == "1" || itemTypeId == "Job") {
+                $(form).find('.jobGroup').show();
+                $(form).find('.jobGroup').each(function () {
+                    $(this).prop("disabled", true);
+                });
+            }
+            else if (itemTypeId == "3" || itemTypeId == "Expense") {
+                $(form).find('.glGroup').show();
+                $(form).find('.glGroup').each(function () {
+                    $(this).prop("disabled", true);
+                });
+            }
+        }
+    }
+</script>

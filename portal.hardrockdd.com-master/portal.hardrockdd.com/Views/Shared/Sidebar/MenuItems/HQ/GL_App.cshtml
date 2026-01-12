@@ -1,0 +1,22 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "gl";
+    var guid = Guid.NewGuid().ToString().Replace(" - ", "");
+}
+@if (User.IsInPosition("IT-DIR") ||
+    User.IsInPosition("CFO") ||
+    User.IsInPosition("FIN-CTRL"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fas fa-list-ol"></i>
+            <span>GL</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="~/PublishApps/ExcelAddin/excelfinanceaddin.application?id=@(guid)">AddIn Installer</a></li>
+        </ul>
+    </li>
+}
+

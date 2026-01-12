@@ -1,0 +1,25 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Setup.CostItemListViewModel
+@{
+    var guidId = string.Format("guid_{0}", Guid.NewGuid());
+    var tabId = "panel_" + Guid.NewGuid();
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<ul class="nav nav-tabs nav-justified nav-justified-mobile" data-sortable-id="index-2">
+    <li class="nav-item"><a href="#units_@tabId" data-toggle="tab" class="nav-link active"><i class="fa fa-cube fa-lg m-r-5"></i> <span class="d-none d-md-inline">Units</span></a></li>
+    <li class="nav-item"><a href="#amount_@tabId" data-toggle="tab" class="nav-link"><i class="fas fa-dollar-sign fa-lg m-r-5"></i> <span class="d-none d-md-inline">Amounts</span></a></li>
+</ul>
+<div id="@panelId">
+    <div class="tab-content" style="padding-left: 0px; padding-right: 0px; overflow:unset;">
+        <div class="tab-pane fade active show" id="units_@tabId">
+            @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/CostItem/Unit/Table", Model)
+        </div>
+        <div class="tab-pane fade" id="amount_@tabId">
+            @Html.Partial("../BD/Bid/Forms/Bore/Setup/Form/CostItem/Amount/Table", Model)
+        </div>
+    </div>
+</div>
+<script>
+    $('#@panelId').ready(function () {
+        initPanels($('#@panelId'));
+    });
+</script>

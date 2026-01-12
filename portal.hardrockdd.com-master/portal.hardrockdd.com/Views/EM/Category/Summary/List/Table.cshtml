@@ -1,0 +1,58 @@
+﻿@model portal.Models.Views.Equipment.Category.EquipmentCategoryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    ViewBag.DisplayOnly = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("Form", "EquipmentCategory")"
+       data-urlcreate="@Url.Action("Add", "EquipmentCategory")"
+       data-dstselect="reviewPanel"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().CategoryId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th>Count</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Co)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    @Html.AntiForgeryToken()
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createModel">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Category/Summary/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        myTable = $('#@tableId').DataTable({
+            autoWidth: false,
+            pageLength: 25,
+            paging: true,
+            ordering: true,
+            columnDefs: [
+                { targets: [3], visible: false },
+                { targets: [4], orderable: false },
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+</script>

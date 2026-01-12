@@ -1,0 +1,53 @@
+﻿@model portal.Models.Views.DailyTicket.Form.CrewTicketFormViewModel
+@{
+    ViewBag.Title = "Daily Crew Ticket";
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "UserSummary")">Tickets</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row validationContaner" id="ticketPanel">
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-xl-9">
+                @Html.Partial("../DT/Type/Crew/Form/Panel", Model.Ticket)
+            </div>
+            <div class="col-xl-3">
+                @Html.Partial("../DT/StatusLog/List/Panel", Model.StatusLogs)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                @Html.Partial("../DT/Type/Crew/Employee/List/Panel", Model.Employees)
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="row">
+            <div class="col-xl-12" id="infoPanel">
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("../DT/Reject/Form")
+
+@if (Model.Audit.Audit != null)
+{
+    <div class="row validationContaner">
+        <div class="col-xl-12">
+            @Html.Partial("../EM/Audit/Types/Meter/List/Panel", Model.Audit)
+        </div>
+    </div>
+
+}
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+}

@@ -1,0 +1,156 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-urlselect="@Url.Action("LocatePanel", "Locate")"
+       data-urlcreate="@Url.Action("LocateAdd", "Locate")"
+       data-urldelete="@Url.Action("LocateDelete", "Locate")"
+       data-urlupdate="@Url.Action("LocateUpdate", "Locate")"
+       data-urlvalidate="@Url.Action("LocateValidate", "Locate")"
+       data-urldata="@Url.Action(ViewBag.DataAction, "Locate")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateId)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateRefId)</th>
+            <th width="250px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th width="250px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Location)</th>
+            <th width="70px" data-datatable-filter-type="select">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th width="70px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+            <th width="70px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().ExpDate)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().GPSCoords)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateRefIds)</th>
+            <th width="100px" data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Owner)</th>
+            <th>
+                <button class="btn btn-sm btn-success addRow pull-right">
+                    <i class='fas fa-plus'></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+
+        var itemCnt = @(Model.List.Count());
+        h = tableHeight($('#@tableId'), itemCnt, 42.4) - 50;
+        if (h <= 400)
+            h = 400;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollCollapse: true,
+            scrollY: 250,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('urldata'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                {
+                    data: "LocateId"
+                },
+                {
+                    data: "LocateRefId",
+                    render: function (data, type, row) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? row.LocateRefIds : data;
+                    }
+                },
+                { data: "Description" },
+                { data: "Location" },
+                { data: "Status" },
+                {
+                    data: "StartDate",
+                    render: function (data, type) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    data: "ExpDate",
+                    render: function (data, type, row) {
+                        if (data == null)
+                            return '';
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    data: "GPSCoords",
+                },
+                {
+                    data: "LocateRefIds",
+                    class: ""
+                },
+                {
+                    data: "Owner"
+                },
+                {
+                    data: "Owner"
+                },
+
+            ],
+            columnDefs: [
+                { targets: [0], visible: false },
+                {
+                    targets: [10],
+                    sortable: false,
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        if (rowData.Status === "New") {
+                            var entityKey = "LocateId=" + rowData.LocateId;
+                            $(cell).html('<button class="btn btn-sm btn-danger pull-right delRow" data-delentitykey="' + entityKey + '"><i class="fa fa-trash"></i></button>');
+                        }
+                        else {
+                            $(cell).html('');
+                        }
+                    }
+                },
+                {
+                    targets: [7],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).addClass("f-s-10")
+                    }
+                },
+                {
+                    targets: [8],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).addClass("f-s-6")
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "LocateId=" + data.LocateId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+</script>

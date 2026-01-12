@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.Bid.Forms.Package.Job.JobListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-xl-7">
+        @Html.Partial("../BD/Bid/Forms/Package/JobSetup/List/Panel", Model)
+    </div>
+    <div class="col-xl-5" id="PackageJobSetupBoreListPanel">
+
+    </div>
+</div>
+<script>
+    $('#@panelId').ready(function () {
+        initPane($('#@panelId'));
+    });
+</script>

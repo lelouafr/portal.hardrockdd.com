@@ -1,0 +1,40 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "ap_document2";
+}
+
+
+
+@if (User.HasAccess("Document", "UploadIndex") ||
+     User.HasAccess("Document", "FiledIndex"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Documents</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("Document", "UploadIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("UploadIndex", "Document", routeValues: new { Area = "AccountsPayable" })">Upload Documents</a></li>
+            }
+            @if (User.HasAccess("Document", "FiledIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("FiledIndex", "Document", routeValues: new { Area = "AccountsPayable" })">Filed Documents</a></li>
+            }
+            @if (User.HasAccess("Document", "RequestedInfoIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("RequestedInfoIndex", "Document", routeValues: new { Area = "AccountsPayable" })">Pending Documents</a></li>
+            }
+            @if (User.HasAccess("Document", "AllIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("AllIndex", "Document", routeValues: new { Area = "AccountsPayable" })">All Documents</a></li>
+            }
+            @if (User.HasAccess("Batch", "BatchSourceListIndex"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("BatchSourceListIndex", "Batch", new { Area = "", source = "AP Entry"})">Batches</a></li>
+            }
+        </ul>
+    </li>
+}

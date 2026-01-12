@@ -1,0 +1,139 @@
+﻿@model  portal.Models.Views.Equipment.Audit.EquipmentAuditListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+@Html.AntiForgeryToken()
+<table class="table "
+       id="@tableId"
+       data-urldelete="@Url.Action("Delete", "EMAudit")"
+       data-dataurl="@Url.Action("ProcessData","EMAudit")"
+       data-reloadurl="@Url.Action("ProcessTable", "EMAudit")"
+       data-urlselect="@Url.Action("Form", "EMAuditForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-emco="@Model.EMCo"
+       data-crewid="@Model.CrewId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().AuditId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().AuditForm)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().AuditTypeId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedOn)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().CompletedOn)</th>
+            @*<th data-datatable-filter-type="none">
+            </th>*@
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+@Html.Partial("../EM/Audit/Reject/Modal")
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= $(panel).height();
+        h -= $(tableElem).find('thead').height();
+        h -= 125;
+        var table = $('#@tableId').DataTable({
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                data: function (d) {
+                },
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "EMCo", visible: false },
+                { data: "AuditId", visible: false },
+                { data: "StatusIdString" },
+                { data: "AuditFormIdString" },
+                { data: "AuditTypeIdString" },
+                { data: "Description" },
+                {
+                    data: "CreatedOn",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return '';
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                {
+                    data: "CompletedOn",
+                    render: function (data, type) {
+                        if (data == null) {
+                            return '';
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "EMCo=" + data.EMCo + "&AuditId=" + data.AuditId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+
+    $('#@tableId')
+        .off('click', 'button.approveRow')
+        .on('click', 'button.approveRow', function () {
+            var func = function (button) {
+                var url = $(button).data('url');
+                if (url) {
+                    var token = $(document).find('[name="__RequestVerificationToken"]');
+                    var data = {
+                        __RequestVerificationToken: token.val(),
+                        emco: $(button).data('emco'),
+                        auditId: $(button).data('auditid'),
+                        status: $(button).data("status")
+                    };
+                    console.log(url, data);
+                    $.post(url, data, function (res) {
+                        //console.log(res);
+                        if (res.success === "true") {
+                            //var rowKey = "Co=" + $(button).data('co') + '&AuditId=' + $(button).data('auditid');
+                            //$(document).find("[data-entitykey='" + rowKey + "']").each(function () {
+                            //    $(this).hide();
+                            //});
+                            $('#reviewPanel').html('');
+                            ReloadElement($('#reviewPanel'), button);
+                        }
+                        else {
+                            var panel = $('#reviewPanel').find('.panel');
+                            SetValidationErrorForObject(panel, res.errorModel);
+                            console.log(res.errorModel);
+                            // $(panel).find('.validation-summary-valid').each(function () { $(this).html(''); });
+                        }
+                        $(button).SetButtonNotBusy();
+                    });
+                }
+            }
+            var button = this;
+            $(button).SetButtonBusy();
+            func(button);
+        });
+</script>

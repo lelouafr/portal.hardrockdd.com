@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.PhaseMaster.PhaseMasterListViewModel
+<div class="panel panel-inverse"
+     
+     data-reloadurl="@Url.Action("SearchTable", "PhaseMaster", new { Co = Model.Co, VendorId = Model.VendorId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Vendor Lookup</h4>
+    </div>
+    <div class="panel-body" id="PhaseMasterListViewModel">
+        @Html.Partial("../JC/PhaseMaster/Search/Table", Model)
+    </div>
+</div>

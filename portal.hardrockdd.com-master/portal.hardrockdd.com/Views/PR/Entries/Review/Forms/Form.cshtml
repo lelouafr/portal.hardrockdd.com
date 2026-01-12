@@ -1,0 +1,17 @@
+﻿@model portal.Models.Views.Payroll.Review.PayrollEmployeeReviewFormViewModel
+<style>
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+<div id="accordion" class="accordion">
+    @Html.Partial("../PR/Entries/Review/Forms/Ticket/Panel", Model.Tickets)
+    @Html.Partial("../PR/Entries/Review/Forms/Perdiem/Panel", Model.Perdiems)
+    @Html.Partial("../PR/Entries/Review/Forms/Hour/Panel", Model.Hours)
+</div>

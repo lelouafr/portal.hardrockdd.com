@@ -1,0 +1,103 @@
+﻿@using Newtonsoft.Json;
+@model portal.Models.Views.DailyTicket.DailyCrewSubmissionListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+<div class="row">
+    <div class="col-xl-6">
+        <table class="table">
+            <tr>
+                <td width="20%" class="text-center" style='background:#FFA500'><label>Draft</label></td>
+                <td width="20%" class="text-center" style='background:#FFFF00'><label>Submitted</label></td>
+                <td width="20%" class="text-center" style='background:#90EE90'><label>Approved</label></td>
+                <td width="20%" class="text-center" style='background:#ADD8E6'><label>Processed</label></td>
+                <td width="20%" class="text-center" style='background:#FA8072'><label>Rejected</label></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("DailyTicketCrewList", "DailyTicketForm")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="18%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Crew)</th>
+            <th width="12%"><label>Created By</label></th>
+            @foreach (var date in Model.Dates)
+            {
+                <th width="10%"><label>@date.DayOfWeek.ToString()</label></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var crew in Model.List)
+        {
+            var entityKey = string.Format(AppCultureInfo.CInfo(), "prco={0}&crewId={1}&weekId={2}", crew.PRCo, crew.CrewId, crew.WeekId);
+            <tr data-entitykey="@entityKey">
+                <td>
+                    @Html.HiddenFor(m => crew.PRCo, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => crew.WeekId, new { @id = Guid.NewGuid() })
+                    @Html.HiddenFor(m => crew.CrewId, new { @id = Guid.NewGuid() })
+                    @Html.EditorFor(m => crew.Crew, new { DisplayOnly = true })
+                </td>
+                <td>
+                    @Html.EditorFor(l => crew.CreatedBy, new { DisplayOnly = true })
+                </td>
+                @foreach (var day in crew.DayList)
+                {
+                    <td style="padding-left:1px; padding-right:1px">
+                        <table class="table-borderless table-condensed">
+                            @foreach (var item in day.List)
+                            {
+                                string colorCode = "";
+                                switch (item.Status)
+                                {
+                                    case DB.DailyTicketStatusEnum.Draft:
+                                        colorCode = "#FFA500";
+                                        break;
+                                    case DB.DailyTicketStatusEnum.Submitted:
+                                        colorCode = "#FFFF00";
+                                        break;
+                                    case DB.DailyTicketStatusEnum.Approved:
+                                        colorCode = "#90EE90";
+                                        break;
+                                    case DB.DailyTicketStatusEnum.Processed:
+                                        colorCode = "#ADD8E6";
+                                        break;
+                                    case DB.DailyTicketStatusEnum.Rejected:
+                                        colorCode = "#FA8072";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                <tr>
+                                    <td width="10%" class="no-padding f-s-10" style="background: @colorCode; padding-left:0px; padding-right:0px">
+                                        @if (item.HasAttachment)
+                                        {
+                                            <span><i class="fas fa-paperclip "></i> @(item.JobId ?? item.FormName)</span>
+                                        }
+                                        else
+                                        {
+                                            @(item.JobId ?? item.FormName)
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody> 
+</table>
+
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

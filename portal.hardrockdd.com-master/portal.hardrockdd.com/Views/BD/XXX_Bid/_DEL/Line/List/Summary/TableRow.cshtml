@@ -1,0 +1,54 @@
+﻿@model portal.Models.Views.Bid.BoreLineViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (rowKey != string.Empty)
+            {
+                rowKey += "&";
+            }
+            rowKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.DisplayFor(m => m.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Footage)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.PipeSize)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.GroundDensityDesc)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.RigCategoryDesc)
+        </td>
+        @*<td>
+            @Html.DisplayFor(m => m.MobeDays)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DeMobeDays)
+        </td>*@
+        <td>
+            @Html.DisplayFor(m => m.DirtCost)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.RockCost)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DirtDays)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.RockDays)
+        </td>
+    </tr>

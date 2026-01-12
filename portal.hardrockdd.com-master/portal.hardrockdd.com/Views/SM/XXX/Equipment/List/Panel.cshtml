@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.SM.Request.Equipment.EquipmentListViewModel
+@{
+    var panelid = "panelId_" + Guid.NewGuid().ToString().Replace(" - ", "");
+    var panelBodyId = "panelBodyId_" + Guid.NewGuid();
+}
+
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("ServiceEquipmentRequestListTable", "ServiceRequest")">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Service Requests</h4>
+    </div>
+    <div class="panel-body" id="@panelBodyId">
+        @Html.Partial("../SM/Request/Summary/Equipment/List/Table", Model)
+    </div>
+</div>
+
+<script>
+    $('#@panelBodyId').ready(function () {
+        handleTableAutoUpdate();
+    });
+</script>

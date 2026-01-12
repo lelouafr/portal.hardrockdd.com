@@ -1,0 +1,45 @@
+﻿@model  portal.Models.Views.Bid.BidCustomerListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidCustomerProposal")"
+       data-urldelete="@Url.Action("Delete", "BidCustomerProposal")"
+       data-urlupdate="@Url.Action("Update", "BidCustomerProposal")"
+       data-urlvalidate="@Url.Action("Validate", "BidCustomerProposal")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="25%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerId)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ContactId)</th>
+            @if (!viewOnly)
+            {
+                <th width="15%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+            else
+            { 
+                <th width="15%">
+                </th>
+            }
+</tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Customer/ProposalList/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+   
+</script>

@@ -1,0 +1,48 @@
+﻿@model portal.Models.Views.PR.Employee.Form.PayrollHistoryViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<style>
+    fieldset {
+        border: .75px solid;
+        padding: 5px 10px 5px 5px;
+        border-radius: 3px;
+    }
+
+    legend {
+        padding: 10px 10px;
+    }
+</style>
+<div class="row">
+    <div class="col-5">
+        <form class="form-horizontal"
+              id="@formId"
+              data-urlupdate="@Url.Action("Update", "HRResourceHistory")"
+              data-urlvalidate="@Url.Action("Validate", "HRResourceHistory")"
+              >
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.HireDate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.RecentRehireDate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.TermDate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.RecentSeparationDate)
+            </div>
+        </form>
+
+    </div>
+    <div class="col-7">
+        @Html.Partial("../HR/Employee/Forms/History/List/Table", Model.EmploymentHistory)
+    </div>
+</div>

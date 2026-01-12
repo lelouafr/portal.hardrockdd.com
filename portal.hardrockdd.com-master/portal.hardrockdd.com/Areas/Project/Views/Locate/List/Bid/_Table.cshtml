@@ -1,0 +1,75 @@
+﻿@model portal.Areas.Project.Models.Locate.LocateListViewModel
+
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+
+
+@Html.AntiForgeryToken()
+<table class="table "
+        id="@tableId"
+        data-urlselect="@Url.Action("LocatePanel", "Locate")"
+        data-urlcreate="@Url.Action("RequestLocateAdd", "Locate", new { requestId = Model.RequestId })"
+        data-urldelete="@Url.Action("LocateDelete", "Locate")"
+        data-urlupdate="@Url.Action("LocateUpdate", "Locate")"
+        data-urlvalidate="@Url.Action("LocateValidate", "Locate")"
+        data-dstselect="reviewLocatePanel"
+        data-dstselectvalidate="false"
+        data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="50px" data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocateRefId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().ExpDate)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().GPSCoords)</th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.List != null)
+        {
+            foreach (var request in Model.List)
+            {
+                @Html.Partial("List/Bid/_TableRow", request)
+            }
+
+        }
+    </tbody>
+</table>
+<div id="tempatt">
+
+</div>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+
+        $('#@(tableId)').on('click', '.btnOpenFile', function () {
+            console.log("I WAS CLICKED");
+            var row = $(this).closest('tr');
+
+            $.ajax({
+                url: $(row).data('filedataurl'),
+                datatype: "json",
+                success: function (data) {
+                    data = data.data;
+                    data.url = $(row).data('fileurl');
+                    console.log(data);
+                    AttachmentLoadDoc($('#tempatt'), data, true);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+
+        });
+    })
+</script>

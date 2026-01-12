@@ -1,0 +1,14 @@
+﻿@model portal.Models.Views.AP.Document.DocumentPendingInfoViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+        >
+    <div class="panel-heading">
+        <h4 class="panel-title">Request Info on Invoice</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../AP/Document/RequestInfo/Form/Form", Model)
+    </div>
+</div>

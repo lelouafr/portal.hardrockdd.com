@@ -1,0 +1,9 @@
+﻿@model portal.Models.Views.Bid.BidPackagePricingViewModel
+
+
+<div class="col-lg-12">
+    @Html.EditorForModel("Form/Form", new {
+                UpdateUrl = @Url.Action("Update", "BidPackagePricing"),
+                ValidateUrl = @Url.Action("Validate", "BidPackagePricing")
+            })
+</div>

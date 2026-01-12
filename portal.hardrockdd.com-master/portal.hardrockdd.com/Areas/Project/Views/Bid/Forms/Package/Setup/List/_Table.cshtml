@@ -1,0 +1,54 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.PackageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+    var reviewPanelId = string.Format("packagesetup_{0}_bores", Model.BidId);
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("PackageSetupAdd", "Bid")"
+       data-urldelete="@Url.Action("PackageSetupDelete", "Bid")"
+       data-urlupdate="@Url.Action("PackageSetupUpdate", "Bid")"
+       data-urlvalidate="@Url.Action("PackageSetupValidate", "Bid")"
+       data-urlselect="@Url.Action("PackageSetupBoreListPanel", "Bid")"
+       data-dstselect="@reviewPanelId"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="150px">@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().MarketId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().DivisionId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().BoreTypeId)</th>
+            <th width="8%">@Html.LabelFor(model => model.List.FirstOrDefault().NumberOfBores)</th>
+            <th width="8%">@Html.LabelFor(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="15%">@Html.LabelFor(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            <th width="12%">@Html.LabelFor(model => model.List.FirstOrDefault().GroundDensityId)</th>
+            @if (!viewOnly)
+            {
+                <th width="35px">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("Forms/Package/Setup/List/_TableRow", obj)
+        }
+    </tbody>
+</table>
+
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>

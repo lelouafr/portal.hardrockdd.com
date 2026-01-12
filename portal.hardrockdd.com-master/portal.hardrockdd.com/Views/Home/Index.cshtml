@@ -1,0 +1,129 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+
+@{
+    ViewBag.Title = "Home";
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+
+
+<!-- begin row -->
+<div class="row">
+    @Html.Partial("../Home/Widget/CM/Summary", Model)
+    @Html.Partial("../Home/Widget/AP/InvoiceDocument", Model)
+    @Html.Partial("../Home/Widget/AP/InvoiceNeedingReview", Model)
+    @Html.Partial("../Home/Widget/CM/MissingReceipt", Model)
+    @Html.Partial("../Home/Widget/CM/TransactionApproval", Model)
+    @Html.Partial("../Home/Widget/DT/RejectedTicket", Model)
+    @Html.Partial("../Home/Widget/DT/TicketApproval", Model)
+    @Html.Partial("../Home/Widget/DT/TimeOffApproval", Model)
+    @Html.Partial("../Home/Widget/DT/TimeOffRequest", Model)
+    @Html.Partial("../Home/Widget/EM/OpenAudits", Model)
+    @Html.Partial("../Home/Widget/EM/UnAssignedEquipment", Model)
+    @Html.Partial("../Home/Widget/EM/OpenApprovals", Model)
+    @Html.Partial("../Home/Widget/EM/OpenProcess", Model)
+    @Html.Partial("../Home/Widget/EM/EMOpenRequest", Model)
+    @Html.Partial("../Home/Widget/PO/PendingApproval", Model)
+    @Html.Partial("../Home/Widget/PO/Reject", Model)
+    @Html.Partial("../Home/Widget/HR/OpenPositionRequest", Model)
+    @*@Html.Partial("../Home/Widget/HR/OpenTermRequest", Model)*@
+</div>
+<div class="row">
+    @Html.Partial("../Home/Card/DT/CreateTicket", Model)
+    @Html.Partial("../Home/Card/DT/TimeOffRequest", Model)
+    @Html.Partial("../Home/Card/PO/PORequest", Model)
+    @Html.Partial("../Home/Card/SM/SMRequest", Model)
+    @Html.Partial("../Home/Card/HR/EmployeeAction", Model)
+</div>
+@*<div class="row">
+    @Html.Partial("../Home/Card/HR/OpenEnrollment")
+</div>*@
+<!-- end row -->
+<div class="row">
+    <div class="col-xl-6">
+        @Html.Action("UserTickets", "Dashboard")
+        @if (@Model.DirectReportCnt > 0)
+        {
+            <div id="DirectReportSummary"
+                 data-url="@Url.Action("Dashboard","DirectReportSummary")">
+                @Html.Partial("../DT/Reports/Supervisor/List/Panel")
+            </div>
+        }
+    </div>
+    @if ((User.IsInPosition("CFO,COO,CEO,PRES,FIN-ARMGR,FIN-CTRL,IT-DIR,OP-DM,OP-GM,OP-SLS,OP-SLSMGR") || User.HasAccess("BidTracker")) || Model.BidReviewCount > 0)
+    {
+        <div class="col-xl-6">
+            @Html.Action("UserBidsPanel", "Bid", new { Area = "Project" })
+        </div>
+    }
+    @if (User.IsInPosition("FLD-CDLDRV,FLD-DRILL,FLD-DRV,FLD-HE,FLD-LBR,FLD-LCT,FLD-MUD,TRUCKING"))
+    {
+        <div class="col-xl-6">
+            @Html.Action("PartialIndex", "WeeklyEmployeeSummary")
+        </div>
+    }
+    <div id="reviewPanel" class="col-xl-6">
+    </div>
+</div>
+
+<div class="modal fade" id="addTicket">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                @Html.Partial("../DT/Create/Index", new portal.Models.Views.DailyTicket.DailyTicketCreateViewModel())
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/assets/plugins/DataTables/media/js/dataTables.rowsGroup.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        lscache.set("Menu_ListItems", null);
+
+        function LoadDirectReportSummary() {
+            var dstId = "DirectReportSummary";
+            var dst = $("#" + dstId);
+            if (dst) {
+                var url = $(dst).data("url");
+                var data = {};
+                //console.log(url, data, dst);
+
+                /*Loader*/
+                var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+                $(dst).addClass('panel-loading');
+                $(dst).html(spinnerHtml);
+
+                $.ajax({
+                    type: "Get",
+                    dataType: "html",
+                    url: url,
+                    data: data,
+                    success: function (res) {
+                        setTimeout(function () {
+                            var divId = dstId;
+                            var html = '<div id="' + divId + '">\r\n';
+                            html += res;
+                            html += '\r\n</div>';
+
+                            dst.html(html);
+
+                            var panel = $('#' + divId).find('.panel-body');
+                            $(dst).removeClass('panel-loading');
+                            $(dst).find('.panel-loader').remove();
+                        }, 100);
+                    }
+                });
+            }
+        }
+    </script>
+}

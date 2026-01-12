@@ -1,0 +1,48 @@
+﻿@model portal.Models.Views.Bid.Forms.Bore.Award.AwardListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       style="display:none"
+       id="@tableId"
+       data-urlupdate="@Url.Action("PackageAwardBoreUpdate", "BidForm")"
+       data-urlvalidate="@Url.Action("PackageAwardBoreValidate", "BidForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th>@Html.LabelFor(model => model.List.FirstOrDefault().Description)</th>
+            <th width="20%">@Html.LabelFor(model => model.List.FirstOrDefault().AwardStatus)</th>
+            <th width="15%">@Html.LabelFor(model => model.List.FirstOrDefault().Footage)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Forms/Package/Award/BoreList/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+$('#@tableId').ready(function () {
+    var table = $('#@tableId');
+    var h = 42 * @(Model.List.Count);
+    if (h > 400) {
+        h = 400;
+        var parent = $(table).parent();
+        var contaner = $('<div></div>');
+        $(contaner).css("height", h + "px");
+        $(contaner).css("overflow-y", "scroll");
+        $(contaner).css("display", "block");
+
+        $(contaner).appendTo(parent);
+        $(table).appendTo(contaner);
+    }
+    $(table).show();
+    $(table).arrowTable();
+});
+</script>

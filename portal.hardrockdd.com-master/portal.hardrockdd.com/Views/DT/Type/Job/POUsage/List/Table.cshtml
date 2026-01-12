@@ -1,0 +1,48 @@
+﻿@model  portal.Models.Views.DailyTicket.DailyPOUsageListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "DailyJobPOUsage")"
+       data-urldelete="@Url.Action("Delete", "DailyJobPOUsage")"
+       data-urlupdate="@Url.Action("Update", "DailyJobPOUsage")"
+       data-urlvalidate="@Url.Action("Validate", "DailyJobPOUsage")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="40%">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendorId)</th>
+            <th width="40%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PO)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Quantity)</th>
+            @if (!viewOnly)
+            {
+                <th width="30%">
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../DT/Type/Job/POUsage/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+
+    $('#@tableId').on('click', 'button.commentRowBtn', function () {
+        var lineNum = $(this).data('linenum');
+        var commentElem = $('#@tableId').find('#commentRow_' + lineNum);
+        commentElem.show();
+        $(this).hide();
+    });
+</script>

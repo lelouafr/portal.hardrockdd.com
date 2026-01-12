@@ -1,0 +1,19 @@
+﻿@model portal.Areas.Project.Models.Locate.RequestListViewModel
+    
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action(ViewBag.TableAction, "Locate")"
+     style="margin-bottom: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">@ViewBag.Title</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("Request/List/_Table", Model)
+    </div>
+</div>

@@ -1,0 +1,24 @@
+﻿@model portal.Models.Views.HR.Resource.Form.ResourceFormViewModel
+<div>
+    @if (User.HasAccess("PayrollReview", "Index"))
+    {
+        <div class="row">
+            <div class="col-xl-8">
+                @Html.Partial("../HR/Employee/Forms/Panel", Model)
+            </div>
+            <div class="col-xl-4">
+                @Html.Partial("../Attachment/Panel", Model.Attachments)
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.Partial("../HR/Employee/Forms/Panel", Model)
+    }
+    <script>
+        $(document).ready(function () {
+            initPanels();
+        });
+
+    </script>
+</div>

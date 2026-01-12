@@ -1,0 +1,81 @@
+﻿@model portal.Areas.HumanResource.Models.PositionRequest.ActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var formId = "form_" + Guid.NewGuid();
+    var btnId = "button_" + Model.RequestId.ToString();
+}
+
+<div class="row"
+     id="@formId"
+     data-hrco="@Model.HRCo"
+     data-requestid="@Model.RequestId">
+    <div class="col-lg-12 m-b-5">
+        @Html.AntiForgeryToken()
+        <div class="text-left">
+            @foreach (var action in Model.WorkFlowActions)
+            {
+                <button 
+                        type="button" 
+                        class="btn @action.ButtonClass @btnId" 
+                        data-url="@Url.Action("UpdateStatus", "PositionRequest", new { Area = "HumanResource" })"
+                        data-gotostatusid="@((int)action.GotoStatusId)" 
+                        data-redirectaction="@action.ActionRedirect" 
+                        data-key="@formLayout.TableKey">@action.Title
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#@formId').ready(function () {
+        $('#@(formId)').on('click', 'button.@btnId', function () {
+            var button = this;
+            var func = function (button) {
+                $(button).SetButtonBusy();
+                var row = $(button).closest('.row');
+                var url = $(button).data('url');
+                var token = $(row).find('[name="__RequestVerificationToken"]');
+
+                var data = $(button).data('key');
+                var gotoStatusId = $(button).data('gotostatusid');
+                data += "&statusId=" + gotoStatusId;
+                data += "&__RequestVerificationToken=" + token.val();
+
+                console.log('url: ', url, 'data: ', data);
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        if (res.model.Info.Status == 5 || res.model.Info.Status == "Hire") {
+
+                            swal.fire({
+                                title: 'Employee Hired',
+                                text: 'Employee Id: ' + res.model.Info.NewEmployeeId,
+                                icon: 'success',
+                                buttons: {
+                                    confirm: {
+                                        text: 'Close',
+                                        value: true,
+                                        visible: true,
+                                        className: 'btn btn-success',
+                                        closeModal: true
+                                    }
+                                }
+                            });
+                        }
+                        $(button).ReloadPanel();
+                    }
+                    else {
+                        var panel = $(button).closest(".panel");
+                        SetValidationErrorForObject($(panel), res.errorModel);
+                    }
+                    $(button).SetButtonNotBusy();
+                });
+            }
+
+            func(button);
+        });
+    });
+</script>

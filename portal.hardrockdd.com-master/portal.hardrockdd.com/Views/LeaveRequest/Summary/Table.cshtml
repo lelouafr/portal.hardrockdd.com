@@ -1,0 +1,50 @@
+﻿@model  portal.Models.Views.Payroll.Leave.LeaveEmployeeSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LeaveCodeId)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartBalHours)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PostedHours)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestedHours)</th>
+            <th width="17%">@Html.LabelForRequired(model => model.List.FirstOrDefault().AvailableHours)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../LeaveRequest/Summary/TableRow", obj)
+        }
+        <tr>
+            <td class="font-weight-bold">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+                <span>Total</span>
+            </td>
+            <td class="font-weight-bold">
+                @Model.List.Sum(sum => sum.StartBalHours)
+            </td>
+            <td class="font-weight-bold">
+                @Model.List.Sum(sum => sum.PostedHours)
+            </td>
+            <td class="font-weight-bold">
+                @Model.List.Sum(sum => sum.RequestedHours)
+            </td>
+            <td class="font-weight-bold">
+                @Model.List.Sum(sum => sum.AvailableHours)
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

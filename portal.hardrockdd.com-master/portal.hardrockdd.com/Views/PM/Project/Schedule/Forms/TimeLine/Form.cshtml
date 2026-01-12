@@ -1,0 +1,184 @@
+﻿@*@model portal.Models.Views.PM.Project.Schedule.FormViewModel
+@{
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var timeline = "JobTimeLine_";// + formId.ToString().Replace("-", "");
+    var panel = "panel_" + formId.ToString().Replace("-", "");
+}
+
+<style type="text/css">
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .dhx_cal_event div.dhx_footer,
+    .dhx_cal_event.past_event div.dhx_footer,
+    .dhx_cal_event.event_english div.dhx_footer,
+    .dhx_cal_event.event_math div.dhx_footer,
+    .dhx_cal_event.event_science div.dhx_footer {
+        background-color: transparent !important;
+    }
+
+    .dhx_cal_event .dhx_body {
+        -webkit-transition: opacity 0.1s;
+        transition: opacity 0.1s;
+        opacity: 0.7;
+    }
+
+    .dhx_cal_event .dhx_title {
+        line-height: 12px;
+    }
+
+    .dhx_cal_event_line:hover,
+    .dhx_cal_event:hover .dhx_body,
+    .dhx_cal_event.selected .dhx_body,
+    .dhx_cal_event.dhx_cal_select_menu .dhx_body {
+        opacity: 1;
+    }
+    /*Invoiced*/
+    .dhx_cal_event.event_invoiced div,
+    .dhx_cal_event_line.event_7 {
+        background-color: #5ccd6a !important;
+        border-color: #479250 !important;
+    }
+
+    .dhx_cal_event.dhx_cal_editor.event_7 {
+        background-color: #5ccd6a !important;
+    }
+
+    .dhx_cal_event_clear.event_7 {
+        color: #5ccd6a !important;
+    }
+    /*Completed*/
+    .dhx_cal_event.event_invoiced div,
+    .dhx_cal_event_line.event_4 {
+        background-color: #0094ff !important;
+        border-color: #0094ff !important;
+    }
+
+    .dhx_cal_event.dhx_cal_editor.event_4 {
+        background-color: #0094ff !important;
+    }
+
+    .dhx_cal_event_clear.event_4 {
+        color: #0094ff !important;
+    }
+
+    /*In Process*/
+    .dhx_cal_event.event_invoiced div,
+    .dhx_cal_event_line.event_2 {
+        background-color: #0094ff !important;
+        border-color: #0094ff !important;
+    }
+
+    .dhx_cal_event.dhx_cal_editor.event_2 {
+        background-color: #0094ff !important;
+    }
+
+    .dhx_cal_event_clear.event_2 {
+        color: #0094ff !important;
+    }
+
+    /*Pull Piped*/
+    .dhx_cal_event.event_invoiced div,
+    .dhx_cal_event_line.event_3 {
+        background-color: #0094ff !important;
+        border-color: #0094ff !important;
+    }
+
+    .dhx_cal_event.dhx_cal_editor.event_3 {
+        background-color: #0094ff !important;
+    }
+
+    .dhx_cal_event_clear.event_3 {
+        color: #0094ff !important;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Project Time Line For Assigned Crew(s)
+        </div>
+    </div>
+    <div class="panel-body" id="@panel">
+        <div id="@timeline" class="dhx_cal_container" style='width:100%; height:100%; height:600px;'
+             data-startdate="@Model.TimeLine.Events.Min(s => s.start_date)"
+             data-enddate="@Model.TimeLine.Events.Max(s => s.end_date)"
+             data-urlupdate="@Url.Action("TimeLineUpdate", "PMProjectScheduleForm")"
+             data-dataurl="@Url.Action("TimeLineData", "PMProjectScheduleForm", new { Area = "",bdco = Model.BDCo, projectId = Model.JobId, jcco = Model.JCCo, packageId = Model.PackageId, bidId = Model.BidId })">
+            <div class="dhx_cal_navline">
+                <div class="dhx_cal_prev_button">&nbsp;</div>
+                <div class="dhx_cal_next_button">&nbsp;</div>
+                <div class="dhx_cal_today_button"></div>
+                <div class="dhx_cal_date"></div>
+                <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+                <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+                <div class="dhx_cal_tab" name="timeline_tab" style="right:280px;"></div>
+                <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+            </div>
+            <div class="dhx_cal_header">
+            </div>
+            <div class="dhx_cal_data">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#@panel").ready(function () {
+        var url = $('#@timeline').data("dataurl");
+        var start = Date.parse($('#@timeline').data("startdate"));
+        var end = Date.parse($('#@timeline').data("enddate"));
+        var duration = (end - start) / 1000 / 60 / 60 / 24;;
+        if (duration <= 45) {
+            duration = 45;
+        }
+        else {
+            duration += 10
+        }
+
+        scheduler.clearAll();
+        scheduler.load(url, "json");
+        setTimeout(function () {
+            var sections = scheduler.serverList("elements");
+
+            scheduler.createTimelineView({
+                name: "timeline",
+                //x_unit: "hour",
+                //x_date: "%H",
+                //x_step: 12,
+                x_unit: "day",
+                x_date: "%M-%d",
+                x_step: 1,
+                //bar_height: 25,
+                //round_position : true,
+                x_size: duration,
+                y_unit: sections,
+                y_property: "section_id",
+                render: "bar",
+                scrollable: true,
+                column_width: 60,
+                scroll_position: new Date(start),
+            });
+            //===============
+            //Data loading
+            //===============
+            scheduler.config.lightbox.sections = [
+                { name: "description", height: 130, map_to: "text", type: "textarea", focus: true },
+                { name: "custom", height: 23, type: "select", options: sections, map_to: "section_id" }, //type should be the same as name of the tab
+                { name: "time", height: 72, type: "time", map_to: "auto" }
+            ];
+            scheduler.init('@timeline', start - 15, "timeline");
+            var dp = new dataProcessor(url);
+            dp.init(scheduler);
+        }, 500);
+    });
+    $('.panel-expand').click(function () {
+        scheduler.expand();
+    });
+</script>*@

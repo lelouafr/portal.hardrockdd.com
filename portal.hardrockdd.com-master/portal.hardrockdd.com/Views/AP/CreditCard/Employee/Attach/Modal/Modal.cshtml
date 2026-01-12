@@ -1,0 +1,136 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.InfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new FormLayoutModel(this);
+    var layoutModel = new TableLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+
+
+    var tableLayout = new TableLayoutModel(this);
+
+    string formKey = layoutModel.TableKey;
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="model-title">Image Select</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+    </div>
+    <div class="modal-body text-center">
+
+        <form class="form"
+              id="@formId"
+              data-imageaddurl="@Url.Action("Add", "APCreditCardEmployeeImageBank")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.CCCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.TransId, new { @id = Guid.NewGuid() })
+
+            <input type="file" id="imgupload" style="display:none" />
+            <div class="btn-group">
+                <button class="btn btn-lg btn-white uploadBtn" type="button">Upload <i class="fas fa-camera"></i></button>
+                <button class="btn btn-lg btn-primary imageBankBtn"
+                        type="button"
+                        data-entitykey="@formKey"
+                        data-toggle="modal"
+                        data-target="#imageTransBankModal"
+                        data-dismiss="modal">
+                    Image Bank <i class="fas fa-images"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var files;
+    $(".imageBankBtn").click(function () {
+        $('#imageSelect').hide();
+    });
+    $(".uploadBtn").click(function () {
+        $("#imgupload").click();
+    });
+    $('#imgupload').on('change', prepareUpload);
+
+    function prepareUpload(event) {
+        var convertPdf = function (pdfData, file, files, form, url) {
+            //var pdfThumb = ConvertPDfToThumbNail(file);
+            //var pdfThumbnailFile = new File(pdfThumb, name, { type: "image/png" });
+            //func(files, form, url, pdfThumbnailFile);
+            //console.log('pdfData:', pdfData);
+            pdfjsLib.GlobalWorkerOptions.workerSrc = '/Content/assets/plugins/pdfjs/pdf.worker.js';
+            pdfjsLib.getDocument(pdfData).promise.then(function (doc) {
+                var pages = []; while (pages.length < 1) pages.push(pages.length + 1);
+                return Promise.all(pages.map(function (num) {
+                    //var div = document.createElement("div");
+                    //document.getElementById("reviewPanel").appendChild(div);
+                    return doc.getPage(num).then(makeThumb)
+                        .then(function (canvas) {
+                            //div.appendChild(canvas);
+                            //use canvas data to add a new file to the dropzone and add the file to the queue 
+                            canvas.toBlob(resultBlob => {
+                                var name = file.name;
+                                name = name.replace(".pdf", "_THUMBNAIL.png");
+                                resultBlob.lastModifiedDate = file.lastModifiedDate;
+                                resultBlob.name = name;
+                                // add converted file to upload
+                                //console.log('File Converted', resultBlob);
+                                //console.log(files.length, form, url);
+                                var canvasFile = new File([resultBlob], name, { type: "image/png" });
+                                func(files, form, url, canvasFile);
+                            });
+                        });
+                }));
+            }).catch(console.error)
+        };
+        var func = function (files, form, url, thumbnail) {
+            var formData = new FormData();
+            
+            $.each(files, function (key, file) {
+                //file.name = CreateGuid() + file.name;
+                console.log(key, file.name, CreateGuid());
+                formData.append(key, file);
+            });
+            if (thumbnail) {
+                //console.log(thumbnail);
+                formData.append(2, thumbnail);
+            }
+            for (var pair of $(form).GetFormData()) {
+                //console.log('Key: ', pair[0], 'Value:', pair[1]);
+                formData.append(pair[0], pair[1]);
+            }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                success: function (data) {
+                    $('#imageSelect').modal('hide');
+                    //$('#StatementTransactions').ReloadPanel();
+                    $('#reviewPanel').ReloadPanel();
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        };
+        var form = $(this).closest('form');
+        var url = $(form).data('imageaddurl');
+        files = event.target.files;
+        file = files[0]
+
+        if (file.name.indexOf('.pdf') > 0) {
+            getArrayBuffer(file).then(function (buffer) {
+                convertPdf(buffer, file, files, form, url);
+            });
+        }
+        else {
+            func(files, form, url);
+        }
+
+    };
+
+</script>
+

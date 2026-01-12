@@ -1,0 +1,85 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.PackageCostListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId">
+    <thead>
+        <tr>
+            <th><label>Budget Category</label></th>
+            <th><label>Budget Code</label></th>
+            <th><label>Cost</label></th>
+            <th><label>UM</label></th>
+            @foreach (var gndTyp in Model.List.GroupBy(g => g.GroundDensityType).Select(s => new { GroundDensityType = s.Key }).ToList())
+            {
+                <th style="border-left: 1px solid #b6c2c9 !important; border-top: 0px !important;"><label class="pull-right">@gndTyp.GroundDensityType Qty</label></th>
+                <th style="border-right: 1px solid #b6c2c9 !important; border-top: 0px !important;"><label class="pull-right">@gndTyp.GroundDensityType Cost</label></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var budgetCategory in Model.List.GroupBy(g => g.BudgetCategory)
+                                            .Select(s => new { BudgetCategory = s.Key, List = s })
+                                            .Where(f => f.List.Sum(sum => sum.ExtCost) != 0)
+                                            .OrderBy(o => o.BudgetCategory)
+                                            .ToList())
+        {
+            <tr>
+                <td><b>@budgetCategory.BudgetCategory</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="border-left: 1px solid #b6c2c9 !important;"></td>
+                <td></td>
+                <td style="border-left: 1px solid #b6c2c9 !important;"></td>
+                <td style="border-right: 1px solid #b6c2c9 !important;"></td>
+            </tr>
+            foreach (var budget in budgetCategory.List.GroupBy(g => new { g.BudgetCodeDescription, g.UM })
+                                                            .Select(s => new { BudgetCodeDescription = s.Key.BudgetCodeDescription, UM = s.Key.UM, Cost = s.Max(m => m.Cost), List = s })
+                                                            .OrderBy(o => o.BudgetCodeDescription).ToList())
+            {
+                var bgColor = budget.Cost == 0 ? "bg-red-transparent-3" : "";
+                var textColor = budget.Cost == 0 ? "text-red f-w-600" : "";
+                <tr class="@bgColor">
+                    <td></td>
+                    <td>@budget.BudgetCodeDescription</td>
+                    <td class="pr-3"><span class="pull-right @textColor">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", budget.Cost))</span> </td>
+                    <td>@budget.UM</td>
+                    @foreach (var gndType in Model.List.GroupBy(g => g.GroundDensityType).Select(s => new { GroundDensityType = s.Key }).ToList())
+                    {
+                        var costList = Model.List.Where(f => f.BudgetCodeDescription == budget.BudgetCodeDescription && f.GroundDensityType == gndType.GroundDensityType).ToList();
+                        var Qty = costList.Sum(s => s.Units * s.Multiplier);
+                        var extCost = costList.Sum(s => s.ExtCost);
+                        <td style="border-left: 1px solid #b6c2c9 !important;"><span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:N2}", Qty))</span></td>
+                        <td style="border-right: 1px solid #b6c2c9 !important;"><span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", extCost))</span></td>
+
+                    }
+                </tr>
+            }
+        }
+        <tr>
+            <td colspan="4"><b>Total</b></td>
+            @foreach (var gndTyp in Model.List.GroupBy(g => g.GroundDensityType)
+                                                .Select(s => new
+                                                {
+                                                    ExtCost = s.Sum(sum => sum.ExtCost)
+                                                })
+                                                .ToList())
+            {
+                <td style="border-left: 1px solid #b6c2c9 !important;"></td>
+                <td style="border-right: 1px solid #b6c2c9 !important;"><b><span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", gndTyp.ExtCost))</span></b></td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>

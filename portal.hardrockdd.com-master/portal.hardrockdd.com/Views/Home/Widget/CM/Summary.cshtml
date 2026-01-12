@@ -1,0 +1,32 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.CMEmployeeMissingPictures == 0 && Model.CMEmployeePriorMissingPictures == 0 && (Model.CMEmployeeAmount > 0 || Model.CMEmployeePriorAmount > 0))
+{
+    {
+        var isMissingReceipt = Model.CMEmployeeMissingPictures > 0 || Model.CMEmployeePriorMissingPictures > 0;
+    }
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-gradient-green">
+            <div class="stats-info">
+                <h4>
+                    Credit Card Review
+                </h4>
+
+                @if (@Model.CMEmployeePriorAmount > 0)
+                {
+                    <p class="f-s-14">
+                        @Model.CMPriorMth.ToString("MMMM") Visa Balance<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", Model.CMEmployeePriorAmount))</span>
+                    </p>
+                }
+                @if (@Model.CMEmployeeAmount > 0)
+                {
+                    <p class="f-s-14">
+                        @Model.CMMth.ToString("MMMM") Visa Balance<span class="pull-right">@(string.Format(AppCultureInfo.CInfo(), "{0:C0}", Model.CMEmployeeAmount))</span>
+                    </p>
+                }
+            </div>
+            <div class="stats-link">
+                <a href="@Url.Action("Index", "APCreditCardEmployeeTransaction")">Goto Review <i class="fa fa-arrow-alt-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+}

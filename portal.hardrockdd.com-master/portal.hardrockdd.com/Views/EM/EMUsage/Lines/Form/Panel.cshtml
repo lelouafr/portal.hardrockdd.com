@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.DailyTicket.Equipment.DailyEquipmentUsageViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    ViewBag.ViewOnly = true;
+}
+
+<div class="panel panel-inverse"
+     style="margin-bottom: 0px;"
+     data-reloadurl="@Url.Action("LineForm", "DailyEquipmentUsage", new { dtco = Model.DTCo, ticketId = Model.TicketId, seqId = Model.SeqId })"
+     >
+    <div class="panel-heading">
+        <div class="panel-heading-btn">            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+        </div>
+        <h4 class="panel-title">Usage #@Model.JobId Details</h4>
+    </div>
+    <div class="panel-body"
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("../EM/EMUsage/Lines/Form/Form", Model)
+    </div>
+</div>

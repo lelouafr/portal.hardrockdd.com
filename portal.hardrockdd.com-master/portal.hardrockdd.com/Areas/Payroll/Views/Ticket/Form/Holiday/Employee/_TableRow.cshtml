@@ -1,0 +1,50 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.EmployeeEntryViewModel
+
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;  
+    var entityKey = tableLayout.TableKey;
+}
+
+
+<tr data-index="@Model.LineNum" data-entitykey="@entityKey">
+    <td style="border-top-width: 0px; padding-top:0px; border-right: 1px;">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.DTCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseGroupId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineNum, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PerdiemLineNum, new { @id = Guid.NewGuid() })
+
+        @Html.HiddenFor(m => m.EmployeeId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Perdiem, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EntryType, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.JobId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.PhaseId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Comments, new { @id = Guid.NewGuid() })
+    </td>
+    <td style="border-top-width: 0px; padding-top:0px;"></td>
+    <td style="border-top-width: 0px; padding-top:0px;">
+        @Html.EditorFor(m => m.Value)
+    </td>
+    @if (!viewOnly)
+    {
+        <td style="border-top-width: 0px; padding-top:0px;">
+            <div class="btn-group pull-right">
+                <button class="btn btn-primary commentRowBtn"
+                        style="@(String.IsNullOrEmpty(Model.Comments) ? "display: normal;" : "display: none;")"
+                        id="@("commentRowBtn_" + @Model.LineNum)">
+                    <i class="fa fa-comment"></i>
+                </button>
+                <button class="btn btn-danger delRow"
+                        data-entitykey="@entityKey">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    }
+</tr>

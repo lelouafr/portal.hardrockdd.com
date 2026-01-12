@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-sortable-id="JobViewModel"
+     data-reloadurl="@Url.Action("Form", "Merchant", new { vendGroupId = Model.VendGroupId, merchantId = Model.MerchantId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Merchant: @Model.Info.Name (@Model.MerchantId)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../AP/Vendor/Merchant/Forms/Form", Model)
+    </div>
+</div>

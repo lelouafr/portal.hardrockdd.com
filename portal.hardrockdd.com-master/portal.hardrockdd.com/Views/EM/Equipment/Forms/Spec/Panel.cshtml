@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentSpecViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = "panelId_" +  Guid.NewGuid();
+}
+
+<div class="card" style="overflow:visible;">
+    <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#@panelId">
+        <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Specifications
+    </div>
+    <div id="@panelId" class="collapse">
+        <div class="card-body">
+            @Html.Partial("../EM/Equipment/Forms/Spec/Form", Model)
+        </div>
+    </div>
+</div>

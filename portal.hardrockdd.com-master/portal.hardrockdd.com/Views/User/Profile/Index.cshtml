@@ -1,0 +1,55 @@
+﻿@model portal.Models.VP.HR.ResourceViewModel
+@{
+    ViewBag.Title = "Profile";
+}
+
+
+<!-- begin #content -->
+<div id="content" class="content content-full-width">
+    <!-- begin profile -->
+    <div class="profile">
+        <div class="profile-header">
+            <!-- BEGIN profile-header-cover -->
+            <div class="profile-header-cover"></div>
+            <!-- END profile-header-cover -->
+            <!-- BEGIN profile-header-content -->
+            <div class="profile-header-content">
+                <!-- BEGIN profile-header-img -->
+                <div class="profile-header-img">
+                    <img src="@Model.ProfileUri" alt="">
+                </div>
+                <!-- END profile-header-img -->
+                <!-- BEGIN profile-header-info -->
+                <div class="profile-header-info">
+                    <h4 class="m-t-10 m-b-5">@Model.FirstName @Model.LastName</h4>
+                    <p class="m-b-10">@Model.Position.JobTitle</p>
+                    @*<a href="#" class="btn btn-xs btn-yellow">Edit Profile</a>*@
+                </div>
+                <!-- END profile-header-info -->
+            </div>
+            <!-- END profile-header-content -->
+            <!-- BEGIN profile-header-tab -->
+            <ul class="profile-header-tab nav nav-tabs">
+                <li class="nav-item"><a href="#profile-info" class="nav-link active" data-toggle="tab">INFO</a></li>
+                <li class="nav-item"><a href="#profile-settings" class="nav-link" data-toggle="tab">SETTINGS</a></li>
+                <li class="nav-item"><a href="#profile-log" class="nav-link" data-toggle="tab">LOG</a></li>
+                <li class="nav-item"><a href="#profile-notifcation" class="nav-link" data-toggle="tab">NOTIFICATIONS</a></li>
+            </ul>
+            <!-- END profile-header-tab -->
+        </div>
+    </div>
+    <!-- end profile -->
+    <!-- begin profile-content -->
+    <div class="profile-content">
+        <!-- begin tab-content -->
+        <div class="tab-content p-0">
+            @Html.Partial("~/Views/User/Profile/Info.cshtml", Model)
+            @Html.Partial("~/Views/User/Profile/Settings.cshtml", Model)
+            @Html.Partial("~/Views/User/Profile/Logs.cshtml", Model)
+            @Html.Partial("~/Views/User/Profile/Notifications.cshtml", Model)
+        </div>
+        <!-- end tab-content -->
+    </div>
+    <!-- end profile-content -->
+</div>
+<!-- end #content -->

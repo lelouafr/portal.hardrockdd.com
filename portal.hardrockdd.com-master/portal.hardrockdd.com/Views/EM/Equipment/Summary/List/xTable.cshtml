@@ -1,0 +1,74 @@
+﻿@model portal.Models.Views.Equipment.EquipmentListViewModel
+@{
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+}
+
+<div id="treeGrid_@tableId"
+    class="dhtmlx_treegrid" 
+    data-urlselect="@Url.Action("FullForm", "Equiment")"
+    data-dstselect="reviewPanel"
+    data-dstselectvalidate="false"
+     >
+
+</div>
+<script>
+    $(document).ready(function () {
+        var h = $("body").height();
+        h -= $("#treeGrid_@tableId").offset().top;
+        h -= 60;
+        $("#treeGrid_@tableId").height(h);
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Action("Data", "Equipment")",
+            dataType: "json",
+            success: function (res) {
+                var treegrid = new dhx.TreeGrid("treeGrid_@tableId", {
+                    selection: "row",
+                    rowHeight: 24,
+                    headerRowHeight: 34,
+                    columns: [
+                        {
+                            id: "EquipmentId",
+                            adjust: "data",
+                            type: "string",
+                            header: [
+                                { height: 24, },
+                                { text: "Id" },
+                                { content: "inputFilter" }
+                            ],
+                            //mark: function (cell, data, row, col) {
+                            //    if (row.ParentJobId == null) {
+                            //        return "font-weight-bold";
+                            //    }
+                            //}
+                        },
+                        {
+                            id: "Description",
+                            adjust: "data",
+                            type: "string",
+                            header: [
+                                { height: 24, },
+                                { text: "Description" },
+                                { content: "inputFilter" }
+                            ],
+                            //mark: function (cell, data, row, col) {
+                            //    if (row.ParentJobId == null) {
+                            //        return "font-weight-bold";
+                            //    }
+                            //}
+                        },
+                        
+                    ],
+                });
+                treegrid.data.parse(res.data);
+                treegrid.collapseAll();
+                handleDHTMLXTableEvents(treegrid);
+            },
+            error: function (result) {
+                alert("Error");
+            }
+        });
+    });
+
+</script>

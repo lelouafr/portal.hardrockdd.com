@@ -1,0 +1,42 @@
+﻿@model portal.Models.Views.AP.Vendor.Merchant.Forms.MerchantInfoViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("Update", "MerchantInfo")"
+      data-urlvalidate="@Url.Action("Validate", "MerchantInfo")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.MerchantId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.VendGroupId, new { @id = Guid.NewGuid() })
+
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.VendorId, new { viewOnly = !User.HasAccess("Merchant", "Index") })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Name, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Address, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.City, new { ViewOnly = true })
+        @Html.EditorFor(m => m.State, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Zip, new { ViewOnly = true })
+        @Html.EditorFor(m => m.CountryCode, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

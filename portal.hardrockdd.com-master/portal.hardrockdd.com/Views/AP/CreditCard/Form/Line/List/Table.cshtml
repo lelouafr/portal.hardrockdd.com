@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.TransactionLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table "
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="8%">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th width="55%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th class="text-right" width="8%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Quantity)</th>
+            <th class="text-right" width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().UnitCost)</th>
+            <th class="text-right" width="15%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LineAmount)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../AP/CreditCard/Form/Line/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    })
+</script>

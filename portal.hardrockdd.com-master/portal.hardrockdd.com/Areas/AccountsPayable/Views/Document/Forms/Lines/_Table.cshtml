@@ -1,0 +1,91 @@
+﻿@model portal.Areas.AccountsPayable.Models.Document.DocumentLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var guid = tableId.ToString().Replace("-", "");
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div id="div_@guid">
+    <table class="table"
+           id="@tableId"
+           data-urlselect="@Url.Action("LinePanel", "Document", new { Area = "AccountsPayable" })"
+           data-urlcreate="@Url.Action("LineListAdd", "Document", new { Area = "AccountsPayable" })"
+           data-urldelete="@Url.Action("LineListDelete", "Document", new { Area = "AccountsPayable" })"
+           data-dstselect="apLinePanel"
+           data-dstselectvalidate="false"
+           data-tablekey="@tableKey">
+        <thead>
+            <tr>
+                <th width="5%"><label>#</label></th>
+                <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().LineTypeId)</th>
+                <th width="50%"><label>Job/Equipment</label></th>
+                <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GrossAmt)</th>
+                @if (!viewOnly)
+                {
+                    <th>
+                        @Html.AntiForgeryToken()
+                        <div class="btn-group pull-right">
+                            @if (Model.PO != null)
+                            {
+                                <button class="btn btn-info poLinesImport"
+                                        style="padding-left: 6px; padding-right:6px;"
+                                        data-url="@Url.Action("ImportPOLines", "Document", new { Area = "AccountsPayable" })"
+                                        data-apco="@Model.APCo"
+                                        data-docid="@Model.DocId">
+                                    <i class="fa fa-refresh"></i> <span class="f-s-12">(Re)Import PO Lines</span>
+                                </button>
+                            }
+                            <button class="btn btn-primary addRow">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </th>
+                }
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model.List)
+            {
+                @Html.Partial("Forms/Lines/_TableRow", obj)
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    });
+
+    $('.poLinesImport').on('click', function () {
+        var row = $(this).closest('tr');
+        var url = $(this).data('url');
+
+        var button = this;
+        $(button).SetButtonBusy()
+
+        if (url) {
+            var token = $(row).find('[name="__RequestVerificationToken"]');
+            var data = {
+                __RequestVerificationToken: token.val(),
+                apco: $(button).data("apco"),
+                docId: $(button).data("docid")
+            };
+            //console.log(url, data, res);
+            $.post(url, data, function (res) {
+                if (res.success === "true") {
+                    //var panel = button.closest('.panel');
+                    $(button).ReloadPanel();
+                }
+                else {
+                    $(button).SetButtonNotBusy()
+                }
+            });
+        }
+        else {
+        }
+    });
+</script>

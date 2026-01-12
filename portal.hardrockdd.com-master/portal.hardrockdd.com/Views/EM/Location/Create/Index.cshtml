@@ -1,0 +1,37 @@
+﻿@model portal.Models.Views.Equipment.Location.EquipmentLocationCreateViewModel
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../EM/Location/Create/Form/Form", Model)
+    </div>
+</div>
+<hr />
+<div class="pull-right">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <a href="javascript:;"
+       class="btn btn-success btnCreate">Create</a>
+</div>
+
+<script>    
+    $('.btnCreate')
+        .on('click', function () {
+            var func = function (form) {
+                data = $(form).SerializeForm();
+                url = $(form).data('urlcreate');
+                $.post(url, data, function (res) {
+                    if (res.success === "true") {
+                        window.location.href = res.url;
+                    }
+                });
+            }
+            var button = this;
+            var modal = $(button).closest('.modal-body');
+            var form = $(modal).find('form');
+            
+            $(form).PostValidate(button, function (valid) {
+                if (valid) {
+                    func(form);
+                }
+            });
+    });
+</script>

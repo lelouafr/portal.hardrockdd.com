@@ -1,0 +1,46 @@
+﻿@model portal.Models.Views.Equipment.Location.EquipmentLocationListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("Form", "EquipmentLocation")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().LocationId)</th>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().EMCo)</th>
+            <th data-datatable-filter-type="none">
+                <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModel">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../EM/Location/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        myTable = $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: true,
+            ordering: true,
+            columnDefs: [
+                { targets: [2], visible: false }
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+        });
+    });
+</script>

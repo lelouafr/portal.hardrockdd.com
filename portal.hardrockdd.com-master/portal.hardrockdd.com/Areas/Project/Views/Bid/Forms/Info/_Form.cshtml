@@ -1,0 +1,172 @@
+﻿@model portal.Areas.Project.Models.Bid.BidInfoViewModel
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+}
+<div class="row">
+    <div class="col-lg-7">
+        <form class="form-horizontal"
+              id="@formId"
+              data-entitykey="@entityKey"
+              data-urlupdate="@Url.Action("InfoUpdate", "Bid")"
+              data-urlvalidate="@Url.Action("InfoValidate", "Bid")">
+            @Html.AntiForgeryToken()
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+            @Html.HiddenFor(m => m.BDCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.FirmType, new { @id = Guid.NewGuid() })
+
+            @Html.HiddenFor(m => m.DelayDeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.DeMobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.MobePrice, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.MapSetId, new { @id = Guid.NewGuid() })
+
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Status, new { ViewOnly = true })
+                @Html.EditorFor(m => m.BidDate, new { ViewOnly = true })
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.DueDate)
+                @Html.EditorFor(m => m.StartDate)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.BidType)
+                @Html.EditorFor(m => m.GPS)
+            </div>
+            @if (Model.BidType == DB.BidTypeEnum.QuickBid)
+            {
+                <div class="form-group has-feedback row">
+                    @Html.EditorFor(m => m.CustomerId)
+                    @Html.EditorFor(m => m.ContactId)
+                </div>
+            }
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.FirmNumber)
+                @Html.EditorFor(m => m.DivisionId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Location)
+                @Html.EditorFor(m => m.StateCodeId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.ProjectManagerId)
+                @Html.EditorFor(m => m.IndustryId)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Description)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.Comments)
+            </div>
+            <div class="form-group has-feedback row">
+                @Html.EditorFor(m => m.CreatedUserName, new { ViewOnly = true })
+            </div>
+        </form>
+    </div>
+    @if (Model.BidType != DB.BidTypeEnum.QuickBid)
+    {
+        <div class="col-lg-5">
+            @Html.Partial("Forms/Customer/_Panel", Model.Customers)
+            @if (Model.HasLocateRequest)
+            {
+                @Html.Action("LocateBidPanel", "Locate", new { Area = "Project", bdco = Model.BDCo, bidId = Model.BidId })
+            }
+            else
+            {
+                @Html.Partial("../Locate/Request/Create/_Modal")
+                <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#newLocateRequest" data-bdco="@Model.BDCo" data-bidid="@Model.BidId">
+                    Request Locate
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="col-lg-5">
+            @if (Model.HasLocateRequest)
+            {
+                @Html.Action("LocateBidPanel", "Locate", new { Area = "Project", bdco = Model.BDCo, bidId = Model.BidId })
+            }
+            else
+            {
+                @Html.Partial("../Locate/Request/Create/_Modal")
+                <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#newLocateRequest" data-bdco="@Model.BDCo" data-bidid="@Model.BidId">
+                    Request Locate
+                </button>
+            }
+        </div>
+    }
+</div>
+
+
+<script>
+    function isUpdating() {
+        var form = $('#@formId')
+        setTimeout(function () {
+            var isUpd = $(form).attr('data-fieldupdating');
+            if (isUpd === "true") {
+                console.log('Form updating...');
+                isUpdating();
+            }
+            else {
+                var attId = "#panel_@Model.UniqueAttchID";
+                var attPanel = $(attId).closest(".panel");
+                console.log('Form complete...');
+                setTimeout(function () { $(attPanel).find('[data-click="panel-reload"]').click(); }, 1000);
+            }
+        }, 250);
+    }
+    $('#@formId').ready(function () {
+        Form().init($('#@formId'));
+
+
+        $('#@formId').on('change', '.BidType', function () {
+            lockFieldSet($('#@formId'));
+            setTimeout(function () { location.reload(); }, 250);
+        });
+
+        $('#@formId').on('change', '.Description', function () {
+            isUpdating();
+        });
+        $('#@formId').on('change', '.FirmNumber', function () {
+            isUpdating();
+        });
+
+        $("#@(formId)").on('change', '.GPS, .Description', function () {
+
+            function callbackFunc() {
+                loadMap();
+                //setTimeout(function () { $(attPanel).find('[data-click="panel-reload"]').click(); }, 1000);
+            }
+
+            function loadMap() {
+                var mapId = $("#@(formId)").find('[name="MapSetId"]').val();
+                console.log("Load Map", mapId);
+                var data = {
+                    mapSetId: mapId
+                };
+                var url = "@(Url.Action("Panel", "Map", new { Area = "Google" }))";
+
+                var settings = {
+                    targetId: "bid_map",
+                    ajaxUrl: url,
+                    ajaxData: data,
+                };
+                console.log(settings);
+                handlePartialAjax(settings);
+            }
+
+            setTimeout(function () {
+                Form().isUpdating($("#@(formId)"), callbackFunc);
+            }, 10);
+
+        });
+    });
+
+
+</script>

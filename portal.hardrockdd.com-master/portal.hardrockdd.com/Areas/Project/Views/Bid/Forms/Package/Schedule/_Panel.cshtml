@@ -1,0 +1,12 @@
+﻿@model portal.Areas.Project.Models.Bid.Package.ScheduleListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div id="@panelId" class="row">
+    <div class="col-xl-6">
+        @Html.Partial("Forms/Package/Schedule/List/_Panel", Model)
+    </div>
+    <div class="col-xl-6" id="PackageScheduleListViewModel">
+
+    </div>
+</div>

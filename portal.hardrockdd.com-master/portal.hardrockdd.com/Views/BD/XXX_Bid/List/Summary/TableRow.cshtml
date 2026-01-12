@@ -1,0 +1,43 @@
+﻿@model portal.Models.Views.Bid.BidTrackerViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+
+    var user = new portal.Models.Views.Web.WebUserViewModel(StaticFunctions.GetUserId());
+}
+    <tr data-entitykey="@entityKey">
+        <td data-search="@Model.Status">
+            <span class="label @Model.StatusClass">
+                @Model.Status
+            </span>
+        </td>
+        <td data-sort="@Model.BidDate.ToString("yyyyMMdd")">@(Model.BidDate.ToShortDateString())</td>
+        <td>@Model.FirmName</td>
+        <td>@Model.Description</td>
+        <td data-search="@Model.Division">@Model.Division</td>
+        <td>@Model.PipeSize</td>
+        <td>@(string.Format(AppCultureInfo.CInfo(), "{0:N0}", Model.Footage))</td>
+        <td class="font-weight-bold">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", Model.DirtRevenue))</td>
+        <td class="font-weight-bold">@(string.Format(AppCultureInfo.CInfo(), "{0:C2}", Model.RockRevenue))</td>
+        <td>@Model.AssigedTo</td>
+        <td>@Model.CreatedUser</td>
+        <td>@Model.SearchString</td>
+        <td>
+            @Html.AntiForgeryToken()
+            <div class="btn-group pull-right ">
+                @if (Model.Status == DB.BidStatusEnum.Proposal && Model.AssigedTo != null)
+                {
+                    if (Model.AssigedTo.Contains(user.FullName))
+                    {
+                        <button type="button" class="btn btn-danger btnstatus" data-co="@Model.BDCo" data-bidid="@Model.BidId" data-url="@Url.Action("SubmitForNotAwarded","BidWizard")"><i class='fas fa-thumbs-down'></i></button>
+                        <button type="button" class="btn btn-primary btnstatus" data-co="@Model.BDCo" data-bidid="@Model.BidId" data-url="@Url.Action("SubmitForContractApproval","BidWizard")"><i class='fas fa-thumbs-up'></i></button>
+                    }
+                }
+            </div>
+        </td>
+        <td>
+            <div class="btn-group pull-right ">
+                <a class='btn btn-success' href='@Url.Action("Index", "BidWizard", new { bdco = @Model.BDCo, BidId = @Model.BidId  })'><i class='fas fa-pencil'></i></a>
+            </div>
+        </td>
+    </tr>

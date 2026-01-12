@@ -1,0 +1,45 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentSpecViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("UpdateSpec", "EquipmentForm")"
+      data-urlvalidate="@Url.Action("ValidateSpec", "EquipmentForm")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.TareWeight)
+        @Html.EditorFor(m => m.GrossVehicleWeight)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Height)
+        @Html.EditorFor(m => m.Width)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Wheelbase)
+        @Html.EditorFor(m => m.OverallLength)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.NoAxles)
+        @Html.EditorFor(m => m.TireSize)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.HorsePower)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

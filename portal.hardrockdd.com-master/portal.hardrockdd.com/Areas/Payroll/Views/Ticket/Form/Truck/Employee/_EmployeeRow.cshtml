@@ -1,0 +1,14 @@
+﻿@model List<portal.Areas.Payroll.Models.Ticket.EmployeeEntryViewModel>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+    if (i == 0)
+    {
+        @Html.Partial("Form/Truck/Employee/_TableRowFirst", Model[i])
+    }
+    else
+    {
+        @Html.Partial("Form/Truck/Employee/_TableRow", Model[i])
+    }
+    @Html.Partial("Form/Truck/Employee/_TableCommentRow", Model[i])
+}

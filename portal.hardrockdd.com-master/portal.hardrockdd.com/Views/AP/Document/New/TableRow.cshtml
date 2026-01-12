@@ -1,0 +1,30 @@
+﻿@model portal.Models.Views.AP.Document.vDocumentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = true;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Model.Source;
+    </td>
+    <td data-search="@Model.MthDate.ToString("MMMM")">
+        @Model.AllMth;
+    </td>
+    <td class="f-s-9 text-wrap">
+        @Model.DocumentName;
+    </td>
+    <td>
+        @Model.CreatedByUser;
+    </td>
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.APCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.DocId, new { @id = Guid.NewGuid() })
+        <button class="btn btn-danger pull-right delRow"
+                data-entitykey="@entityKey">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+</tr>

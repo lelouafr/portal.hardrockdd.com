@@ -1,0 +1,387 @@
+﻿@model portal.Models.Views.Bid.Wizard.FinalReview.BidWizardFormViewModel
+
+@{
+    ViewBag.Title = "Bid Final Review";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+@section styles {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
+    @Styles.Render("~/csspage/inputcontrols")
+    <link href="~/Content/assets/plugins/smartwizard/css/smart_wizard.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/smartwizard/css/smart_wizard_theme_circles.css" rel="stylesheet" />
+    <link href="~/Content/assets/plugins/smartwizard/css/smart_wizard_theme_arrows.css" rel="stylesheet" />
+}
+
+<ol class="breadcrumb pull-right">
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home" )">Home</a></li>
+    <li class="breadcrumb-item active">@ViewBag.Title</li>
+</ol>
+<h1 class="page-header">@ViewBag.Title </h1>
+<div class="row">
+    <div class="col-lg-12 m-b-10">
+        @Html.AntiForgeryToken()
+        <a class='btn btn-primary' href='@Url.Action("EstimateWizard", "BidWizard", new { Area = "",co = @Model.Co, BidId = @Model.BidId  })'>View Estimate</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="form-group has-feedback">
+            <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+            </div>
+        </div>
+        <div id="wizard">
+            @Html.AntiForgeryToken()
+            <ul>
+                <li>
+                    <a href="#step1" data-validate="true">
+                        <span class="number">1</span>
+                        <span class="info text-ellipsis">
+                            Project Info
+                            <small class="text-ellipsis">Customer, Owner and location</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step2" data-validate="true">
+                        <span class="number">2</span>
+                        <span class="info text-ellipsis">
+                            Bore Info
+                            <small class="text-ellipsis">Bore lines</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step3" data-validate="false">
+                        <span class="number">3</span>
+                        <span class="info text-ellipsis">
+                            Package Details
+                            <small class="text-ellipsis">Rates and Cost Items</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step4" data-validate="true">
+                        <span class="number">4</span>
+                        <span class="info text-ellipsis">
+                            Bore Production Details
+                            <small class="text-ellipsis">Bore Production Rates and Cost Items</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step5" data-validate="false">
+                        <span class="number">5</span>
+                        <span class="info text-ellipsis">
+                            Bid Summary
+                            <small class="text-ellipsis">Bid Cost Summary</small>
+                        </span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#step6" data-validate="true">
+                        <span class="number">6</span>
+                        <span class="info text-ellipsis">
+                            Cost and Revenue
+                            <small class="text-ellipsis">Total Cost and Revenue of the bid</small>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step7">
+                        <span class="number">7</span>
+                        @if (Model.Bid.Status == DB.BidStatusEnum.FinalReview)
+                        {
+                            <span class="info text-ellipsis">
+                                Submit for Proposal
+                                <small class="text-ellipsis"></small>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="info text-ellipsis">
+                                Proposal
+                                <small class="text-ellipsis"></small>
+                            </span>
+                        }
+                    </a>
+                </li>
+            </ul>
+            <div>
+                <div id="step1" data-validate="true">
+                    <div class="row">
+                        <div class="col-xl-8">
+                            @Html.Partial("../BD/Bid/Form/Panel", Model.Bid)
+                        </div>
+                        <div class="col-xl-4">
+                            @Html.Partial("../BD/Bid/Customer/List/Panel", Model.Customers)
+                        </div>
+                    </div>
+                </div>
+                <div id="step2" data-validate="true">
+                    <div class="row">
+                        <div class="col-xl-5">
+                            @Html.Partial("../BD/Bid/Wizard/Estimate/Package/Panel", Model.Packages)
+                        </div>
+                        <div class="col-xl-7" id="BidBoreLineSelect">
+
+                        </div>
+                    </div>
+                </div>
+                <div id="step3" data-validate="true" data-stepurl="">
+                    @*@Html.Partial("../BidPackageProductionRate/Estimate", Model.Packages)*@
+                </div>
+                <div id="step4" data-validate="true">
+                    @*@Html.Partial("../BidBoreLine/Estimate", Model.Packages)*@
+
+                </div>
+                <div id="step5" data-validate="false">
+                    @*@Html.Partial("BidSummary", Model.Packages)*@
+                </div>
+                <div id="step6" data-validate="false">
+                    @*@Html.Partial("../BD/Bid/Wizard/FinalReview/Summary/Panel", Model.Packages)*@
+                </div>
+                <div id="step7">
+                    @if (Model.Bid.Status == DB.BidStatusEnum.FinalReview)
+                    {
+                        @Html.Partial("../BD/Bid/WorkFlow/Panel", Model.FlowSubmit)
+                    }
+                    else
+                    {
+
+                        <div class="row">
+                            <div class="col-8">
+                                @Html.Action("Panel", "BidProposal", new { Area = "",Co = Model.Co, BidId = Model.BidId })
+                            </div>
+                            <div class="col-4">
+                                @Html.Partial("../BD/Bid/Customer/ProposalList/Panel", Model.Customers)
+                            </div>
+                        </div>
+                    }
+                    @*<div class="jumbotron m-b-0 text-center">
+                            <p>
+                                <a href="@Url.Action("SalesReview","BidWizard", new { Area = "",co = Model.Co, bidId = Model.BidId })" class="btn btn-danger btn-lg">Send Back for Sales Review</a>
+                                <a href="@Url.Action("ProposalSubmit","BidWizard", new { Area = "",co = Model.Co, bidId = Model.BidId })" class="btn btn-primary btn-lg">Send for Proposal.</a>
+                                @Html.Partial("../BD/Bid/WorkFlow/Panel", Model.FlowSubmit)
+                            </p>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="col-2">
+            @Html.Partial("../BidWorkFlowTimeLine/Form", Model.WorkFlows)
+        </div>*@
+</div>
+<br />
+<div class="row">
+    <div class="col-lg-5">
+        @Html.Partial("../Forum/Panel", Model.Forum)
+    </div>
+    <div class="col-lg-7">
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/keytable/2.5.3/js/dataTables.keyTable.min.js"></script>
+    <script src="~/Content/assets/plugins/smartwizard/js/jquery.smartWizard.js"></script>
+    <script src="~/Content/assets/plugins/arrow-table/arrow-table.js"></script>
+    @Scripts.Render("~/jspage/inputcontrols")
+    <script>
+        var ajaxInvoke = false;
+        $(document).ready(function () {
+            initPanels();
+            if ('@viewOnly' == 'True') {
+                var wizard = $('#wizard').smartWizard();
+            }
+            else {
+                var wizard = $('#wizard').smartWizard({
+                    toolbarSettings: {
+                        toolbarExtraButtons: [
+                            $('<button class="pull-left"></button>')
+                                .text('Send Back to Sales Review')
+                                .addClass('btn btn-danger')
+                                .on('click', function () {
+                                    var token = $("#wizard").find('[name="__RequestVerificationToken"]');
+                                    var data = {
+                                        __RequestVerificationToken: token.val(),
+                                        co: @Model.Co,
+                                        bidId: @Model.BidId,
+                                        bidStatus: @((int)DB.BidStatusEnum.SalesReview)
+                                        };
+                                    var url = '@Url.Action("ChangeStatus", "Bid")';
+                                    $.post(url, data, function (res) {
+                                         window.location.href = document.referrer;;
+                                    });
+                                })
+                        ]
+                    },
+                });
+            }
+        });
+
+        $('#wizard').on('leaveStep', function (e, anchorObject, stepNumber, stepDirection) {
+            var func = function (button, stepNumber) {
+                $(button).Busy()
+                if (stepNumber == 1) {
+                    step = $('#step' + (stepNumber + 2));
+                    step.html("<div class='spinner'></div>");
+                    //IndexWizard
+                    var url = '@Url.Action("PackageDetails", "BidPackageProductionRate")';
+                    var data = {
+                        co: '@Model.Co',
+                        bidId: '@Model.BidId'
+                    };
+                    $.ajax({
+                        type: "Get",
+                        dataType: "html",
+                        url: url,
+                        data: data,
+                        async: false,
+                        success: function (data) {
+                            //console.log(data);
+                            step.html(data);
+                            $(button).NotBusy()
+                            return true;
+                        },
+                        error: function () {
+                            c//onsole.log("error");
+                            $(button).NotBusy()
+                            return false;
+                        }
+                    });
+                }
+                else if (stepNumber == 2) {
+                    step = $('#step' + (stepNumber + 2));
+                    //IndexWizard
+                    var token = $("#wizard").find('[name="__RequestVerificationToken"]');
+                    var url = '@Url.Action("ApplyAllDefault", "BidPackageProductionRate")';
+                    var data = {
+                        __RequestVerificationToken: token.val(),
+                        co: '@Model.Co',
+                        bidId: '@Model.BidId'
+                    };
+                    step.html("<div class='spinner'></div>");
+                    $.ajax({
+                        type: "Post",
+                        dataType: "json",
+                        url: url,
+                        data: data,
+                        async: false,
+                        success: function (data) {
+                            errors = false;
+                            url = '@Url.Action("PackageBidBoreLineDetails","BidPackageEstimateWizard")';
+                            data = {
+                                co: '@Model.Co',
+                                bidId: '@Model.BidId'
+                            };
+                            $.ajax({
+                                type: "Get",
+                                dataType: "html",
+                                url: url,
+                                data: data,
+                                async: false,
+                                success: function (data) {
+                                    step.html(data);
+                                    $(button).NotBusy()
+                                    return true;
+                                },
+                                error: function () {
+                                    //console.log("error");
+                                    $(button).NotBusy()
+                                    return false;
+                                }
+                            });
+                        },
+                        error: function () {
+                            errors = true;
+                            $(button).NotBusy()
+                        }
+                    });
+                }
+                else if (stepNumber == 3) {
+                    step = $('#step' + (stepNumber + 2));
+                    step.html("<div class='spinner'></div>");
+                    var url = '@Url.Action("BidSummary","BidWizard")';
+                    var data = {
+                        co: '@Model.Co',
+                        bidId: '@Model.BidId'
+                    };
+                    $.ajax({
+                        type: "Get",
+                        dataType: "html",
+                        url: url,
+                        data: data,
+                        async: false,
+                        success: function (data) {
+                            step.html(data);
+                            $(button).NotBusy()
+                            return true;
+                        },
+                        error: function () {
+                            //console.log("error");
+                            $(button).NotBusy()
+                            return false;
+                        }
+                    });
+                }
+                else if (stepNumber == 4) {
+                    step = $('#step' + (stepNumber + 2));
+                    step.html("<div class='spinner'></div>");
+                    var url = '@Url.Action("FinalReviewIndex", "BidPackagePricing")';
+                    var data = {
+                        co: '@Model.Co',
+                        bidId: '@Model.BidId'
+                    };
+                    $.ajax({
+                        type: "Get",
+                        dataType: "html",
+                        url: url,
+                        data: data,
+                        async: false,
+                        success: function (data) {
+                            step.html(data);
+                            $(button).NotBusy()
+                            return true;
+                        },
+                        error: function () {
+                            //console.log("error");
+                            $(button).NotBusy()
+                            return false;
+                        }
+                    });
+                }
+            }
+            if (stepDirection == 'forward') {
+                var stepElem = $('#step' + (stepNumber + 1));
+                var isValid = $(stepElem).attr('data-isvalid') == 'true';
+                var button = this;
+                var validate = $(stepElem).data('validate');
+                if (validate && !isValid) {
+                    $(stepElem).PostValidate(button, function (valid) {
+                        $(stepElem).attr('data-isvalid', valid);
+                        if (valid && isValid) {
+                            func(button, stepNumber);
+                        }
+                        else if (valid && !isValid) {
+                            $('.sw-btn-next').click();
+                        }
+                    });
+                }
+                else {
+                    $(stepElem).attr('data-isvalid', true);
+                    if (isValid) {
+                        func(button, stepNumber);
+                    }
+                    else if (!isValid) {
+                        $('.sw-btn-next').click();
+                    }
+                }
+                return isValid;
+            }
+	    });
+    </script>
+}
+

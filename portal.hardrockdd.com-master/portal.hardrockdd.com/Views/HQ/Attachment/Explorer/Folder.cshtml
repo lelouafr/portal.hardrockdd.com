@@ -1,0 +1,18 @@
+﻿@model portal.Models.Views.HQ.Attachment.FileExplorerListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var breadCrumbId = panelId.Replace('-', '_');
+    var tableId = string.Format("table_{0}_{1}", Model.UniqueAttchId, Model.FolderId);
+}
+<div class="row" style="overflow:visible;">
+    <div class="col-12 p-1">
+        @Html.Partial("../HQ/Attachment/Explorer/BreadCrumb", Model)
+    </div>
+    <div class="col-xl-12">
+        @Html.Partial("../HQ/Attachment/Explorer/DropZone", Model)
+    </div>
+    <div class="col-xl-12">
+        @Html.Partial("../HQ/Attachment/Explorer/FilePreview", Model)
+    </div>
+</div>

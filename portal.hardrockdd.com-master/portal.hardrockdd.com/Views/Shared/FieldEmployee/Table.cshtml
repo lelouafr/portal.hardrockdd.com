@@ -1,0 +1,32 @@
+﻿@model List<portal.Models.Views.DailyTicket.DailyJobEmployeeViewModel>
+@{ 
+    ViewBag.TableRow = "True";
+}
+
+<table class="table"
+       id="employeeTable"
+       data-urlcreate="@Url.Action("Add", "DailyEmployee")"
+       data-urldelete="@Url.Action("Delete", "DailyEmployee")"
+       data-urlupdate="@Url.Action("Update", "DailyEmployee")"
+       data-ticketid="@Model.FirstOrDefault().TicketId">
+    <thead>
+        <tr>
+            <th width="45%">@Html.LabelForRequired(model => model.FirstOrDefault().EmployeeId)</th>
+            <th width="15%">@Html.LabelForRequired(model => model.FirstOrDefault().Hours)</th>
+            <th width="25%">@Html.LabelForRequired(model => model.FirstOrDefault().Perdiem)</th>
+            @*<th width="15%">@Html.LabelForRequired(model => model.FirstOrDefault().EarnCodeId)</th>*@
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model)
+        {
+            @Html.EditorFor(o => obj, "Table/TableRow")
+        }
+    </tbody>
+</table>
+@*<script src="~/Scripts/views/DailyTicket/Employee/script.js"></script>*@

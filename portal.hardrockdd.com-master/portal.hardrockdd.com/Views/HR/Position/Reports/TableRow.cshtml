@@ -1,0 +1,26 @@
+﻿@model portal.Models.Views.HR.Position.PositionViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = tableLayout.TableKey;
+    var classStr = "";
+}
+
+<tr data-rowkey="@rowKey">
+    <td class="@classStr">
+        @Html.AntiForgeryToken()
+        @Html.EditorFor(m => m.HRCo, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.PositionCodeId, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.Description, new { DisplayOnly = true })
+    </td>
+    <td class="@classStr">
+        @Html.EditorFor(m => m.OpenJobs, new { DisplayOnly = true })
+    </td>
+    <td>
+
+    </td>
+</tr>

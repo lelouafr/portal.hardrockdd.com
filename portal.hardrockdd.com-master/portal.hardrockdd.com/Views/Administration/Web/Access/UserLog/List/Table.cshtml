@@ -1,0 +1,43 @@
+﻿@model portal.Models.Views.Web.UserAccessLogListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+}
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().UserName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().LogDate)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().AccessLevel)</th>
+            <th></th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List.OrderBy(f => f.UserName).ToList())
+        {
+            @Html.Partial("../Administration/Web/Access/UserLog/List/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: true,
+            pageLength: 10,
+            ordering: true,
+            columnDefs: [
+                { targets: 3, visible: false },
+            ],
+            order: [
+                [0, "asc"]
+            ],
+        });
+    });
+
+</script>

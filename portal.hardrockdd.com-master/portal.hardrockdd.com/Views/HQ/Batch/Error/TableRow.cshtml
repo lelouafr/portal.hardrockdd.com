@@ -1,0 +1,23 @@
+﻿@model portal.Models.Views.HQ.Batch.BatchErrorViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Model.Co
+    </td>
+    <td>
+        @Model.BatchId
+    </td>
+    <td>
+        @Model.Mth.ToShortDateString()
+    </td>
+    <td>
+        @Model.Seq
+    </td>
+    <td>
+        @Model.ErrorText
+    </td>
+</tr>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+	<Runtime>
+		<Mappings>
+			<Mapping Space="C-S" >
+				<EntityContainerMapping StorageEntityContainer="ViewpointModelStoreContainer" CdmEntityContainer="VPEntities">
+				</EntityContainerMapping>
+			</Mapping>
+		</Mappings>
+	</Runtime>
+</Edmx>

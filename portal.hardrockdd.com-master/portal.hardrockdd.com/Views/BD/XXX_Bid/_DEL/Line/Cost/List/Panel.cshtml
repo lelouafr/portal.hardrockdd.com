@@ -1,0 +1,57 @@
+﻿@model portal.Models.Views.Bid.BoreLine.CostItemListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+<div class="panel panel-inverse"
+     id="BidBoreLineCostItemListViewModel"
+     data-reloadurl="@Url.Action("PanelTabs", "BidBoreLineCostItem", new { co = Model.Co, bidId = Model.BidId, boreId = Model.BoreId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+            
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
+        </div>
+        @if (!viewOnly)
+        {
+            <div class="btn-group pull-right pr-2">
+                <button type="button" class="btn btn-success btn-xs">Menu</button>
+                <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:CalculateUnits()">Calculate Units</a></li>
+                </ul>
+            </div>
+        }
+        <h4 class="panel-title">Bore Line Cost Items</h4>
+    </div>
+    <div class="panel-body" id="BoreLineCostItems">
+        @Html.Partial("../BD/Bid/Line/Cost/List/Tabs", Model)
+    </div>
+</div>
+<script>
+    function CalculateUnits() {
+        var table = $('#BoreLineCostItems').find('table');
+        var url = $(table).data('urlcalculate');
+        var data = table.data('tablekey');
+        var token = $(table).find('[name="__RequestVerificationToken"]');
+        if (token.length != 0) {
+            data += '&__RequestVerificationToken=' + token.val();
+        }
+
+        $.ajax({
+            type: "Post",
+            dataType: "json",
+            url: url,
+            data: data,
+            success: function (data) {
+                var panel = $(table).closest('.panel');
+                var reload = $(panel).find('[data-click=panel-reload]');
+                $(reload).click();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //console.log(XMLHttpRequest);
+            }
+        });
+    }
+</script>

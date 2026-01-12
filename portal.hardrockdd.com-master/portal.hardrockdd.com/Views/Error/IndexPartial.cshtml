@@ -1,0 +1,29 @@
+﻿@model portal.Models.Views.Web.ErrorLogViewModel
+<div class="panel panel-danger" data-sortable-id="@(Guid.NewGuid())">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+        </div>
+        <h4 class="panel-title">Error 500</h4>
+    </div>
+    <div class="panel-body">
+        <div class="error">
+            <div class="" style="padding-top:0px">
+                <div class="">Internal Server Error</div>
+                <div class="">
+                    The server encountered something unexpected that didn't allow it to complete the request. We apologize. <br />
+                    Error Log Id: @Model.ErrorId<br />
+                </div>
+            </div>
+        </div>
+        <div class="card" style="overflow:visible;">
+            <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#ErrorDetails">
+                <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Details
+            </div>
+            <div id="ErrorDetails" class="collapse">
+                <div class="card-body">
+                    @Html.Partial("../Administration/ErrorLog/Form/Form", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

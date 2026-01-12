@@ -1,0 +1,44 @@
+﻿@model portal.Areas.Payroll.Models.Crew.CrewViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("CrewUpdate", "Crew")"
+      data-urlvalidate="@Url.Action("CrewValidate", "Crew")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.PRCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewId, new { ViewOnly = true })
+        @Html.EditorFor(m => m.Status)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewType)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.JobId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.CrewLeaderId)
+    </div>
+</form>
+<script>
+
+    $('#@formId').ready(function () {
+        var $form = $('#@formId');
+        Form().init($form);
+    });
+
+
+</script>

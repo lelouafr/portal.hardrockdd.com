@@ -1,0 +1,52 @@
+﻿@model portal.Models.Views.SM.RequestLine.EquipmentLineViewModel
+@{
+    ViewBag.DisplayOnly = "True";
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    ViewBag.TableRow = true;
+    var entityKey = tableLayout.TableKey;
+}
+
+<tr data-entitykey="@entityKey">
+
+    <td>
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.EMCo, new { ViewOnly = true })
+    </td>
+    <td data-search="@Model.RequestDate.ToShortDateString()" data-order="@Model.RequestDate.ToString("yyyy-MM-dd")">
+        @Html.EditorFor(m => m.RequestDate, new { ViewOnly = true })
+    </td>
+    <td>
+        @Model.EquipmentId
+    </td>
+    <td>
+        @Model.EquipmentName
+    </td>
+    <td data-search="@Model.RequestedUser" data-order="@Model.RequestedUser">
+        @Model.RequestedUser
+    </td>
+    <td>
+        @Model.Status
+    </td>
+</tr>
+@*<tr>
+    <td>
+        @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.LineId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.EquipmentName, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestedUser, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.RequestDate, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Status, new { @id = Guid.NewGuid() })
+
+    </td>
+    <td colspan="5">
+        @Html.EditorFor(m => m.Comments, new { ViewOnly = true })
+    </td>
+</tr>*@

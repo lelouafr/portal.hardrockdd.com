@@ -1,0 +1,43 @@
+﻿@model portal.Models.Views.AP.Payment.InvoicePaymentViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var entityKey = tableLayout.TableKey;
+    ViewBag.TableRow = "True";
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.VendorGroup, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.BatchId, new { @id = Guid.NewGuid() })
+        @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.APCo, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CMCo, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CMAcct, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.PayMethod, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.CMRef, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Vendor, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Name, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.ChkType, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.PaidDate, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.Amount, new { DisplayOnly = true })
+    </td>
+</tr>

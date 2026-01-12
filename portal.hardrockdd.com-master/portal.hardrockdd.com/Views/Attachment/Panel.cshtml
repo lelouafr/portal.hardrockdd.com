@@ -1,0 +1,187 @@
+﻿@model portal.Models.Views.Attachment.AttachmentListViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+}
+
+<style>
+    #googlemap {
+        width: 100%;
+        height: 400px;
+        background-color: grey;
+    }
+    .file-container {
+        /*position: relative;
+        display: inline-block;*/ /* added */
+        /*overflow: hidden;*/ /* added */
+    }
+    .iframe-fullScreen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .iframe-container {
+        width: 100%;
+        height: 470px;
+    }
+        .file-container .tagged {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 15px;
+            color: green;
+        }
+
+        .file-container iframe {
+            width: 100%;
+        }
+
+        .file-container:hover button {
+            opacity: 1; /* added */
+        }
+
+    .file-container button {
+        position: absolute;
+        opacity: 1;
+        /*top: 50px;*/
+        left: 100%;
+        /*transform: translate(-200%, 41px);*/
+        transform: translate(-125%, -125%);
+        /* -ms-transform: translate(-100%, -100%);*/
+        text-align: center;
+    }
+</style>
+
+@*<div class="row">
+        <div id="treePanel" class="col-xl-12">
+            <div class="panel panel-inverse"
+                 data-sortable-id="AttachmentListViewModel"
+                 data-reloadurl="@Url.Action("Table", "Attachment", new { co = Model.Co, tableName = Model.TableName, keyId = Model.KeyID, uniqueAttchID = Model.UniqueAttchID})">
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                        
+                    </div>
+                    <h4 class="panel-title">Attachments</h4>
+                </div>
+                <div class="panel-body" id="AttachmentListViewModel">
+                    @Html.Partial("../Attachment/Table", Model)
+                </div>
+            </div>
+        </div>
+        <div id="previewPanel" class="col-xl-12">
+            <div id="data" class="panel panel-inverse">
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        
+                        
+                    </div>
+                    <h4 class="panel-title">File Preview</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="code" style="display: none;"><textarea id="code" readonly="readonly"></textarea></div>
+                    <div class="folder" style="display: none;"></div>
+                    <div class="file" style="display: none;">
+                        <iframe id="preview" frameborder="0" style="width: 100%; height: 470px;" allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="image" style="position: relative; display: none;">
+                        <img src="data:inode/x-empty;base64,"
+                             data-magnify="gallery"
+                             alt=""
+                             style="display:block; left:50%; top:50%; padding:0; max-height:90%; max-width:90%; cursor: zoom-in;">
+                        <p>Click image to enlarge</p>
+                    </div>
+                    <div class="google-map" style="position: relative; display: none;">
+
+                        <div id="googlemap">
+
+                        </div>
+                        <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+                    </div>
+                    <div class="default" style="text-align: center; display: none;">
+                        <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div class="row">
+    <div id="treePanel" class="col-xl-12">
+        <div class="accordion">
+            <div class="card">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#card_treePanel">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Attachments
+                </div>
+                <div id="card_treePanel" class="show">
+                    <div class="card-body" style=" padding: 0px;">
+                        @Html.Partial("../Attachment/Table", Model)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="previewPanel" class="col-12">
+        <div class="accordion">
+            <div class="card" style="overflow: hidden; ">
+                <div class="card-header bg-dark-darker pointer-cursor d-flex align-items-center" data-toggle="collapse" data-target="#card_previewPanel">
+                    <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> File Preview
+                </div>
+                <div id="card_previewPanel" class="show">
+                    <div id="data"  class="card-body" style=" padding: 0px;">
+                        <div class="code" style="display: none;"><textarea id="code" readonly="readonly"></textarea></div>
+                        <div class="folder" style="display: none;"></div>
+                        <div class="file file-container iframe-container" style="display: none;">
+                            <button class="btn btn-sm btn-icon btn-circle btn-dark btnExpand"
+                                    type="button">
+                                <span><i class="fa fa-expand"></i></span>
+                            </button>
+                            <iframe class="iframe-container" id="preview" frameborder="0" allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="image" style="position: relative; display: none; max-height: 500px;">
+                            <img src="data:inode/x-empty;base64,"
+                                    data-magnify="gallery"
+                                    alt=""
+                                    style="display:block; left:50%; top:50%; padding:0; max-height:50%; max-width:50%; cursor: zoom-in;">
+                            <p>Click image to enlarge</p>
+                        </div>
+                        <div class="google-map" style="position: relative; display: none;">
+
+                            <div id="googlemap">
+
+                            </div>
+                            <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+                        </div>
+                        <div class="default" style="text-align: center; display: none;">
+                            <a href='#' class="btn btn-primary btn-lg" target="_blank">Button</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //$('.btnExpand').on('click', function () {
+    //    event.stopPropagation();
+    //    console.log('I was clicked');
+    //    var button = $(this);
+    //    var container = $(button).closest('.card');
+    //    if ($(container).hasClass('card-expand')) {
+    //        $(container).removeClass('card-expand');
+    //    }
+    //    else {
+    //        $(container).addClass('card-expand');
+    //        //$(container).removeClass('iframe-container');
+    //        //$(container).addClass('iframe-fullScreen');
+    //    }
+    //    var containerHeight = $(container).height();
+    //    $(container).find('iframe').css("height", containerHeight + "px");
+    //});
+</script>

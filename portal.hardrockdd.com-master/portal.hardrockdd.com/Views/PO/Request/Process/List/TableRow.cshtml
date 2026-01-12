@@ -1,0 +1,38 @@
+﻿@model portal.Models.Views.Purchase.Request.PORequestSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+    <tr data-entitykey="@entityKey">
+        <td>
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.POCo, new { @id = Guid.NewGuid() })
+            @Html.HiddenFor(m => m.RequestId, new { @id = Guid.NewGuid() })
+            <span class="label @Model.StatusClass">
+                @Html.EditorFor(l => l.Status, new { DisplayOnly = true })
+            </span>
+        </td>
+        <td>
+            @Html.EditorFor(l => l.VendorName, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(l => l.PO, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(l => l.Cost, new { DisplayOnly = true })
+        </td>
+        <td>
+            @Html.EditorFor(l => l.CreatedUser, new { DisplayOnly = true })
+        </td>
+        <td>
+            @if (Model.ContainsErrors)
+            {
+                <i class="fas fa-exclamation-triangle fa-2x text-red pull-right "></i>
+                <div class="f-s-12 text-red"><p>@Model.ErrorMsg</p></div>
+            }
+            else
+            {
+                <div class="pull-right">@Html.EditorFor(l => l.CanProcess)</div>                
+            }
+        </td>
+    </tr>

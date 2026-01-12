@@ -1,0 +1,97 @@
+﻿@model portal.Models.Views.AR.Customer.CustomerListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<style>
+    .form-inline .form-control {
+        width: 100%;
+    }
+
+    th, td {
+        white-space: nowrap;
+    }
+
+    div.dataTables_wrapper {
+        margin: 0 auto;
+    }
+</style>
+<table class="table  order-column"
+       id="@tableId"
+       data-reloadurl="@Url.Action("Table", "Customer")"
+       data-dataurl="@Url.Action(ViewBag.DataAction, ViewBag.DataController)"
+       data-urlselect="@Url.Action("Panel", "Customer")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustGroupId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().CustomerId)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().Balance)</th>
+            <th data-datatable-filter-type="input">@Html.LabelForRequired(model => model.List.FirstOrDefault().LastInvoiceDate)</th>
+            <th data-datatable-filter-type="multiselect">@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        h = tableHeight($('#@tableId'), 100, 24.6);
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            ordering: true,
+            processing: true,
+            scrollY: 250,
+            scrollX: true,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "CustGroupId", visible: false },
+                { data: "CustomerId" },
+                { data: "Name" },
+                {
+                    data: "Balance",
+                    class: "text-right",
+                    render: $.fn.dataTable.render.number(',', '.', 0, '$')
+                },
+                {
+                    data: "LastInvoiceDate",
+                    class: "text-right",
+                    render: function (data, type) {
+                        //console.log(type, data);
+                        if (data == null) {
+                            return ""
+                        }
+                        return type === 'sort' ? moment(data).format("YYYY-MM-DD") : moment(data).format('L');
+                    }
+                },
+                { data: "Status" },
+            ],
+            order: [[3, "desc"]],
+            fnInitComplete: function () {
+                $('#@(tableId)_filter').hide();
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "CustGroupId=" + data.CustGroupId + "&CustomerId=" + data.CustomerId;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+    })
+</script>

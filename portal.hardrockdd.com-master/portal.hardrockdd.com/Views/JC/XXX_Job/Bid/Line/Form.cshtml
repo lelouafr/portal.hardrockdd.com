@@ -1,0 +1,56 @@
+﻿@model portal.Models.Views.Bid.BoreLineViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+
+    var formLayout = new FormLayoutModel(this);
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+
+<form class="form-horizontal"
+        id="@formId"
+        @*
+        data-urlcreate="@Url.Action("Add", "PurchaseOrder")"
+        data-urldelete="@Url.Action("Delete", "PurchaseOrder")"
+    data-urlupdate="@Url.Action("Update", "PurchaseOrder")"
+    data-urlvalidate="@Url.Action("Validate", "PurchaseOrder")"
+    data-postupdate="PostUpdate@(id)"
+            *@>
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.Co, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BidId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.BoreId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.GroundDensityId)
+        @Html.EditorFor(m => m.RigCategoryId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Footage)
+        @Html.EditorFor(m => m.PipeSize)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DirtCost)
+        @Html.EditorFor(m => m.RockCost)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.DirtDays)
+        @Html.EditorFor(m => m.RockDays)
+    </div>
+</form>
+
+<script>
+    function PostUpdate@(id)(elem) {
+    }
+</script>

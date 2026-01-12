@@ -1,0 +1,86 @@
+﻿@{
+    //var companyInfo = SystemFunc.GetCompanyInfo();
+    //var favIconUrl = string.Format("/Content/assets/img/favicon/{0}-favicon.png", companyInfo.CompanyName.Replace(" ", "").ToLower());
+}
+<!DOCTYPE html>
+<html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <title>@ViewBag.Title </title>
+    <!-- Favicon -->
+    @*<link rel="shortcut icon" href="@favIconUrl">*@
+    <link rel="shortcut icon" href="~/Content/assets/img/logo/favicon.png">
+
+    <!-- ================== BEGIN BASE CSS STYLE ================== -->
+    @Styles.Render("~/cssbase/font-google")
+    @Styles.Render("~/cssbase/theme")
+    @Styles.Render("~/cssbase/style")
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-9ZfPnbegQSumzaE7mks2IYgHoayLtuto3AS6ieArECeaR8nCfliJVuLh/GaQ1gyM" crossorigin="anonymous">
+
+    @*@Styles.Render("~/cssbase/font-awesome")*@
+    @*@Styles.Render("~/cssbase/notifications")*@
+    @*<link href="~/Content/assets/plugins/dropzone/min/dropzone.min.css" rel="stylesheet" />*@
+    <!-- ================== END BASE CSS STYLE ================== -->
+    <!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+
+    @if (IsSectionDefined("Styles"))
+    {
+        @RenderSection("Styles", required: false)
+    }
+    <!-- ================== END PAGE LEVEL STYLE ================== -->
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/pageloader")
+    @Scripts.Render("~/jsbase/jquery")
+    <!-- ================== END BASE JS ================== -->
+</head>
+<body>
+    <div id="page-loader" class="fade show"><span class="spinner"></span></div>
+    <div id="page-container" class="fade">
+        <div id="content" class="p-10">
+            @RenderBody()
+        </div>
+        <div class="ControllerId">
+            <input type="hidden" id="controllerTokenId" name="controllerTokenId" value="@ViewBag.ControllerActionToken">
+        </div>
+    </div>
+    <!-- ================== BEGIN BASE JS ================== -->
+    @Scripts.Render("~/jsbase/bootstrap")
+    <!--[if lt IE 9]>
+        @Scripts.Render("~/jsbase/ie9")
+    <![endif]-->
+    @Scripts.Render("~/jsbase/slimScroll")
+    @Scripts.Render("~/jsbase/lsCache")
+    @Scripts.Render("~/jsbase/jscookie")
+    @Scripts.Render("~/jsbase/theme")
+    @*@Scripts.Render("~/jsbase/notifications")*@
+    @*@Scripts.Render("~/jspage/dropZone")*@
+    <!-- ================== END BASE JS ================== -->
+    <!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    @RenderSection("scripts", required: false)
+    <!-- ================== END PAGE LEVEL JS ================== -->
+    <script>
+        //Dropzone.autoDiscover = false;
+        $(document).ready(function () {
+            App.init();
+            //App.initControllerToken();
+            lscache.enableWarnings(true);
+            $('#page-container').addClass(lscache.get('SideBar'));
+            $("#auditLog").draggable({
+                handle: ".modal-dialog"
+            });
+        });
+
+        function LogOff() {
+            var url = '@Url.Action("LogOff", "Account")'
+            $.post(url).done(function (res) {
+                window.location.href = res.url;
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+﻿@model portal.Models.Views.Equipment.EquipmentListViewModel
+<div class="panel panel-inverse"
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("Table","Equipment")">
+    <div class="panel-heading">
+        <h4 class="panel-title">Equipment List</h4>
+    </div>
+    <div class="panel-body" id="EquipmentListViewModel">
+        @Html.Partial("../EM/Equipment/Summary/BasicList/Table", Model)
+    </div>
+</div>

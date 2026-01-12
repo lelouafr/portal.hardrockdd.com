@@ -1,0 +1,33 @@
+﻿@model portal.Models.Views.Bid.BidUserSummaryViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        <span class="label @Model.StatusClass">
+            @Html.EditorFor(l => l.Status, new { DisplayOnly = true })
+        </span>
+    </td>
+    <td data-order="@Model.DueDate.ToString("MM/dd/yyyy")">
+        @Html.EditorFor(l => l.DueDate, new { DisplayOnly = true })
+    </td>
+    <td data-order="@Model.BidDate.ToString("MM/dd/yyyy")">
+        @Html.EditorFor(l => l.BidDate, new { DisplayOnly = true })
+    </td>
+    <td class="hidden-xs hidden-sm">
+        @Html.EditorFor(l => l.FirmName, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.Description, new { DisplayOnly = true })
+    </td>
+    <td class="hidden-xs hidden-sm">
+        @Html.EditorFor(l => l.CreatedUser, new { DisplayOnly = true })
+    </td>
+    <td>
+        <div class="pull-right button-group">
+            <a class='btn btn-primary' href='@Url.Action("Index", "BidWizard", new { bdco = @Model.BDCo, BidId = @Model.BidId  })' target="_blank"><i class='fas fa-pencil'></i></a>
+
+        </div>
+    </td>
+</tr>

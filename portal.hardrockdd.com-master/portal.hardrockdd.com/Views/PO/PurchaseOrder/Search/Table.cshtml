@@ -1,0 +1,109 @@
+﻿@model portal.Models.Views.Purchase.Order.PurchaseOrderSummaryListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+
+}
+<table class="table"
+       id="@tableId"
+       data-urlsearchreturn="@Url.Action("SearchReturn","POCombo")"
+       data-dataurl="@Url.Action("SearchData", "POCombo", new { vendGroupId = @Model.POCo, vendorId = @Model.VendorId})"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().KeyID)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().POCo)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().SearchString)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusClass)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Status)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().OrderedDate)</th>
+            <th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().VendorName)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().PO)</th>
+            <th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Cost)</th>
+            <th></th>
+            @*<th class="hidden-xs hidden-sm">@Html.LabelForRequired(model => model.List.FirstOrDefault().CreatedUser)</th>*@
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        h = 350;
+        myTable = $('#@tableId').DataTable({
+            autoWidth: false,
+            paging: false,
+            scrollY: 250,
+            ordering: true,
+            processing: true,
+            'language': {
+                'loadingRecords': 'Loading....',
+                'processing': '<span class="spinner-small"></span>'
+            },
+            ajax: {
+               "url": $('#@tableId').data('dataurl'),
+               "type": "GET",
+               "datatype": "json",
+            },
+            order: [
+                [0, "desc"]
+            ],
+            columns: [
+                { data: "KeyID" },
+                { data: "POCo" },
+                { data: "SearchString" },
+                { data: "StatusClass" },
+                { data: "StatusString" },
+                { data: "OrderedDateString" },
+                { data: "VendorName" },
+                { data: "PO" },
+                { data: "Description" },
+                { data: "Cost", render: $.fn.dataTable.render.number(',', '.', 2, '$') },
+                { data: "PO" },
+                //{ data: "CreatedUser.FullName" }
+            ],
+            columnDefs: [
+                { targets: [0, 1, 2, 3], visible: false },
+                { targets: [10], orderable: false },
+                //{ targets: [4], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+                //{ targets: [5], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+                {
+                    targets: [4],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="label ' + rowData.StatusClass + '">' + cellData + '</span>');
+                    }
+                },
+                {
+                    targets: [9],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        $(cell).html('<span class="pull-right">' + $(cell).html() + '</span>');
+                    }
+                },
+                {
+                    targets: [10],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        var href = "/PO/" + rowData.PO + "-" + rowData.POCo + ""
+                        $(cell).html("<a class='btn btn-primary btn-sm' href='#' onclick=OpenNewWindow('" + href + "')><i class='fas fa-info fa-sm'></i></a>");
+                    }
+                },
+            ],
+            fnInitComplete: function () {
+                Table().init($('#@tableId'));
+            },
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "poco=" + data.POCo + "&po=" + data.PO;
+                $(row).attr('data-entitykey', rowKey);
+            }
+        });
+        setTimeout(function () {
+            $('#@tableId').DataTable().columns.adjust().draw();
+        }, 500);
+    });
+    function OpenNewWindow(href) {
+        var params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1400,height=800';
+        window.open(href, '', params)
+    }
+</script>

@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.AP.CreditCard.Form.CodingInfoListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    var id = panelId.ToString().Replace("-", "");
+
+}
+<div class="panel panel-inverse"
+     style="margin-bottom: 0px;"
+     id="CodingInfoListViewModel"
+     data-reloadurl="@Url.Action("LineTable", "APCreditCardTransactionCoding", new { ccco = Model.CCCo, transId = Model.TransId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Coding Line(s)</h4>
+    </div>
+    <div class="panel-body"
+         style="padding-bottom: 5px;"
+         id="@panelId">
+        @Html.Partial("../AP/CreditCard/Form/Coding/List/Table", Model)
+    </div>
+</div>

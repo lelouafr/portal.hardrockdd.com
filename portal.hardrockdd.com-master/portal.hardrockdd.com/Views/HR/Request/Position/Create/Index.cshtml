@@ -1,0 +1,58 @@
+﻿@model portal.Models.Views.HR.Request.Position.CreateRequestViewModel
+
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../HR/Request/Position/Create/Panel", Model)
+    </div>
+</div>
+<hr />
+<div class="pull-right p-r-10">
+    <a href="javascript:;" class="btn btn-white" data-dismiss="modal">Close</a>
+    <button type="button" class="btn btn-success btnAddPosition">Send Position Request</button>
+</div>
+<script>
+    $('.btnAddPosition')
+        .off('click')
+        .on('click', function () {
+            //console.log('clicked');
+            var func = function (button, form) {
+                $(button).Busy();
+                data = $(form).SerializeForm();
+                url = $(form).data('url');
+                //console.log(data, url);
+                $.post(url, data, function (res) {
+                    $(button).NotBusy();
+                    if (res.success === "true") {
+                        $('#position').modal('hide');
+                        swal.fire({
+                            title: 'Message Sent',
+                            text: 'Your Request has been sent to HR',
+                            icon: 'info',
+                            buttons: {
+                                confirm: {
+                                    text: 'Close',
+                                    value: true,
+                                    visible: true,
+                                    className: 'btn btn-success',
+                                    closeModal: true
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        SetValidationErrorForObject($(form), res.errorModel);
+                    }
+                });
+            }
+            var button = this;
+            var modal = $(button).closest('.modal-body');
+            var form = $(modal).find('form');
+
+            $(form).PostValidate(button, function (valid) {
+                console.log("IsValid:", valid);
+                if (valid) {
+                    func(button, form);
+                }
+            });
+        });
+</script>

@@ -1,0 +1,35 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.Form.ActionViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var unSubmitAllowed = bool.TryParse(ViewBag.UnSumbitAllowed?.ToString(), out bool unSumbitAllowedOut) ? unSumbitAllowedOut : false;
+    bool partialView = bool.TryParse(ViewBag.Partial?.ToString(), out bool partialViewOut) ? partialViewOut : false;
+    var formKey = string.Format("hrco={0}&employeeId={1}", Model.HRCo, Model.EmployeeId);
+}
+
+<div class="row"
+     data-hrco="@Model.HRCo"
+     data-employeeid="@Model.EmployeeId">
+    <div class="col-lg-12 m-b-5">
+        @Html.AntiForgeryToken()
+        <div class="pull-right">
+            @if (Model.CanRequestTermination)
+            {
+                @*<button type="button" class="btn btn-success btnAction"
+                        data-url="@Url.Action("UpdateStatus", "EMAudit")"
+                        data-co="@Model.Co"
+                        data-auditid="@Model.EmployeeId"
+                        data-validate="true">
+                    <i class="fa fa-times"></i> Terminate Employee
+                </button>*@
+                <button class="btn btn-danger"
+                        data-toggle="modal"
+                        data-entitykey="@formKey"
+                        data-target="#termination">
+                    <i class="fa fa-times"></i> Terminatation Request
+                </button>
+            }
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,19 @@
+﻿@model portal.Models.Views.AR.Invoice.InvoiceFormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+    ViewBag.ViewOnly = true;
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("Form", "ARInvoice", new { arco = Model.Invoice.ARCo, mth = Model.Invoice.Mth, arTransId = Model.Invoice.ARTransId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-url="@Url.Action("Panel","AuditLog")" data-click="panel-history" style="display:none"><i class="fas fa-history"></i></a>
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Invoice: @Model.Invoice.CustomerDescription (@Model.Invoice.Invoice)</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../AR/Invoice/Form/Form", Model)
+    </div>
+</div>

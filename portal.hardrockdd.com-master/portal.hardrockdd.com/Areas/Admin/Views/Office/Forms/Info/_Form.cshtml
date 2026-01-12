@@ -1,0 +1,46 @@
+﻿@model portal.Areas.Admin.Models.Office.OfficeViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = "form_" + Guid.NewGuid();
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("OfficeUpdate", "Office")"
+      data-urlvalidate="@Url.Action("OfficeValidate", "Office")">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.OfficeId, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Address)
+        @Html.EditorFor(m => m.Address2)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.City)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.State)
+        @Html.EditorFor(m => m.Zip)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Phone)
+    </div>
+</form>
+
+
+<script>
+    $(document).ready(function () {
+        Form().init($('#@formId'));
+    });
+</script>

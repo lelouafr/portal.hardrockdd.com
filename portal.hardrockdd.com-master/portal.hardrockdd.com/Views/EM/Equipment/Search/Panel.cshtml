@@ -1,0 +1,16 @@
+﻿@model portal.Models.Views.Equipment.EquipmentListViewModel
+<div class="panel panel-inverse"
+     data-sortable-id="@(Guid.NewGuid())"
+     data-reloadurl="@Url.Action("SearchTable", "EMCombo", new { Co = Model.Co })"
+      style="margin: 0px; padding: 0px;">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Equipment Lookup</h4>
+    </div>
+    <div class="panel-body" id="EquipmentListViewModel"
+          style="margin: 0px; padding: 10px 5px 10px 5px;">
+        @Html.Partial("../EM/Equipment/Search/Table", Model)
+    </div>
+</div>

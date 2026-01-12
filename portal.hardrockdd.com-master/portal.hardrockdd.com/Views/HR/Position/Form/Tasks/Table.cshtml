@@ -1,0 +1,27 @@
+﻿@model portal.Models.Views.HR.Position.HireTaskListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().SeqId)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().TaskId)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().IsRequired)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../HR/Position/Form/Tasks/TableRow", request)
+        }
+    </tbody>
+</table>

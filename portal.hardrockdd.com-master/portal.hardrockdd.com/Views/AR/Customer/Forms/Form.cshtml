@@ -1,0 +1,31 @@
+﻿@model portal.Models.Views.AR.Customer.Forms.CustomerFormViewModel
+
+<style>
+    .accordion > .card {
+        overflow: unset;
+    }
+
+    .card {
+        margin-bottom: 5px;
+        overflow: visible;
+    }
+
+    .card-body {
+        padding: 0px;
+        overflow: visible;
+    }
+</style>
+
+<div class="row">
+    <div class="col-6">
+        @Html.Partial("../AR/Customer/Forms/Info/Panel", Model.Info)
+        @Html.Partial("../AR/Customer/Forms/Address/Panel", Model.Info)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../AR/Customer/Forms/Stats/Panel", Model.TotalStats)
+        @Html.Partial("../AR/Customer/Forms/YearStats/Panel", Model.YearStats)
+    </div>
+</div>
+
+@Html.Partial("../AR/Customer/Forms/Jobs/Panel", Model.Jobs)
+@Html.Partial("../AR/Customer/Forms/Invoices/Panel", Model.Invoices)

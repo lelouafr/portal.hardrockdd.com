@@ -1,0 +1,28 @@
+﻿@model portal.Areas.HumanResource.Models.Resource.ResourceListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().ResourceId)</th>
+            <th>@Html.LabelForRequired(model => model.List.FirstOrDefault().Name)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("Form/ActiveEmployees/_TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    Table().init('#@tableId');
+</script>

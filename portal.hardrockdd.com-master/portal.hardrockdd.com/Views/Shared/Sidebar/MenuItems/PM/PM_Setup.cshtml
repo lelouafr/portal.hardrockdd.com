@@ -1,0 +1,20 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+    var listItemTag = "pm_setup";
+}
+
+@if (User.HasAccess("JCMarket") ||
+     User.HasAccess("JCIndustry"))
+{
+    <li id="menu_li_bd_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Setup</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "JCIndustry", routeValues: new { Area = "" })">Industry List</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "JCMarket", routeValues: new { Area = "" })">Market List</a></li>
+        </ul>
+    </li>
+}

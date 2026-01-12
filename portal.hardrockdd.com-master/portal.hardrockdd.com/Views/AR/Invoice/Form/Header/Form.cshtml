@@ -1,0 +1,61 @@
+﻿@model portal.Models.Views.AR.Invoice.InvoiceViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    viewOnly = true;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+}
+
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      @*data-urlcreate="@Url.Action("Add", "PurchaseOrder")"
+      data-urldelete="@Url.Action("Delete", "PurchaseOrder")"
+      data-urlupdate="@Url.Action("Update", "PurchaseOrder")"
+      data-urlvalidate="@Url.Action("Validate", "PurchaseOrder")"
+      data-postupdate="PostUpdate@(id)"*@>
+    @Html.AntiForgeryToken()
+    <div class="row justify-content-md-center">
+        <div class=" col-xl-8 ">
+            <div class="form-group has-feedback">
+                <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.ARCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.Mth, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ARTransId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.JCCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.CustGroupId, new { @id = Guid.NewGuid() })
+
+
+    @Html.HiddenFor(m => m.CustGroupId, new { @id = Guid.NewGuid() })
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Customer)
+        @Html.EditorFor(m => m.Mth)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.ContractId)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Invoice)
+        @Html.EditorFor(m => m.CustRef)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Description)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.InvoiceDate)
+        @Html.EditorFor(m => m.DueDate)
+    </div>
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.Amount)
+        @Html.EditorFor(m => m.PaidAmount)
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () { Form().init($('#@formId')); });
+</script>

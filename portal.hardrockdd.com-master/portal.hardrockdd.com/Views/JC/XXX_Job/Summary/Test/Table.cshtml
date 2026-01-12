@@ -1,0 +1,116 @@
+﻿@model portal.Models.Views.JC.Job.JobListViewModel
+@{
+    //ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table stripe row-border order-column nowrap"
+       id="@tableId"
+       data-dataurl="@Url.Action("DataTablesSample", "TestJob")"      
+       data-tablekey="@tableKey"
+        >
+    <thead>
+        <tr>
+            <th data-datatable-filter-type="none">@Html.LabelForRequired(model => model.List.FirstOrDefault().Co)</th>
+            <th data-datatable-filter-type="checkbox" width="15px"><label><i class="fas fa-paperclip"></i></label></th>
+            <th data-datatable-filter-type="input" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobId)</th>
+            <th data-datatable-filter-type="multiselect" data-datatable-filter-value="Job" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobType)</th>
+            <th data-datatable-filter-type="input" width="300px">@Html.LabelForRequired(model => model.List.FirstOrDefault().JobName)</th>
+            <th data-datatable-filter-type="multiselect" width="60px">@Html.LabelForRequired(model => model.List.FirstOrDefault().StatusId)</th>
+            <th data-datatable-filter-type="multiselect" width="140px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Crew)</th>
+            <th data-datatable-filter-type="multiselect" width="240px">@Html.LabelForRequired(model => model.List.FirstOrDefault().Rig)</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        var panel = $("#@tableId").closest('.panel').first();
+        var tableElem = $('#@tableId');
+        var h = $("body").height();
+        h -= $(panel).height();
+        h -= $(tableElem).find('thead').height();
+        //h -= 100;
+        var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            deferRender: true,
+            ordering: true,
+            processing: true,
+            scrollY: h,
+            scrollX: true,
+            //scrollCollapse: true,
+            scroller: true,
+            fixedColumns: {
+                leftColumns: 3
+            },
+            //searching: false,
+            language: {
+                loadingRecords: 'Loading....',
+                processing: '<span class="spinner-small"></span>'
+            },
+            ajax: {
+                url: $('#@tableId').data('dataurl'),
+                type: "GET",
+                datatype: "json",
+            },
+            columns: [
+                { data: "Co" },
+                { data: "HasAttachment" },
+                { data: "JobId" },
+                { data: "JobType" },
+                { data: "JobName" },
+                { data: "StatusString" },
+                { data: "Crew" },
+                { data: "Rig" },
+            ],
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+            columnDefs: [
+                { targets: [0], visible: false },
+                { targets: [1], orderable: false },
+                //{ targets: [4], render: $.fn.dataTable.render.moment('MM/DD/YYYY') },
+                {
+                    targets: [1],
+                    createdCell: function (cell, cellData, rowData, rowIndex, colIndex) {
+                        if (colIndex === 1) {
+                            if (cellData === true) {
+                                $(cell).html('<i class="fas fa-paperclip"></i>');
+                            }
+                            else {
+                                $(cell).html(cellData);
+                            }
+                        }
+                    }
+                },
+            ],
+            createdRow: function (row, data, dataIndex) {
+                var rowKey = "Co=" + data.Co + "&JobId=" + data.JobId;
+                $(row).attr('data-rowKey', rowKey);
+            }
+        });
+        //new $.fn.dataTable.FixedColumns(table);
+        $('.dataTables_filter').hide();
+    })
+</script>

@@ -1,0 +1,117 @@
+﻿@model  portal.Models.Views.Bid.BoreLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "BidBoreLine")"
+       data-urldelete="@Url.Action("Delete", "BidBoreLine")"
+       data-urlupdate="@Url.Action("Update", "BidBoreLine")"
+       data-urlvalidate="@Url.Action("Validate", "BidBoreLine")"
+       data-urlselect="@Url.Action("Panel", "BidBoreLinePass"), @Url.Action("Panel", "BidBoreLineCostItem")"
+       data-dstselect="BidBoreLineInfo@(Model.PackageId)"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+
+            <th width="18%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Description) </th>
+            <th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Footage)</th>
+            <th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().PipeSize)</th>
+            <th width="8%">@Html.LabelForRequired(model => model.List.FirstOrDefault().GroundDensityId)</th>
+            <th width="12%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RigCategoryId)</th>
+            @*<th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().MobeDays)</th>
+        <th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DeMobeDays)</th>*@
+            <th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtCost)</th>
+            <th width="7%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockCost)</th>
+            <th width="5%">@Html.LabelForRequired(model => model.List.FirstOrDefault().DirtDays)</th>
+            <th width="5%">@Html.LabelForRequired(model => model.List.FirstOrDefault().RockDays)</th>
+
+            <th>
+                @if (!viewOnly)
+                {
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                }
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../BD/Bid/Line/List/TableRow", obj)
+        }
+    </tbody>
+</table>
+@if (Model.List.Count > 35)
+{
+    <script>
+    $('#@tableId').ready(function() {
+            h = 800;
+            var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            //scrollX: true,
+            scrollY: h,
+            columnDefs: [
+                {
+                    targets: [9], orderable: false
+                },
+                ],
+                fnInitComplete: function () {
+                    var setting = this;
+                    this.api().columns().every(function () {
+                        addSearchRow(this, setting);
+                    });
+                },
+        $('.dataTables_filter').hide();
+        })
+
+    </script>
+}
+else
+{
+    <script>
+    $('#@tableId').ready(function() {
+            var table = $('#@tableId').DataTable({
+            orderCellsTop: true,
+            paging: false,
+            autoWidth: true,
+            ordering: true,
+            //scrollX: true,
+            //scrollY: h,
+            columnDefs: [
+                { targets: [9], orderable: false },
+            ],
+            fnInitComplete: function () {
+                var setting = this;
+                this.api().columns().every(function () {
+                    addSearchRow(this, setting);
+                });
+            },
+        $('.dataTables_filter').hide();
+        })
+
+    </script>
+}

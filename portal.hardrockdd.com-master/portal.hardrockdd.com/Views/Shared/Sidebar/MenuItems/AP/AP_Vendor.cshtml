@@ -1,0 +1,22 @@
+﻿
+@{
+    var listItemId = 1;
+    var listItemTag = "ap_vendor";
+}
+
+
+
+@if (User.HasAccess("Vendor", "Index") ||
+        User.HasAccess("Merchant", "Index"))
+{
+    <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <span>Vendor</span>
+        </a>
+        <ul class="sub-menu">
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Vendor", routeValues: new { Area = "" })">Vendor Listing</a></li>
+            <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("Index", "Merchant", routeValues: new { Area = "" })">Merchant Listing</a></li>
+        </ul>
+    </li>
+}

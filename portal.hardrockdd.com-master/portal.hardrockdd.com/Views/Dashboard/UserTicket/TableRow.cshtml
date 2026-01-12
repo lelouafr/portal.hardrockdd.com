@@ -1,0 +1,50 @@
+﻿@model portal.Models.Views.DailyTicket.DailyTicketSummary
+@using Microsoft.AspNet.Identity
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var entityKey = tableLayout.TableKey;
+    string dateSort = Model.WorkDate.ToString("yyyyMMdd");
+}
+<tr data-entitykey="@entityKey">
+    <td>
+        @Html.HiddenFor(m => m.TicketId, new { @id = Guid.NewGuid() })
+        <span class="label @Model.StatusClass">
+            @Html.EditorFor(l => l.Status, new { DisplayOnly = true })
+        </span>
+    </td>
+    <td data-sort='@dateSort'>
+        @Html.EditorFor(l => l.WorkDate, new { DisplayOnly = true })
+    </td>
+    <td>
+        @Html.EditorFor(l => l.FormName, new { DisplayOnly = true })
+    </td>
+    <td class="hidden-xs hidden-sm">
+        @Html.EditorFor(l => l.Description, new { DisplayOnly = true })
+    </td>
+    <td class="hidden-xs hidden-sm">
+        @Html.EditorFor(l => l.Comments, new { DisplayOnly = true })
+    </td>
+    <td class="hidden-xs hidden-sm">
+        @Html.EditorFor(l => l.CreatedUser, new { DisplayOnly = true })
+    </td>
+    <td>
+        <div class="pull-right">
+            @if (Model.Access == DB.SessionAccess.Edit)
+            {
+                <div class="pull-right">
+                    <a class='btn btn-primary' href='@Url.Action("Index", "DailyTicket", new { dtco = @Model.DTCo, ticketId = @Model.TicketId  })'><i class='fas fa-pencil'></i></a>
+
+                    @*<button class="btn btn-danger delRow"
+                            data-entitykey="@entityKey">
+                        <i class="fa fa-trash"></i>
+                    </button>*@
+                </div>
+            }
+            else
+            {
+                <a class='btn btn-primary' href='@Url.Action("Index", "DailyTicket", new { dtco = @Model.DTCo, ticketId = @Model.TicketId  })'><i class='fas fa-info'></i></a>
+            }
+        </div>
+    </td>
+
+</tr>

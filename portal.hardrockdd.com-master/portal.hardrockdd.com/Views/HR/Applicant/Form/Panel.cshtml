@@ -1,0 +1,22 @@
+﻿@model portal.Models.Views.WA.Applicant.FormViewModel
+@{
+    var id = Guid.NewGuid().ToString().Replace("-", "");
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<div class="panel panel-inverse"
+     data-reloadurl="@Url.Action("ApplicantForm", "WebApplication", new { applicantId = Model.ApplicantId })">
+    <div class="panel-heading">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <h4 class="panel-title">Applicant (@Model.Info.FirstName @Model.Info.LastName) Id: @Model.ApplicantId</h4>
+    </div>
+    <div class="panel-body" id="@panelId">
+        @Html.Partial("../HR/Applicant/Form/Form", Model)
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initPane($('#@panelId'));
+    });
+</script>

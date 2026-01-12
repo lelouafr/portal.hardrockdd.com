@@ -1,0 +1,75 @@
+﻿@model portal.Models.Views.Equipment.Forms.EquipmentMeterViewModel
+
+@{
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var formLayout = new TableLayoutModel(this);
+    var entityKey = formLayout.TableKey;
+    var formId = string.Format("form_{0}", Guid.NewGuid());
+    var id = formId.ToString().Replace("-", "");
+}
+<form class="form-horizontal"
+      id="@formId"
+      data-entitykey="@entityKey"
+      data-urlupdate="@Url.Action("UpdateMeter", "EquipmentForm")"
+      data-urlvalidate="@Url.Action("ValidateMeter", "EquipmentForm")"
+      data-postupdate="PostUpdate@(id)">
+    @Html.AntiForgeryToken()
+    <div class="form-group has-feedback">
+        <div class="validation-summary-valid text-danger" data-valmsg-summary="true">
+        </div>
+    </div>
+    @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.EquipmentId, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ReplacedHourDate, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ReplacedHourReading, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ReplacedOdoDate, new { @id = Guid.NewGuid() })
+    @Html.HiddenFor(m => m.ReplacedOdoReading, new { @id = Guid.NewGuid() })
+
+    <div class="form-group has-feedback row">
+        @Html.EditorFor(m => m.MeterType)
+    </div>
+    <div class="form-group has-feedback row meterOdoGrp" style="display: none">
+        @Html.EditorFor(m => m.OdoReading)
+    </div>
+    <div class="form-group has-feedback row meterOdoGrp" style="display: none">
+        @Html.EditorFor(m => m.OdoDate, new { ViewOnly = true })
+    </div>
+    <div class="form-group has-feedback row meterHourGrp" style="display: none">
+        @Html.EditorFor(m => m.HourReading)
+    </div>
+    <div class="form-group has-feedback row meterHourGrp" style="display: none">
+        @Html.EditorFor(m => m.HourDate, new { ViewOnly = true })
+    </div>
+</form>
+<script>
+    $('#@formId').ready(function () {
+        Form().init('#@formId');
+        handleMeterView($('#@formId'));
+    });
+    function PostUpdate@(id)(elem) {
+        if ($(elem).attr('name') == "MeterType") {
+            handleMeterView($('#@formId'));
+        }
+    }
+    function handleMeterView(form) {
+        var elem = $(form).find("[name='MeterType']");
+        var val = parseInt($(elem).val());
+
+        $(form).find(".meterOdoGrp").hide();
+        $(form).find(".meterHourGrp").hide();
+        switch (val) {
+            case 2:
+                $(form).find(".meterOdoGrp").show();
+                $(form).find(".meterHourGrp").show();
+                break;
+            case 1:
+                $(form).find(".meterOdoGrp").show();
+                break;
+            case 0:
+                $(form).find(".meterHourGrp").show();
+                break;
+            default:
+        }
+    }
+
+</script>

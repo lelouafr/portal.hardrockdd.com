@@ -1,0 +1,19 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Truck.FormViewModel
+
+<style>
+</style>
+
+<div class="row rowform">
+    <div class="col-xl-7">
+        @Html.Partial("Form/Truck/Info/_Panel", Model.Ticket)
+    </div>
+    <div class="col-xl-5">
+        @Html.Partial("Form/Log/_Panel", Model.StatusLogs)
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.UniqueAttchID })
+    </div>
+</div>
+<div class="row rowform">
+    <div class="col-xl-12">
+        @Html.Partial("Form/Truck/Employee/_Panel", Model.Employees)
+    </div>
+</div>

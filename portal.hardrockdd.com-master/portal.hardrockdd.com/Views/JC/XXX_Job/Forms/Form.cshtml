@@ -1,0 +1,37 @@
+﻿@model portal.Models.Views.JC.Job.Forms.JobFormViewModel
+
+<div class="row">
+    <div class="col-8">
+        @Html.Partial("../JC/Job/Forms/Info/Panel", Model.Info)
+    </div>
+    <div class="col-4">
+        @Html.Action("Panel", "Explorer", new { Area = "Attachment", uniqueAttchID = Model.Attachments.UniqueAttchID })
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @Html.Partial("../JC/Job/Forms/Progress/Panel", Model.JobProgress)
+    </div>
+</div>
+@if (Model.Mth != null)
+{
+    <div class="row">
+        <div class="col-12">
+            @Html.Partial("../JC/Job/Forms/IS/Panel", Model.ISData)
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-6">
+        @Html.Partial("../JC/Job/Forms/Cost/Panel", Model.JobCostSummary)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../JC/Job/Forms/AR/Panel", Model.ARTrans)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../JC/Job/Forms/PO/Panel", Model.POLines)
+    </div>
+    <div class="col-6">
+        @Html.Partial("../JC/Job/Forms/AP/Panel", Model.APLines)
+    </div>
+</div>

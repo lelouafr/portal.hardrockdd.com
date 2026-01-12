@@ -1,0 +1,98 @@
+﻿@model string
+@{
+    var idGuid = "group_" + Guid.NewGuid();
+    var id = Html.IdFor(m => m).ToString();
+    if (id.LastIndexOf("_") > 0)
+    {
+        id = id.Substring(id.LastIndexOf("_") + 1);
+    }
+    var name = id;
+    id = string.Concat(id, idGuid);
+
+    var required = this.ViewData.ModelMetadata.IsRequired ? "required" : "";
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var displayOnly = bool.TryParse(ViewBag.DisplayOnly?.ToString(), out bool displayOnlyOut) ? displayOnlyOut : false;
+    var tableRow = bool.TryParse(ViewBag.TableRow, out bool tableRowOut) ? tableRowOut : false;
+    var prop = this.ViewData.ModelMetadata.PropertyName;
+    viewOnly = this.ViewData.ModelMetadata.IsReadOnly ? true : viewOnly;
+    var attributes = this.ViewData.ModelMetadata.AdditionalValues.TryGetValue("FieldAttribute", out object fldAttribute) ? (FieldAttribute)fldAttribute : new FieldAttribute();
+
+    /**Define Html Attributes**/
+    var dic = new Dictionary<string, object>();
+    dic.Add("data-updrelatedpanes", attributes.UpdateRelatedPanes);
+    dic.Add("id", id);
+    dic.Add("Name", name);
+    if (this.ViewData.ModelMetadata.IsRequired)
+    {
+        dic.Add("required", "");
+    }
+    if (viewOnly)
+    {
+        dic.Add("disabled", "");
+    }
+    dic.Add("type", "email");
+    dic.Add("placeholder", "name@domain.com");
+    dic.Add("autocomplete", "off");
+
+    var labelSize = "col-lg-" + @attributes.LabelSize.ToString();
+    var textSize = "";
+    if (!tableRow)
+        textSize = "col-lg-" + @attributes.TextSize.ToString();
+}
+@if (attributes.LabelSize != 0 && !tableRow)
+{
+    @Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+}
+@if (displayOnly)
+{
+    <span Name="@name">
+        @if (@Model != null)
+        {
+            @Html.DisplayTextFor(m => m)
+        }
+    </span>
+}
+else
+{
+    <div class="@textSize input-group " id="@idGuid">
+        @Html.TextBoxFor(m => m, StaticFunctions.GetHtmlAttributes(new { @class = ("form-control " + prop) }, dic))
+        @if (!string.IsNullOrEmpty(attributes.InfoUrl))
+        {
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary btnInfo" data-urlinfo="@ViewBag.InfoUrl" data-infodata="@ViewBag.InfoData">
+                    <i class="fas fa-info"></i>
+                </button>
+            </div>
+        }
+        @Html.ValidationMessageFor(m => m, "", new { @class = "invalid-feedback" })
+
+    </div>
+}
+
+
+@*@Html.LabelForRequired(m => m, new { @class = @labelSize + " col-form-label text-lg-right col-form-label" })
+    <div class="@textSize input-group">
+        @if (viewOnly)
+        {
+            <span class="form-control">
+                @Html.DisplayTextFor(m => m)
+            </span>
+        }
+        else
+        {
+            if (required.ToString() != string.Empty)
+            {
+                @Html.TextBoxFor(m => m, new { @class = "form-control", @type = "email", placeholder = "name@domain.com", required = @required })
+            }
+            else
+            {
+                @Html.TextBoxFor(m => m, new { @class = "form-control", @type = "email", placeholder = "name@domain.com" })
+            }
+        }
+        @Html.ValidationMessageFor(m => m, "", new { @class = "text-danger" })
+        <div class="input-group-append">
+            <span class="input-group-text">
+                <i class="fa fa-envelope"></i>
+            </span>
+        </div>
+    </div>*@

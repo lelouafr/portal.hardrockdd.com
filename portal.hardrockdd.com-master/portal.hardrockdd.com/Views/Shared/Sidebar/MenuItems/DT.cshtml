@@ -1,0 +1,41 @@
+﻿@using portal
+@{
+    var listItemId = 1;
+}
+@if (User.HasAccess("UserSummary") ||
+     User.HasAccess("TicketPendingSummary") ||
+     User.HasAccess("TicketSummary") ||
+     User.HasAccess("CrewSubmission") ||
+     User.HasAccess("DailyTicketApproval"))
+{
+    <li id="menu_li_dt_@(listItemId++)" class="has-sub">
+        <a href="javascript:;">
+            <b class="caret"></b>
+            <i class="fab fa-wpforms"></i>
+            <span>Daily Tickets</span>
+        </a>
+        <ul class="sub-menu">
+            @if (User.HasAccess("UserSummary"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "UserSummary", routeValues: new { Area = "" })">Your Tickets</a></li>
+            }
+            @if (User.HasAccess("TicketPendingSummary"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "TicketPendingSummary", routeValues: new { Area = "" })">Pending Ticket</a></li>
+            }
+            @if (User.HasAccess("TicketSummary"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "TicketSummary", routeValues: new { Area = "" })">All Tickets</a></li>
+            }
+            @if (User.HasAccess("CrewSubmission"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "CrewSubmission", routeValues: new { Area = "" })">Crew Submissions</a></li>
+            }
+            @if (User.HasAccess("DailyTicketApproval"))
+            {
+                <li id="menu_li_dt_@(listItemId++)"><a href="@Url.Action("Index", "DailyTicketApproval", routeValues: new { Area = "" })">Ticket Approvals</a></li>
+            }
+
+        </ul>
+    </li>
+}

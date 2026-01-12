@@ -1,0 +1,15 @@
+﻿@model portal.Models.Views.HQ.Batch.AP.APBatchLineListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+<ul class="nav nav-tabs nav-justified nav-justified-mobile" data-sortable-id="index-2">
+    <li class="nav-item"><a href="#lines" data-toggle="tab" class="nav-link active"><span class="d-none d-md-inline">Lines</span></a></li>
+    <li class="nav-item"><a href="#lineform" data-toggle="tab" class="nav-link"><span class="d-none d-md-inline">Line Info</span></a></li>
+</ul>
+<div class="tab-content" style="padding:0px; overflow:unset;" id="@panelId">
+    <div class="tab-pane  active show" id="lines">
+        @Html.Partial("../HQ/Batch/Detail/AP/Batch/Line/List/Panel", Model)
+    </div>
+    <div class="tab-pane " id="lineform">
+    </div>
+</div>

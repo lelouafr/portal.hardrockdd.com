@@ -1,0 +1,17 @@
+﻿@model  portal.Models.Views.HR.Resource.ResourceViewModel
+@{
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string rowKey = "";
+    ViewBag.TableRow = "True";
+    ViewBag.DisplayOnly = "True";
+    rowKey = tableLayout.TableKey;
+}
+<tr data-rowkey="@rowKey">
+    <td>
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.HRCo, new { @id = Guid.NewGuid() })
+        @Html.EditorFor(m => m.ResourceId)
+    </td>
+    <td> @Html.EditorFor(m => m.Name) </td>
+</tr>

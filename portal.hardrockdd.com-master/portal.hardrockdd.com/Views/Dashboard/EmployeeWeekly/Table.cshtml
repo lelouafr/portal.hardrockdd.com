@@ -1,0 +1,174 @@
+﻿@model  portal.Models.Views.Employee.EmployeeViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       @*data-urlcreate="@Url.Action("Add", "DailyJobEmployee")"
+       data-urldelete="@Url.Action("Delete", "DailyJobEmployee")"
+       data-urlupdate="@Url.Action("Update", "DailyJobEmployee")"
+       data-urlvalidate="@Url.Action("Validate", "DailyJobEmployee")"*@
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="10%">Crew</th>
+            <th width="15%">Job</th>
+            @foreach (var day in Model.Calendar)
+            {
+                <th width="8%"> @Html.Label(day.ToString("ddd")) <br />@Html.Label(day.ToString("M/dd"))</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var perdResults = (from crew in Model.Perdiems
+                               group crew by new { Crew = crew.Crew ?? string.Empty } into crewgrp
+                               select new
+                               {
+                                   Crew = crewgrp.Key.Crew,
+                                   Jobs = (from job in Model.Perdiems
+                                           where job.Crew == crewgrp.Key.Crew
+                                           group job by job.Job ?? string.Empty into jobgrp
+                                           select new
+                                           {
+                                               Job = jobgrp.Key,
+                                               Dates = (from calendar in Model.Calendar
+                                                        join perdiem in Model.Perdiems.Where(w => w.Job == jobgrp.Key && w.Crew == crewgrp.Key.Crew) on
+                                                           new { workdate = calendar.Date }
+                                                           equals
+                                                           new { workdate = perdiem.WorkDate.Date } into perm
+                                                        from perd in perm.DefaultIfEmpty()
+                                                        group new { perd, calendar } by new { WorkDate = calendar.Date } into workdategrp
+                                                        select new
+                                                        {
+                                                            WorkDate = workdategrp.Key,
+                                                            Perdiem = workdategrp.Max(f => f.perd?.Perdiem) ?? null,
+                                                            TicketId = workdategrp.Max(f => f.perd?.TicketId) ?? null
+                                                        }).ToList()
+                                           }).ToList()
+                               }).ToList();
+
+
+            var hourResults = (from crew in Model.Hours
+                               group crew by new { Crew = crew.Crew ?? string.Empty } into crewgrp
+                               select new
+                               {
+                                   Crew = crewgrp.Key.Crew,
+                                   Jobs = (from job in Model.Hours
+                                           where job.Crew == crewgrp.Key.Crew
+                                           group job by job.Job ?? string.Empty into jobgrp
+                                           select new
+                                           {
+                                               Job = jobgrp.Key,
+                                               Dates = (from calendar in Model.Calendar
+                                                        join hour in Model.Hours.Where(w => w.Job == jobgrp.Key && w.Crew == crewgrp.Key.Crew) on
+                                                           new { workdate = calendar.Date }
+                                                           equals
+                                                           new { workdate = hour.WorkDate.Date } into perm
+                                                        from perd in perm.DefaultIfEmpty()
+                                                        group new { perd, calendar } by new { WorkDate = calendar.Date } into workdategrp
+                                                        select new
+                                                        {
+                                                            WorkDate = workdategrp.Key,
+                                                            Hours = workdategrp.Sum(f => f.perd?.Hours) ?? null,
+                                                            TicketId = workdategrp.Max(f => f.perd?.TicketId) ?? null
+                                                        }).ToList()
+                                           }).ToList()
+                               }).ToList();
+
+            var totalHours = (from hrs in Model.Hours
+                              group hrs by new { WorkDate = hrs.WorkDate } into weekHrs
+                              select new
+                              {
+                                  WorkDate = weekHrs.Key.WorkDate,
+                                  TotalHours = weekHrs.Sum(s => s.Hours)
+                              }).ToList();
+        }
+        <tr>
+            <td colspan="9">
+                <h5>Perdiem</h5>
+            </td>
+        </tr>
+        @for (int c = 0; c < perdResults.Count(); c++)
+        {
+            var crew = perdResults[c];
+            for (int j = 0; j < crew.Jobs.Count(); j++)
+            {
+                <tr>
+                    @{
+                        var job = crew.Jobs[j];
+                    }
+                    @if (j == 0)
+                    {
+                        <td rowspan="@crew.Jobs.Count()">
+                            @crew.Crew
+                        </td>
+                    }
+                    <td>
+                        @job.Job
+                    </td>
+                    @for (int d = 0; d < job.Dates.Count(); d++)
+                    {
+                        var workdate = job.Dates[d];
+                        <td>
+                            @workdate.Perdiem
+
+                        </td>
+                    }
+                </tr>
+            }
+        }
+        <tr>
+            <td colspan="9">
+                <h5>Hours</h5>
+            </td>
+        </tr>
+        @for (int c = 0; c < hourResults.Count(); c++)
+        {
+            var crew = hourResults[c];
+            for (int j = 0; j < crew.Jobs.Count(); j++)
+            {
+                <tr>
+                    @{
+                        var job = crew.Jobs[j];
+                    }
+                    @if (j == 0)
+                    {
+                        <td rowspan="@crew.Jobs.Count()">
+                            @crew.Crew
+                        </td>
+                    }
+                    <td>
+                        @job.Job
+                    </td>
+                    @for (int d = 0; d < job.Dates.Count(); d++)
+                    {
+                        var workdate = job.Dates[d];
+                        <td>
+                            @(workdate.Hours == 0 ? null : workdate.Hours)
+
+                        </td>
+                    }
+                </tr>
+            }
+        }
+        <tr>
+            <td colspan="2">
+                <b>Total</b>
+            </td>
+            @foreach (var hrs in totalHours)
+            {
+                <td>
+                    <b>@(hrs.TotalHours == 0 ? "EMPTY" : hrs.TotalHours.ToString())</b>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

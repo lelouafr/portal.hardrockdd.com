@@ -1,0 +1,82 @@
+﻿@model  portal.Models.Views.AP.Document.DocumentFormViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmail.cshtml";
+    ViewBag.Title = "Invoice Requesting More Info";
+}
+
+<!-- begin page container -->
+<table class="container content dark-theme">
+    <tr>
+        <td>
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="last">
+                                    <h4>@ViewBag.Title.</h4>
+                                    <p class="m-b-5">Please click the following link to review the invoice.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="panel">
+                                    <a href="https://@(Request.Url.Authority)@Url.Action("RequestedInfoIndex", "APDocument")">https://@(Request.Url.Authority)@Url.Action("RequestedInfoIndex", "APDocument")</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="m-t-15 last">If clicking the URL above does not work, copy and paste the URL into a browser window.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+            <!-- begin divider -->
+            <table class="divider"></table>
+            <!-- end divider -->
+            <!-- begin row -->
+            <table class="row">
+                <tr>
+                    <!-- begin wrapper -->
+                    <td class="wrapper">
+                        <!-- begin twelve columns -->
+                        <table class="twelve columns">
+                            <tr>
+                                <td class="callout-inner secondary">
+                                    <h4>AP Document</h4>
+                                    <table class="row">
+                                        <tr>
+                                            <th class="small-3 large-3 columns first" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>AP Ref #</b></p>
+                                            </th>
+                                            <th class="small-6 large-6 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Vendor</b></p>
+                                            </th>
+                                            <th class="small-3 large-3 columns" style="border-bottom: 1px solid;">
+                                                <p class="text-left"><b>Amount</b></p>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td>@Model.Document.APEntry.APReference</td>
+                                            <td>@Model.Document.APEntry.VendorDescription</td>
+                                            <td>@(Model.Document.APEntry.Lines.List.Sum(sum => sum.GrossAmt) ) </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end twelve columns -->
+                    </td>
+                    <!-- end wrapper -->
+                </tr>
+            </table>
+            <!-- end row -->
+        </td>
+    </tr>
+</table>
+<!-- end page container -->

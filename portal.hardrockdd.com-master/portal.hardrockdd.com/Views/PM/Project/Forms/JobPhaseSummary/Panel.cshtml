@@ -1,0 +1,34 @@
+﻿@model portal.Models.Views.PM.Project.Form.JobPhaseSummaryListViewModel
+@{
+    var panelId = string.Format("panel_{0}", Guid.NewGuid());
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading pointer-cursor" data-toggle="collapse" data-target="#@(panelId)">
+        <div class="panel-heading-btn">
+            <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+        </div>
+        <div class="panel-title">
+            <i class="fa fa-circle fa-fw text-blue mr-2 f-s-8"></i> Job Phase Summary
+        </div>
+    </div>
+    <div class="panel-body show" id="@panelId">
+        @Html.Partial("../PM/Project/Forms/JobPhaseSummary/Table", Model)
+    </div>
+</div>
+
+<script>
+    $('#@panelId').on('shown.bs.collapse', function () {
+        var tables = $('#@panelId').find('.table');
+        tables.each(function () {
+            var tableId = $(this).attr('id');
+            if (tableId !== undefined) {
+                var table = $('#' + tableId)
+                var dsTable = $(table).DataTable();
+                $(table).resize();
+            }
+            //var dsTable = $(this).DateTable();
+            //dsTable.resize();
+        });
+    })
+</script>

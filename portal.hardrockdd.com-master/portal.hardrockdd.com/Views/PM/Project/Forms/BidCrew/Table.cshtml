@@ -1,0 +1,40 @@
+﻿@model portal.Models.Views.PM.Project.Form.ProjectCrewListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    //var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("CrewAdd", "PMProjectForm")"
+       data-urldelete="@Url.Action("CrewDelete", "PMProjectForm")"
+       data-urlupdate="@Url.Action("CrewUpdate", "PMProjectForm")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="55%">@Html.LabelForRequired(model => model.List.FirstOrDefault().CrewId)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().StartDate)</th>
+            <th>
+                @Html.AntiForgeryToken()
+                <div class="btn-group pull-right">
+                    <button class="btn btn-primary addRow">
+                        <i class="fa fa-plus"></i>
+                    </button>
+
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model.List)
+        {
+            @Html.Partial("../PM/Project/Schedule/Forms/Crew/TableRow", request)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () { Table().init($('#@tableId')); });
+</script>

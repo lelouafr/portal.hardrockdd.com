@@ -1,0 +1,1455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E42D2F7D-483B-4959-A42F-A5E4EBF03EB2}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DB</RootNamespace>
+    <AssemblyName>DB</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper, Version=16.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.16.0.0\lib\net47\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.CommandLine, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.CommandLine.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.CommandLine.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.EnvironmentVariables, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.EnvironmentVariables.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.EnvironmentVariables.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.3.1.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Configuration, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Configuration.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Console, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Console.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options.ConfigurationExtensions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.ConfigurationExtensions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Client.Policy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.Office.Client.Policy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.SharePoint.Tools, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.Office.SharePoint.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ProjectServer.Client, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.ProjectServer.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.Search.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SharePointOnline.CSOM.16.1.22921.12000\lib\net45\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Steeltoe.Common, Version=3.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Steeltoe.Common.3.2.1\lib\netstandard2.0\Steeltoe.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Steeltoe.Common.Abstractions, Version=3.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Steeltoe.Common.Abstractions.3.2.1\lib\netstandard2.0\Steeltoe.Common.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Steeltoe.Common.Net, Version=3.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Steeltoe.Common.Net.3.2.1\lib\netstandard2.0\Steeltoe.Common.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.6.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.ConfigurationManager, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Configuration.ConfigurationManager.6.0.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata, Version=1.4.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.Metadata.1.7.0\lib\netstandard2.0\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.MetadataLoadContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.MetadataLoadContext.4.6.0\lib\netstandard2.0\System.Reflection.MetadataLoadContext.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.6.0.0\lib\net461\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.5.0.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="Z.EntityFramework.Extensions, Version=5.2.13.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Extensions.5.2.13\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Infrastructure\EmailModels\DailyTicketEmailViewModel.cs" />
+    <Compile Include="Infrastructure\EmailModels\BidEmail.cs" />
+    <Compile Include="Infrastructure\EmailModels\PORequestUpdateEmailViewModel.cs" />
+    <Compile Include="Infrastructure\EmailModels\LocateRequestEmailViewModel.cs" />
+    <Compile Include="Infrastructure\EmailModels\PositionRequestEmailViewModel.cs" />
+    <Compile Include="Infrastructure\EmailModels\TermRequestEmailViewModel.cs" />
+    <Compile Include="Infrastructure\Extensions\DateTimeExtension.cs" />
+    <Compile Include="Infrastructure\Extensions\DirectoryExt.cs" />
+    <Compile Include="Infrastructure\Extensions\LinqExt.cs" />
+    <Compile Include="Infrastructure\Extensions\SharePoint.cs" />
+    <Compile Include="Infrastructure\Extensions\ZipHelper.cs" />
+    <Compile Include="Infrastructure\Services\AESEncryption.cs" />
+    <Compile Include="Infrastructure\Services\EmailHelper.cs" />
+    <Compile Include="Infrastructure\Services\NetworkConnection.cs" />
+    <Compile Include="Infrastructure\Services\SharePoint.cs" />
+    <Compile Include="Infrastructure\Services\UNCAccessWithCredentials.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Data\APBatchHeader.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APBatchLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APDocument.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APDocumentLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APDocumentStatusLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APDocumentWorkFlow.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APPayment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APPaymentBatchSequence.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APPaymentBatchSequenceTransaction.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APPaymentLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APTran.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APTransLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APTransLinePayment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\APVendor.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ARTran.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ARTransLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\AttachmentType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Audit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Batch.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BatchAction.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BatchError.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BatchTableControl.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\bCMDT.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BDCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BDPackageCrew.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Bid.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidBoreLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidBoreLineCostItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidBoreLineCostItemPhase.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidBoreLinePass.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidBoreType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidCustomer.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackageCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackageCostItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackageDensity.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackageProductionRate.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidPackageScope.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidProductionDay.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidProposalScope.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\BidWorkFlowAssignment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\budCMTH_Cross.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\budEMCR.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\budPMLM_Owners.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\budPMLM_RequestNames.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\budWA_CrossRef_Temp.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Calendar.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CCWexImport.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CMAccount.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ComboCustomValue.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ComboValue.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CompanyDivision.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Contact.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ContractItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CostType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditCardImage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditImageLink.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditImport.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditMerchant.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditMerchantCategory.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditMerchantGroup.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditTransaction.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditTransactionAttachment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditTransactionCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditTransactionLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CreditTransactionLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Crew.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Customer.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\CustomerContact.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyEmployeeEntry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyEmployeePerdiem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyEmployeeTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyEquipment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyEquipmentUsage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyForm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyGeneralTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyJobEmployee.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyJobTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyPMTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyPOUsage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyShopTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyStatusLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailySubContractorTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DailyTruckTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DDFIShared.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DEL_DailyPayrollEntry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DNU_DailyJobTask.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DTCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DTJobPhase.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DTJobPhaseCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DTPayrollHour.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\DTPayrollPerdiem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EarnCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMAudit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMAuditApprover.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMAuditLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMAuditStatusLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMBatchUsage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMCostCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMCostCodeType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMCostType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMDepartmentCostTypeGLAcct.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMDeptCostCodeGLAccount.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMLocation.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMLocationLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Employee.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EmployeeHouse.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EmployeeHouseType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EmployeeLeave.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EmploymentHistory.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMRevCodes.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMRevRate.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMServiceCategoryLink.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMServiceEquipmentLink.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMServiceItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMShop.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkOrder.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkOrderItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkOrderPart.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkOrderStatusCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Equipment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EquipmentCategory.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EquipmentDocument.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EquipmentLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EquipmentMeterLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ErrorLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Ext\DbContextExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Data\EXT_JCContract.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Firm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\FirmType.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Forum.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ForumLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\GLAccount.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\GLFinPeriod.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\GLParameter.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\GroundDensity.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQAttachment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQAttachmentFile.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQAttachmentFolder.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQCountry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQGroup.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQMaterial.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQMaterialCategory.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQMA_SearchResults_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQOffice.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HQState.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRAppliedPosition.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRAssetAssignment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRBenefitCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRBenefitGroup.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRBenefitGroupCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRCompanyAsset.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRDrivingExperience.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRDrugTest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPosition.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionApplicant.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionBenefit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionDefaultAsset.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionDuty.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionRequestTask.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionRequirement.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRPositionTask.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRResource.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRResourceBenefit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRSalaryHistory.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRTask.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRTermRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRTrafficAccident.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRTrafficTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\HRWorkExperience.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ImportTexTag.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCContract.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCIndustry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCIndustryMarket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCInvoiceDetail.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCItemCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JCMarket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Job.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobDepartment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobDepartmentCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobPhase.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobPhaseCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobPhaseTrack.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\JobStatus.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveCodeUsage.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveEntry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveRequestLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveRequestStatusLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\LeaveRequestWorkFlow.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Notification.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PayPeriod.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PayrollEntry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PayTerm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PhaseMaster.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PhaseMasterCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMContact.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMDistributionGroup.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMDistributionGroupContact.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMLocate.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMLocateAssignment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMLocateRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMLocateSequence.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMLocate_Import.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMProjectCrew.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMProjectGantTaskOwner.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMProjectGanttTask.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMProjectTaskLink.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PMTempJob.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\POBatchHeader.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\POBatchItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\POCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PORequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PORequestLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PORequestStatusLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\POWorkFlow.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRBatchTimeEntry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRCompanyParm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRCrewRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRDepartment.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PREmployeeCrew.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PREmployeeDivision.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRImportBenefit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PRInsuranceCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectBudget.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectBudgetCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectBudgetCodeCalPhase.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectBudgetLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectDivision.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ProjectFirm.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PurchaseOrder.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\PurchaseOrderItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Race.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SMRequest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SMRequestLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SPList.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SPSite.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SPTenate.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\TaxCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\tfudBDBI_SUMMARY_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udARTH_AgingByDivision_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udARTH_Aging_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udBDPR_BgtVsAct_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udDTEH_PortalReport_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udGLAC_AccountNumber_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udPRTH_PayrollSummary_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udPRTH_UserSummary_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udTransactionsDetails_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udTrialBalanceWithDim_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udTrialBalance_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\udWPHM_Index_Result.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\UMConversion.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\UnitofMeasure.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\UserProfile.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vAPDocument.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vAPTran.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vAudit.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vBid.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vBidBoreLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vBidBoreLineCostItem.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vCMBatch.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vCMTransactionCode.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vCreditMerchant.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vDailyTicket.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\VendorAltAddress.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\VendorPhase.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vFormHeader.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJob.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJobActualCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJobCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJobEstmatedCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJobForecastedCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vJobUnPostedCost.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\VPdb.Context.cs">
+      <DependentUpon>VPdb.Context.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\VPdb.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\VPdb.Designer.cs">
+      <DependentUpon>VPdb.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\Ext\VPEntitiesExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Data\vPMLocate.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vPOItemLine.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\vPurchaseOrder.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WAApplicantDrugTest.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WAAppliedPosition.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WADrivingExperience.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WATrafficIncident.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WAWorkExperience.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebApplicant.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebApplication.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebController.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebControllerSub.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebIPAddress.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebMenu.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebRole.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUser.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUserAccess.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUserClaim.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUserLog.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUserLogin.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WebUserRole.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WorkFlow.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WorkFlowSequence.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WorkFlowUser.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPExcelImport.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPExcelSheet.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPMapCoord.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPMapSet.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPUserDeviceRegistry.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\WPUserDivisionLink.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\ZionImport.cs">
+      <DependentUpon>VPdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Enums\APEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\BDEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\CMEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\DTEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\EMEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\GeneralEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\HQEnum.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\HREnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\JCEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\PMEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\POEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\PREnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\SMEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\WAEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Enums\WPEnums.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APBatch.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APBatchHeader.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APBatchLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APDocument.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APDocumentLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APDocumentSeq.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APTran.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APTranLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AP\APVendor.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\AR\ARTran.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\Bid.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidBoreLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidBoreLineCost.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidBoreLineCostItem.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidBoreLinePass.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\PackageCostItem.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidPackage.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidPackageCost.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\BidPackageSummary.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\BD\tfudBDBI_SUMMARY_Result.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditCardImage.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditCardImport.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditImageLink.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditTransaction.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditTransactionCode.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\CreditTransactionExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\ImportTexTag.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CSV\BenefitsCSV.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CSV\TXTagCSV.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CSV\WexCSV.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\WexImport.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CSV\ZionCSV.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\CC\ZionImport.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyEmployeeEntry.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyEmployeePerdiem.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyEmployeeTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyEquipmentUsage.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyForm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyGeneralTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyJobEmployee.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyJobTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyPOUsage.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyShopTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DailyTruckTicket.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DNU_DailyJobTask.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DTJobPhase.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DTJobPhaseCost.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DTPayrollHour.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\DT\DTPayrollPerdiem.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMAuditExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMAuditLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMBatch.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMWorkOrder.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EMWorkOrderItem.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\Equipment.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EquipmentCategory.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\EM\EquipmentLog.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQAttachment.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\BatchExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQAttachmentFile.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQAttachmentFolder.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQGroup.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQMaterialCategory.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HQ\HQOffice.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRBenefitCode.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRCompanyAsset.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRPosition.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRPositionApplicant.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRPositionRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRResource.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\HRTermRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\HR\LeaveRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\Contract.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\JCCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\JCJob.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\JobPhase.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\JobPhaseTrack.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\JC\PhaseMaster.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMBudget.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMLocate.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMLocateAssignment.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMLocateSequance.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMLocate_Import.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMProjectGanttTask.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PM\PMLocateRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PO\POBatch.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PO\PORequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRBatchTimeEntry.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\Crew.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\Employee.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRBatch.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRCompanyParm.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRCrewRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRImportBenefit.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\PR\PRTimeEntry.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\SM\SMRequest.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\SM\SMRequestLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\SP\SPList.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\SP\SPSite.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\SP\SPTenate.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WA\WAAppliedPosition.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WA\WATrafficIncident.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WA\WebApplicant.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WA\WebApplication.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\CompanyDivision.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\Forum.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\ForumLine.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WebUserAccessExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WebUserExtension.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WorkFlow.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WPExcelImport.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WPExcelSheet.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WPMapCord.cs" />
+    <Compile Include="Infrastructure\ViewPointDB\Models\WP\WPMapSet.cs" />
+    <Compile Include="Infrastructure\VPAttachmentDB\Data\Attachment.cs">
+      <DependentUpon>VPAttachmentdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.Context.cs">
+      <DependentUpon>VPAttachmentdb.Context.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.cs">
+      <DependentUpon>VPAttachmentdb.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.Designer.cs">
+      <DependentUpon>VPAttachmentdb.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Infrastructure\ViewPointDB\Data\VPdb.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VPdb.edmx</DependentUpon>
+      <LastGenOutput>VPdb.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Infrastructure\ViewPointDB\Data\VPdb.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VPdb.edmx</DependentUpon>
+      <LastGenOutput>VPdb.cs</LastGenOutput>
+    </Content>
+    <Content Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VPAttachmentdb.edmx</DependentUpon>
+      <LastGenOutput>VPAttachmentdb.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>VPAttachmentdb.edmx</DependentUpon>
+      <LastGenOutput>VPAttachmentdb.cs</LastGenOutput>
+    </Content>
+    <None Include="App.config" />
+    <EntityDeploy Include="Infrastructure\ViewPointDB\Data\VPdb.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>VPdb.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Infrastructure\ViewPointDB\Data\VPdb.edmx.diagram">
+      <DependentUpon>VPdb.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>VPAttachmentdb.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Infrastructure\VPAttachmentDB\Data\VPAttachmentdb.edmx.diagram">
+      <DependentUpon>VPAttachmentdb.edmx</DependentUpon>
+    </Content>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\EmailModels\DT\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+</Project>

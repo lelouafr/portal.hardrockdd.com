@@ -1,0 +1,13 @@
+﻿@model portal.Models.Views.Dashboard.HomeViewModel
+@if (Model.RejectedCount > 0)
+{
+    <div class="col-xl-2 col-lg-3 col-md-4">
+        <div class="widget widget-stats bg-orange">
+            <div class="stats-icon"><i class="fa fa-thumbs-down"></i></div>
+            <div class="stats-info">
+                <h4>Rejected Tickets</h4>
+                <p>@Model.RejectedCount</p>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <application name="ExcelFinanceAddIn" publisher="Hardrock DD" version="2.0.2.0" providerUrl="https://portal.hardrockdd.com/PublishApps/ExcelAddin/excelfinanceaddin.application" minimumVersion="2.0.2.0" culture="neutral" icon="" publicKeyToken="703928a7eda58b85" processorArchitecture="x86">
+    <supportedApps>1</supportedApps>
+    <registerForComInterop />
+  </application>
+  <preferences>
+    <showErrors>true</showErrors>
+    <showGUI>true</showGUI>
+    <runAfterInstalling>true</runAfterInstalling>
+    <generateLogFile>false</generateLogFile>
+    <showRegMsg>true</showRegMsg>
+    <showRunningApplicationsWarning>true</showRunningApplicationsWarning>
+  </preferences>
+</configuration>

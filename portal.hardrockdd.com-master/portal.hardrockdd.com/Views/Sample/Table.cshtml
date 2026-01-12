@@ -1,0 +1,55 @@
+﻿@model portal.Models.SampleListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = "";
+    foreach (var prp in tableLayout.Properties)
+    {
+        if (prp.IsKey)
+        {
+            var myData = Model.GetType().GetProperty(prp.Property);
+            var myVal = myData.GetValue(Model, null);
+            if (tableKey != string.Empty)
+            {
+                tableKey += "&";
+            }
+            tableKey += prp.Property + "=" + myVal.ToString();
+        }
+    }
+    tableKey += "|";
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("Add", "Sample")"
+       data-urldelete="@Url.Action("Delete", "Sample")"
+       data-urlselect="@Url.Action("Panel", "Sample")"
+       data-dstselect="reviewPanel"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().Id)</th>
+            <th width="20%">@Html.LabelForRequired(model => model.List.FirstOrDefault().SomeDateTime)</th>
+            <th width="30%">@Html.LabelForRequired(model => model.List.FirstOrDefault().SomeString)</th>
+            <th>
+                <button class="btn btn-primary addRow pull-right">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.List)
+        {
+            @Html.Partial("../Sample/TableRow", obj)
+        }
+    </tbody>
+</table>
+<script> 
+    $(document).ready(function () {
+        //$('#@tableId').DataTable();
+    });
+</script>

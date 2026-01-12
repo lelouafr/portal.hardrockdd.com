@@ -1,0 +1,48 @@
+﻿@model  portal.Models.Views.AR.Invoice.InvoiceLineListViewModel
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    viewOnly = true;
+    var tableLayout = new TableLayoutModel(this);
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlselect="@Url.Action("LineForm", "ARInvoice")"
+       data-dstselect="arInvoiceLineForm"
+       data-dstselectvalidate="false"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr>
+            <th width="5%"><label>#</label></th>
+            <th width="10%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ItemId)</th>
+            <th width="50%">@Html.LabelForRequired(model => model.List.FirstOrDefault().ItemDescription)</th>
+            <th width="10%" >@Html.LabelForRequired(model => model.List.FirstOrDefault().Units)</th>
+            <th width="10%" class="text-right">@Html.LabelForRequired(model => model.List.FirstOrDefault().UnitPrice)</th>
+            <th width="10%" class="text-right">@Html.LabelForRequired(model => model.List.FirstOrDefault().Amount)</th>
+            @if (!viewOnly)
+            {
+                <th>
+                    <button class="btn btn-primary addRow pull-right">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.List)
+        {
+            @Html.Partial("../AR/Invoice/Form/Lines/TableRow", line)
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+        Table().selectFirstRow($('#@tableId'));
+    });
+</script>

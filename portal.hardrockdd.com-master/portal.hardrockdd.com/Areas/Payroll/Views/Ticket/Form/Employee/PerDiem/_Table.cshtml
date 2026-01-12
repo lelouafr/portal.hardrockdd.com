@@ -1,0 +1,40 @@
+﻿@model portal.Areas.Payroll.Models.Ticket.Employee.PerDiemListViewModel
+
+@{
+    ViewBag.TableRow = "True";
+    var tableId = string.Format("table_{0}", Guid.NewGuid());
+    var tableLayout = new TableLayoutModel(this);
+    var viewOnly = bool.TryParse(ViewBag.ViewOnly?.ToString(), out bool viewOnlyOut) ? viewOnlyOut : false;
+    string tableKey = tableLayout.TableKey;
+}
+
+<table class="table"
+       id="@tableId"
+       data-urlcreate="@Url.Action("JobEmployeeAdd", "Ticket")"
+       data-urldelete="@Url.Action("JobEmployeeDelete", "Ticket")"
+       data-urlupdate="@Url.Action("JobEmployeeUpdate", "Ticket")"
+       data-urlvalidate="@Url.Action("JobEmployeeValidate", "Ticket")"
+       data-tablekey="@tableKey">
+    <thead>
+        <tr class="">
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Saturday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Sunday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Monday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Tuesday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Wednesday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Thursday)</th>
+            <th width="14%">@Html.LabelForRequired(model => model.Week.FirstOrDefault().Friday)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obj in Model.Week)
+        {
+            @Html.Partial("Form/Employee/PerDiem/_TableRow", obj)
+        }
+    </tbody>
+</table>
+<script>
+    $('#@tableId').ready(function () {
+        Table().init($('#@tableId'));
+    });
+</script>
