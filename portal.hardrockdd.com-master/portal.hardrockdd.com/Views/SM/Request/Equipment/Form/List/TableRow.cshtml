@@ -5,9 +5,13 @@
     var entityKey = "";
     ViewBag.TableRow = "True";
 
-    entityKey  = tableLayout.TableKey;
+    entityKey = tableLayout.TableKey;
+
+    var priorityOptions = portal.Models.Views.SM.Request.Forms.EquipmentLineViewModel.GetPriorityOptions();
+    var requestTypeOptions = portal.Models.Views.SM.Request.Forms.EquipmentLineViewModel.GetRequestTypeOptions();
 }
 <tr data-entitykey="@entityKey">
+    @* Hidden Fields *@
     <td>
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.SMCo, new { @id = Guid.NewGuid() })
@@ -17,12 +21,48 @@
         @Html.HiddenFor(m => m.EMCo, new { @id = Guid.NewGuid() })
         @Html.EditorFor(m => m.EquipmentId)
     </td>
+
+    @* Equipment Type (read-only, auto-filled) *@
     <td>
-        @Html.EditorFor(m => m.RequestComments)
+        <span class="form-control-plaintext form-control-sm">@Model.EquipmentType</span>
     </td>
+
+    @* Location *@
     <td>
-        @Html.EditorFor(m => m.IsEquipmentDisabled)
+        @Html.TextBoxFor(m => m.AssignedLocation, new { @class = "form-control form-control-sm", @id = Guid.NewGuid() })
     </td>
+
+    @* Mileage *@
+    <td>
+        @Html.TextBoxFor(m => m.Mileage, new { @class = "form-control form-control-sm", @type = "number", @step = "0.1", @id = Guid.NewGuid() })
+    </td>
+
+    @* Hours *@
+    <td>
+        @Html.TextBoxFor(m => m.Hours, new { @class = "form-control form-control-sm", @type = "number", @step = "0.1", @id = Guid.NewGuid() })
+    </td>
+
+    @* Request Type Dropdown *@
+    <td>
+        @Html.DropDownListFor(m => m.MaintenanceRequestTypeId, requestTypeOptions, new { @class = "form-control form-control-sm", @id = Guid.NewGuid() })
+    </td>
+
+    @* Priority Dropdown *@
+    <td>
+        @Html.DropDownListFor(m => m.PriorityId, priorityOptions, new { @class = "form-control form-control-sm", @id = Guid.NewGuid() })
+    </td>
+
+    @* Description of Issue *@
+    <td>
+        @Html.TextBoxFor(m => m.RequestComments, new { @class = "form-control form-control-sm", @id = Guid.NewGuid() })
+    </td>
+
+    @* Emergency Checkbox *@
+    <td class="text-center">
+        @Html.CheckBoxFor(m => m.IsEmergency, new { @class = "form-check-input", @id = Guid.NewGuid() })
+    </td>
+
+    @* Delete Button *@
     <td>
         <button class="btn btn-sm btn-danger pull-right delRow"
                 data-entitykey="@entityKey">

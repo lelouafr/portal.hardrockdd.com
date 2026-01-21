@@ -6,7 +6,7 @@
     var tableKey = tableLayout.TableKey;
 }
 
-<table class="table"
+<table class="table table-sm"
        id="@tableId"
        style="display:none"
        data-urlcreate="@Url.Action("RequestEquipmentLineAdd", "ServiceRequest")"
@@ -15,9 +15,15 @@
        data-tablekey="@tableKey">
     <thead>
         <tr>
-            <th width="250px">@Html.LabelForRequired(model => model.List.FirstOrDefault().EquipmentId)</th>
-            <th >@Html.LabelForRequired(model => model.List.FirstOrDefault().RequestComments)</th>
-            <th width="140px">@Html.LabelForRequired(model => model.List.FirstOrDefault().IsEquipmentDisabled)</th>
+            <th width="150px">Equipment</th>
+            <th width="80px">Type</th>
+            <th width="100px">Location</th>
+            <th width="70px">Mileage</th>
+            <th width="70px">Hours</th>
+            <th width="120px">Request Type</th>
+            <th width="90px">Priority</th>
+            <th>Description of Issue</th>
+            <th width="70px">Emergency</th>
             <th width="35px">
                 <button class="btn btn-sm btn-primary addRow pull-right">
                     <i class="fa fa-plus"></i>

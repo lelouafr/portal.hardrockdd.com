@@ -21,36 +21,54 @@
 <script>
     $('#@formId').ready(function () {
         $('#@(formId)').on('click', 'button.@btnId', function () {
-
             var button = $(this);
             $(button).SetButtonBusy();
-
             var gotoStatusId = $(this).data('gotostatusid');
             var redirectAction = $(this).data('redirectaction');
+            var actionUrl = $(this).data('actionurl');
             var dst = $(document).find('.reviewPanel');
 
-            var url = "@Url.Action("RequestUpdateStatus", "ServiceRequest")";
-            var data = Object.fromEntries(new URLSearchParams($(this).data('key')));
+            // Use custom actionUrl if provided for CreateWorkOrder, otherwise default to RequestUpdateStatus
+            var url = (actionUrl && actionUrl.includes("CreateWorkOrder")) ? actionUrl : "@Url.Action("RequestUpdateStatus", "ServiceRequest")";
             var token = $(document).find('[name="__RequestVerificationToken"]');
+
+            // Parse the key data (e.g., "SMCo=1&RequestId=3195")
+            var data = {};
+            var keyString = $(this).data('key');
+            if (keyString) {
+                keyString.split('&').forEach(function(pair) {
+                    var parts = pair.split('=');
+                    if (parts.length === 2) {
+                        data[parts[0]] = parts[1];
+                    }
+                });
+            }
 
             data.gotoStatusId = gotoStatusId;
             data.redirectAction = redirectAction;
             data.__RequestVerificationToken = token.val();
 
-
             $.post(url, data, function (res) {
                 $(button).SetButtonNotBusy();
                 if (res.success === "true") {
-                    if ($(dst).length !== 0) {
+                    if (actionUrl && actionUrl.includes("CreateWorkOrder") && res.url) {
+                        // Redirect to the new work order
+                        location.href = res.url;
+                    }
+                    else if ($(dst).length !== 0) {
                         $(dst).find('[data-click="panel-reload"]').click();
                     }
                     else {
                         location.href = res.url;
                     }
                 }
+                else {
+                    // Show error if available
+                    if (res.errorModel) {
+                        alert('Error: ' + JSON.stringify(res.errorModel));
+                    }
+                }
             });
-
         });
-
     });
 </script>

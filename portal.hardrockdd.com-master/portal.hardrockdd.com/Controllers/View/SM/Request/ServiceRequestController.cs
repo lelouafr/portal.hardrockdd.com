@@ -272,12 +272,24 @@ namespace portal.Controllers.VP
         {
             using var db = new VPContext();
             var entity = db.SMRequests.FirstOrDefault(f => f.SMCo == smco && f.RequestId == requestId);
+
+            // Remove lines without equipment
             foreach (var item in entity.Lines.Where(f => f.Equipment == null).ToList())
             {
                 entity.Lines.Remove(item);
             }
+
             entity.Status = (DB.SMRequestStatusEnum)gotoStatusId;
             db.SaveChanges(ModelState);
+
+            // ========== AUTO-CREATE WORK ORDER ON SUBMIT ==========
+            if (gotoStatusId == (int)DB.SMRequestStatusEnum.Submitted)
+            {
+                // Call the existing CreateWorkOrderFromRequest logic
+                AutoCreateWorkOrder(db, smco, requestId);
+            }
+            // ======================================================
+
             var url = Url.Action("Index", "Home", new { Area = "" });
             if (ActionRedirect == "Reload")
             {
@@ -286,7 +298,161 @@ namespace portal.Controllers.VP
 
             return Json(new { url, success = ModelState.IsValidJson(), errorModel = ModelState.ModelErrors() });
         }
+
+        // ========== ADD THIS NEW PRIVATE METHOD ==========
+        private void AutoCreateWorkOrder(VPContext db, byte smco, int requestId)
+        {
+            var request = db.SMRequests.FirstOrDefault(f => f.SMCo == smco && f.RequestId == requestId);
+
+            if (request == null)
+                return;
+
+            var equipmentLines = request.Lines.Where(l => l.tEquipmentId != null && l.WorkOrderId == null).ToList();
+
+            if (!equipmentLines.Any())
+                return;
+
+            var firstEquipment = equipmentLines.First().Equipment;
+            byte emco = firstEquipment?.EMCo ?? 1;
+
+            // Generate unique Work Order ID using timestamp
+            string workOrderIdStr = DateTime.Now.ToString("MMddHHmmss");
+
+            var workOrder = new EMWorkOrder
+            {
+                EMCo = emco,
+                WorkOrderId = workOrderIdStr,
+                EquipmentId = firstEquipment?.EquipmentId,
+                Description = $"From Service Request #{requestId}",
+                ShopGroupId = (byte)(equipmentLines.FirstOrDefault()?.ShopGroupId ?? 1),
+                DateCreated = DateTime.Now,
+                Notes = request.Comments,
+                Complete = "N"
+            };
+
+            db.EMWorkOrders.Add(workOrder);
+            db.SaveChanges(ModelState);
+
+            if (!ModelState.IsValid)
+                return;
+
+            short itemNum = 1;
+            foreach (var line in equipmentLines)
+            {
+                var woItem = new EMWorkOrderItem
+                {
+                    EMCo = emco,
+                    WorkOrderId = workOrder.WorkOrderId,
+                    WOItem = itemNum,
+                    EquipmentId = line.tEquipmentId,
+                    Description = line.Description ?? line.RequestComments ?? "Service Request Item",
+                    DateCreated = DateTime.Now,
+                    Notes = line.RequestComments,
+                    EMGroup = 1,
+                    InHseSubFlag = "I",
+                    RepairType = "1",
+                    Priority = "N"
+                };
+
+                woItem.CostCodeId = "300";
+                woItem.StatusCode = db.EMWorkOrderStatusCodes.FirstOrDefault(s => s.StatusCodeId == "1");
+
+                db.EMWorkOrderItems.Add(woItem);
+
+                line.EMCo = emco;
+                line.WorkOrderId = workOrder.WorkOrderId;
+                line.WOItemId = itemNum;
+
+                itemNum++;
+            }
+
+            db.SaveChanges(ModelState);
+        }
+
+
+
         #endregion
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateWorkOrderFromRequest(byte smco, int requestId)
+        {
+            using var db = new VPContext();
+            var request = db.SMRequests.FirstOrDefault(f => f.SMCo == smco && f.RequestId == requestId);
+
+            if (request == null)
+            {
+                return Json(new { success = "false", errorModel = new { Error = "Service Request not found" } });
+            }
+
+            var equipmentLines = request.Lines.Where(l => l.tEquipmentId != null).ToList();
+
+            if (!equipmentLines.Any())
+            {
+                return Json(new { success = "false", errorModel = new { Error = "No equipment lines found in request" } });
+            }
+
+            var firstEquipment = equipmentLines.First().Equipment;
+            byte emco = firstEquipment?.EMCo ?? 1;
+
+            // Generate unique Work Order ID using timestamp
+            string workOrderIdStr = DateTime.Now.ToString("MMddHHmmss");
+
+            var workOrder = new EMWorkOrder
+            {
+                EMCo = emco,
+                WorkOrderId = workOrderIdStr,
+                EquipmentId = firstEquipment?.EquipmentId,
+                Description = $"From Service Request #{requestId}",
+                ShopGroupId = (byte)(equipmentLines.FirstOrDefault()?.ShopGroupId ?? 1),
+                DateCreated = DateTime.Now,
+                Notes = request.Comments,
+                Complete = "N"
+            };
+
+            db.EMWorkOrders.Add(workOrder);
+            db.SaveChanges(ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = "false", errorModel = ModelState.ModelErrors() });
+            }
+
+            short itemNum = 1;
+            foreach (var line in equipmentLines)
+            {
+                var woItem = new EMWorkOrderItem
+                {
+                    EMCo = emco,
+                    WorkOrderId = workOrder.WorkOrderId,
+                    WOItem = itemNum,
+                    EquipmentId = line.tEquipmentId,
+                    Description = line.Description ?? line.RequestComments ?? "Service Request Item",
+                    DateCreated = DateTime.Now,
+                    Notes = line.RequestComments,
+                    EMGroup = 1,
+                    InHseSubFlag = "I",
+                    RepairType = "1",
+                    Priority = line.IsEmergancy == true ? "E" : "N"
+                };
+
+                woItem.CostCodeId = "300";
+                woItem.StatusCode = db.EMWorkOrderStatusCodes.FirstOrDefault(s => s.StatusCodeId == "1");
+                
+                db.EMWorkOrderItems.Add(woItem);
+
+                line.EMCo = emco;
+                line.WorkOrderId = workOrder.WorkOrderId;
+                line.WOItemId = itemNum;
+
+                itemNum++;
+            }
+
+            db.SaveChanges(ModelState);
+
+            var url = Url.Action("Index", "EMWorkOrder", new { Area = "", emco = workOrder.EMCo, workOrderId = workOrder.WorkOrderId });
+            return Json(new { success = ModelState.IsValid ? "true" : "false", url, errorModel = ModelState.ModelErrors() });
+        }
 
         #region Service Request Info Form
         [HttpGet]
@@ -355,9 +521,10 @@ namespace portal.Controllers.VP
                 var entity = db.SMRequestLines.FirstOrDefault(f => f.SMCo == model.SMCo && f.RequestId == model.RequestId && f.LineId == model.LineId);
                 if (entity != null)
                 {
+                    // Equipment handling
                     if (entity.tEquipmentId != model.EquipmentId)
                     {
-                        var equipment = db.Equipments.FirstOrDefault(f => f.EquipmentId == entity.tEquipmentId);
+                        var equipment = db.Equipments.FirstOrDefault(f => f.EquipmentId == model.EquipmentId);
                         entity.tEquipmentId = model.EquipmentId;
                         entity.Equipment = null;
                         entity.Equipment = equipment;
@@ -365,20 +532,38 @@ namespace portal.Controllers.VP
                     }
                     if (entity.tEquipmentId != null && entity.Equipment == null)
                     {
-                        var equipment = db.Equipments.FirstOrDefault(f =>  f.EquipmentId == entity.tEquipmentId);
+                        var equipment = db.Equipments.FirstOrDefault(f => f.EquipmentId == entity.tEquipmentId);
                         entity.EMCo = equipment.EMCo;
                         entity.Equipment = equipment;
                         entity.ShopGroupId = equipment.ShopGroup;
                     }
-                    entity.RequestComments = model.RequestComments;
-                    entity.IsEquipmentDisabled = model.IsEquipmentDisabled;
 
+                    // ========== EXISTING FIELDS (budSMRL) ==========
+                    entity.RequestComments = model.RequestComments;
+                    entity.AssignedLocation = model.AssignedLocation;
+                    entity.EMOdoReading = model.Mileage;
+                    entity.EMHourReading = model.Hours;
+                    entity.IsEmergancy = model.IsEmergency;
+
+                    // ========== CUSTOM FIELDS (budSMRLCustom) - using raw SQL helper ==========
+                    var customData = new SMRequestLineCustom
+                    {
+                        SMCo = model.SMCo,
+                        RequestId = model.RequestId,
+                        LineId = model.LineId,
+                        PriorityId = (byte?)model.PriorityId,
+                        RequestTypeId = model.MaintenanceRequestTypeId
+                    };
+                    SMCustomData.SaveCustomData(customData, db.CurrentUserId);
+                    // ================================================
                 }
+
                 db.SaveChanges(ModelState);
                 model = new portal.Models.Views.SM.Request.Forms.EquipmentLineViewModel(entity);
             }
             return Json(new { success = ModelState.IsValidJson(), model, errorModel = ModelState.ModelErrors() });
         }
+
 
         [HttpGet]
         public PartialViewResult RequestEquipmentLineAdd(byte smco, int requestId)

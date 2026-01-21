@@ -278,27 +278,40 @@ namespace portal.Controllers.VP.EM
         public ActionResult Delete(byte emco, string workOrderId)
         {
             using var db = new VPContext();
-            var workOrder = db.EMWorkOrders
-                .Include(w => w.Items)
-                .Include(w => w.Parts)
-                .FirstOrDefault(f => f.EMCo == emco && f.WorkOrderId == workOrderId);
-            
+
+            // Clear references from Service Request Lines first
+            var requestLines = db.SMRequestLines.Where(l => l.EMCo == emco && l.WorkOrderId == workOrderId).ToList();
+            foreach (var line in requestLines)
+            {
+                line.EMCo = null;
+                line.WorkOrderId = null;
+                line.WOItemId = null;
+            }
+
+            // Remove parts first
+            var parts = db.EMWorkOrderParts.Where(p => p.EMCo == emco && p.WorkOrderId == workOrderId).ToList();
+            db.EMWorkOrderParts.RemoveRange(parts);
+
+            // Remove items
+            var items = db.EMWorkOrderItems.Where(i => i.EMCo == emco && i.WorkOrderId == workOrderId).ToList();
+            db.EMWorkOrderItems.RemoveRange(items);
+
+            // Remove work order
+            var workOrder = db.EMWorkOrders.FirstOrDefault(f => f.EMCo == emco && f.WorkOrderId == workOrderId);
             if (workOrder != null)
             {
-                // Remove parts first
-                db.EMWorkOrderParts.RemoveRange(workOrder.Parts);
-                // Remove items
-                db.EMWorkOrderItems.RemoveRange(workOrder.Items);
-                // Remove work order
                 db.EMWorkOrders.Remove(workOrder);
-                db.SaveChanges(ModelState);
             }
+
+            db.SaveChanges(ModelState);
 
             return Json(new { success = ModelState.IsValidJson(), errorModel = ModelState.ModelErrors() });
         }
+
         #endregion
 
         #region Work Order Items
+
         [HttpGet]
         public PartialViewResult ItemsTable(byte emco, string workOrderId)
         {
@@ -345,8 +358,10 @@ namespace portal.Controllers.VP.EM
                 InHseSubFlag = "I",
                 RepairType = "1",
                 Priority = "N",
-                CostCodeId = workOrder.EMCompany.LaborCostCode?.CostCodeId
+                CostCodeId = workOrder.EMCompany.LaborCostCode?.CostCodeId ?? "300"
             };
+
+            newItem.StatusCode = db.EMWorkOrderStatusCodes.FirstOrDefault(s => s.StatusCodeId == "1");
 
             db.EMWorkOrderItems.Add(newItem);
             db.SaveChanges(ModelState);

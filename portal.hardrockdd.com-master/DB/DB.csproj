@@ -1015,6 +1015,7 @@
     <Compile Include="Infrastructure\ViewPointDB\Data\Race.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\SMCustomData.cs" />
     <Compile Include="Infrastructure\ViewPointDB\Data\SMRequest.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>

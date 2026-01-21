@@ -9,9 +9,9 @@
 
 <table class="table table-striped"
        id="@tableId"
-       data-urlcreate="@Url.Action("ItemAdd", "EMWorkOrder")"
-       data-urldelete="@Url.Action("ItemDelete", "EMWorkOrder")"
-       data-urlupdate="@Url.Action("ItemUpdate", "EMWorkOrder")"
+       data-urlcreate="@Url.Action("ItemAdd", "EMWorkOrder", new { emco = firstItem.EMCo, workOrderId = firstItem.WorkOrderId })"
+       data-urldelete="@Url.Action("ItemDelete", "EMWorkOrder", new { emco = firstItem.EMCo, workOrderId = firstItem.WorkOrderId })"
+       data-urlupdate="@Url.Action("ItemUpdate", "EMWorkOrder", new { emco = firstItem.EMCo, workOrderId = firstItem.WorkOrderId })"
        data-tablekey="@tableKey">
     <thead>
         <tr>

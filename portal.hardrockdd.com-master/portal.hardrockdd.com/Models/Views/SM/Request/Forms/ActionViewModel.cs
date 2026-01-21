@@ -48,6 +48,7 @@ namespace portal.Models.Views.SM.Request.Forms
                         results.Add(new WF.WorkFlowAction() { Title = "Cancel", GotoStatusId = (int)DB.SMRequestStatusEnum.Canceled, ButtonClass = "btn-danger", ActionRedirect = "Home", ActionUrl = "/ServiceRequest/ServiceRequestPanel" });
                         break;
                     case DB.SMRequestStatusEnum.Submitted:
+                        results.Add(new WF.WorkFlowAction() { Title = "Create Work Order", GotoStatusId = (int)DB.SMRequestStatusEnum.Submitted, ButtonClass = "btn-success", ActionRedirect = "WorkOrder", ActionUrl = "/ServiceRequest/CreateWorkOrderFromRequest" });
                         results.Add(new WF.WorkFlowAction() { Title = "Cancel", GotoStatusId = (int)DB.SMRequestStatusEnum.Canceled, ButtonClass = "btn-danger", ActionRedirect = "Home", ActionUrl = "/ServiceRequest/ServiceRequestPanel" });
                         break;
                     case DB.SMRequestStatusEnum.Canceled:
