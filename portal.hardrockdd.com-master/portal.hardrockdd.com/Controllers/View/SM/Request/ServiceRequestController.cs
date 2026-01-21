@@ -896,5 +896,88 @@ namespace portal.Controllers.VP
         #region Email
 
         #endregion
+
+
+        #region Foreman Dashboard
+
+        [HttpGet]
+        [Route("Service/Foreman/Dashboard")]
+        public ActionResult ForemanDashboard()
+        {
+            try
+            {
+                using var db = new VPContext();
+
+                // Get request lines from the last 30 days with equipment
+                var thirtyDaysAgo = DateTime.Now.AddDays(-30);
+
+                var lines = db.SMRequestLines
+                    .Where(l => l.tEquipmentId != null)
+                    .ToList()
+                    .Where(l => l.Request.Status != DB.SMRequestStatusEnum.Draft
+                             && l.Request.Status != DB.SMRequestStatusEnum.Canceled
+                             && l.Request.RequestDate >= thirtyDaysAgo)
+                    .OrderByDescending(l => l.Request.RequestDate)
+                    .ToList();
+
+                var model = new portal.Models.Views.SM.Request.ForemanDashboardViewModel(lines);
+                return View("~/Views/SM/Request/Foreman/Index.cshtml", model);
+            }
+            catch (Exception ex)
+            {
+                return Content("Error: " + ex.Message + "<br><br>Stack: " + ex.StackTrace, "text/html");
+            }
+        }
+
+
+        [HttpGet]
+        public JsonResult GetMechanics(byte emco = 1)
+        {
+            using var db = new VPContext();
+
+            var mechanics = db.Employees
+                .Where(e => e.PRCo == emco && e.ActiveYN == "Y")
+                .OrderBy(e => e.LastName)
+                .Take(100)
+                .Select(e => new { Value = e.EmployeeId.ToString(), Text = e.FirstName + " " + e.LastName })
+                .ToList();
+
+            return Json(mechanics, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult AssignMechanic(byte smco, int requestId, int lineId, byte emco, string workOrderId, int mechanicId)
+        {
+            using var db = new VPContext();
+
+            // Update Service Request Line
+            var line = db.SMRequestLines.FirstOrDefault(l =>
+                l.SMCo == smco && l.RequestId == requestId && l.LineId == lineId);
+
+            if (line != null)
+            {
+                line.AsignedEmployeeId = mechanicId;
+                //line.Status = DB.SMRequestLineStatusEnum.Assigned;
+            }
+
+            // Update Work Order Item if exists
+            if (!string.IsNullOrEmpty(workOrderId))
+            {
+                var woItem = db.EMWorkOrderItems.FirstOrDefault(w =>
+                    w.EMCo == emco && w.WorkOrderId == workOrderId && w.WOItem == line.WOItemId);
+
+                if (woItem != null)
+                {
+                    woItem.MechanicId = mechanicId;
+                }
+            }
+
+            db.SaveChanges(ModelState);
+
+            return Json(new { success = ModelState.IsValid });
+        }
+
+        #endregion
     }
 }

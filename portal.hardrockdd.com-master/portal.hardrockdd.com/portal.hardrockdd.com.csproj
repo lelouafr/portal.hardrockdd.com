@@ -987,6 +987,7 @@
     <Compile Include="Models\Views\SM\Request\Equipment\Forms\Line\AssignmentViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Equipment\Forms\Line\FormViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Equipment\Forms\Line\InfoViewModel.cs" />
+    <Compile Include="Models\Views\SM\Request\ForemanDashboardViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Forms\ActionViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Forms\EquipmentLineViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Forms\FormViewModel.cs" />
@@ -7067,6 +7068,7 @@
     <Content Include="Views\Shared\Sidebar\MenuItems\HQ\GL_App.cshtml" />
     <Content Include="Views\Shared\Sidebar\MenuItems\DT.cshtml" />
     <Content Include="Views\EM\WorkOrder\Add\Index.cshtml" />
+    <Content Include="Views\SM\Request\Foreman\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />

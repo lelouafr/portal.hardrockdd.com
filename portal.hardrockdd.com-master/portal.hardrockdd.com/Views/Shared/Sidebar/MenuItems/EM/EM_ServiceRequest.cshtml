@@ -27,6 +27,16 @@
                 <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceEquipmentAllListIndex", "ServiceRequest", routeValues: new { Area = "" })">All Request</a></li>
             }
 
+            @if (User.HasAccess("ServiceRequest", "ForemanDashboard"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)">
+                    <a href="@Url.Action("ForemanDashboard", "ServiceRequest", routeValues: new { Area = "" })">
+                        <i class="fa fa-dashboard"></i> Foreman Dashboard
+                    </a>
+                </li>
+            }
+
+
         </ul>
     </li>
 }
