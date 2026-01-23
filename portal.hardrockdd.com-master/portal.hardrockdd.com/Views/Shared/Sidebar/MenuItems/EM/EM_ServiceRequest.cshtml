@@ -3,10 +3,11 @@
     var listItemId = 1;
     var listItemTag = "em_servicerequest";
 }
-
 @if (User.HasAccess("ServiceRequest", "ServiceEquipmentRequestListIndex") ||
     User.HasAccess("ServiceRequest", "ServiceRequestUserListIndex") ||
-    User.HasAccess("ServiceRequest", "ServiceEquipmentAllListIndex"))
+    User.HasAccess("ServiceRequest", "ServiceEquipmentAllListIndex") ||
+    User.HasAccess("ServiceRequest", "ForemanDashboard") ||
+    User.HasAccess("ServiceRequest", "MechanicDashboard"))
 {
     <li id="menu_li_@(listItemTag)_@(listItemId++)" class="has-sub">
         <a href="javascript:;">
@@ -14,6 +15,22 @@
             <span>Request</span>
         </a>
         <ul class="sub-menu">
+            @if (User.HasAccess("ServiceRequest", "ForemanDashboard"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)">
+                    <a href="@Url.Action("ForemanDashboard", "ServiceRequest", routeValues: new { Area = "" })">
+                        <i class="fa fa-dashboard"></i> Foreman Dashboard
+                    </a>
+                </li>
+            }
+            @if (User.HasAccess("ServiceRequest", "MechanicDashboard"))
+            {
+                <li id="menu_li_@(listItemTag)_@(listItemId++)">
+                    <a href="@Url.Action("MechanicDashboard", "ServiceRequest", routeValues: new { Area = "" })">
+                        <i class="fa fa-wrench"></i> My Work Orders
+                    </a>
+                </li>
+            }
             @if (User.HasAccess("ServiceRequest", "ServiceEquipmentRequestListIndex"))
             {
                 <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceEquipmentRequestListIndex", "ServiceRequest", routeValues: new { Area = "" })">Equipment(s) with Request</a></li>
@@ -26,17 +43,6 @@
             {
                 <li id="menu_li_@(listItemTag)_@(listItemId++)"><a href="@Url.Action("ServiceEquipmentAllListIndex", "ServiceRequest", routeValues: new { Area = "" })">All Request</a></li>
             }
-
-            @if (User.HasAccess("ServiceRequest", "ForemanDashboard"))
-            {
-                <li id="menu_li_@(listItemTag)_@(listItemId++)">
-                    <a href="@Url.Action("ForemanDashboard", "ServiceRequest", routeValues: new { Area = "" })">
-                        <i class="fa fa-dashboard"></i> Foreman Dashboard
-                    </a>
-                </li>
-            }
-
-
         </ul>
     </li>
 }

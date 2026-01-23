@@ -979,5 +979,88 @@ namespace portal.Controllers.VP
         }
 
         #endregion
+
+
+
+        #region Mechanic Dashboard
+
+        [HttpGet]
+        [Route("Service/Mechanic/Dashboard")]
+        public ActionResult MechanicDashboard()
+        {
+            try
+            {
+                using var db = new VPContext();
+
+                // Get current user's employee info
+                var currentEmployee = StaticFunctions.GetCurrentEmployee();
+                int? employeeId = currentEmployee?.EmployeeId;
+                string mechanicName = currentEmployee?.FullName ?? "Unknown";
+
+                // Get work order items assigned to this mechanic (not completed, from last 90 days)
+                var ninetyDaysAgo = DateTime.Now.AddDays(-90);
+
+                var items = db.EMWorkOrderItems
+                    .Where(i => i.MechanicId == employeeId
+                             && i.DateCreated >= ninetyDaysAgo)
+                    .OrderByDescending(i => i.DateCreated)
+                    .ToList();
+
+                var model = new portal.Models.Views.SM.Request.MechanicDashboardViewModel(items, mechanicName);
+                return View("~/Views/SM/Request/Mechanic/Index.cshtml", model);
+            }
+            catch (Exception ex)
+            {
+                return Content("Error: " + ex.Message + "<br><br>Stack: " + ex.StackTrace, "text/html");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult CompleteWorkOrderItem(byte emco, string workOrderId, short woItem, string notes)
+        {
+            try
+            {
+                using var db = new VPContext();
+
+                // Find the work order item
+                var item = db.EMWorkOrderItems.FirstOrDefault(i =>
+                    i.EMCo == emco && i.WorkOrderId == workOrderId && i.WOItem == woItem);
+
+                if (item == null)
+                {
+                    return Json(new { success = false, error = "Work order item not found" });
+                }
+
+                // Mark as complete
+                item.DateCompl = DateTime.Now;
+
+                // Append completion notes if provided
+                if (!string.IsNullOrEmpty(notes))
+                {
+                    item.Notes = string.IsNullOrEmpty(item.Notes)
+                        ? notes
+                        : item.Notes + "\n\n[Completion Notes " + DateTime.Now.ToShortDateString() + "]: " + notes;
+                }
+
+                // Update linked Service Request Line status if exists
+                var srLine = db.SMRequestLines.FirstOrDefault(l =>
+                    l.EMCo == emco && l.WorkOrderId == workOrderId && l.WOItemId == woItem);
+
+                if (srLine != null)
+                {
+                    srLine.Status = DB.SMRequestLineStatusEnum.Completed;
+                }
+
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }

@@ -993,6 +993,7 @@
     <Compile Include="Models\Views\SM\Request\Forms\FormViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Forms\InfoViewModel.cs" />
     <Compile Include="Models\Views\SM\RequestLine\RequestInfoViewModel.cs" />
+    <Compile Include="Models\Views\SM\Request\MechanicDashboardViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\ServiceRequestViewModel.cs" />
     <Compile Include="Models\Views\SM\Request\Summary\ServiceRequestLineViewModel.cs" />
     <Compile Include="Models\Views\System\FormModel.cs" />
@@ -7069,6 +7070,7 @@
     <Content Include="Views\Shared\Sidebar\MenuItems\DT.cshtml" />
     <Content Include="Views\EM\WorkOrder\Add\Index.cshtml" />
     <Content Include="Views\SM\Request\Foreman\Index.cshtml" />
+    <Content Include="Views\SM\Request\Mechanic\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
