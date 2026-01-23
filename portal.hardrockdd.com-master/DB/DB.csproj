@@ -654,6 +654,7 @@
     <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkOrderStatusCode.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMWorkPerformedData.cs" />
     <Compile Include="Infrastructure\ViewPointDB\Data\Equipment.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>

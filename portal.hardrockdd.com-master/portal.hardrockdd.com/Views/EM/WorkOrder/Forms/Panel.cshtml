@@ -1,7 +1,16 @@
-﻿@model portal.Models.Views.EM.WorkOrder.Forms.FormViewModel
+﻿@* =============================================================================
+    UPDATED FILE: Views/EM/WorkOrder/Forms/Panel.cshtml
+    This adds the Work Performed Documentation panel
+    ============================================================================= *@
+
+@model portal.Models.Views.EM.WorkOrder.Forms.FormViewModel
 @{
     var id = Guid.NewGuid().ToString().Replace("-", "");
     var panelId = string.Format("panel_{0}", Guid.NewGuid());
+
+    // Get Work Performed data
+    var workPerformed = global::DB.Infrastructure.ViewPointDB.Data.EMWorkPerformedData.GetWorkPerformed(
+        Model.EMCo, Model.WorkOrderId, 1);
 }
 <div class="row">
     <div class="col-xl-8">
@@ -30,6 +39,107 @@
                 @Html.Partial("../EM/WorkOrder/Forms/Items/Panel", Model.Items)
             </div>
         </div>
+
+        <!-- Work Performed Documentation -->
+        @if (workPerformed != null)
+        {
+            <div class="panel panel-inverse">
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-default" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    </div>
+                    <h4 class="panel-title"><i class="fa fa-clipboard-check"></i> Work Performed Documentation</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Completion Status:</strong><br />
+                                @if (workPerformed.CompletionStatus == 'C')
+                                {
+                                    <span class="badge badge-success">Completed</span>
+                                }
+                                else if (workPerformed.CompletionStatus == 'P')
+                                {
+                                    <span class="badge badge-warning">Partially Completed</span>
+                                }
+                                else if (workPerformed.CompletionStatus == 'F')
+                                {
+                                    <span class="badge badge-danger">Requires Follow-up</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong>Completed Date:</strong><br />
+                                @workPerformed.CompletedDate.ToString("MM/dd/yyyy h:mm tt")
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                        <label><strong>Repairs Completed:</strong></label>
+                        <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #dee2e6;">
+                            @(workPerformed.RepairsCompleted ?? "N/A")
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(workPerformed.PartsReplaced))
+                    {
+                        <div class="form-group">
+                            <label><strong>Parts Replaced:</strong></label>
+                            <div style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #dee2e6;">
+                                @workPerformed.PartsReplaced
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(workPerformed.PartsBackordered))
+                    {
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label><strong>Parts on Backorder:</strong></label>
+                                    <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border: 1px solid #ffc107;">
+                                        @workPerformed.PartsBackordered
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label><strong>Expected Arrival:</strong></label>
+                                    <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; border: 1px solid #ffc107;">
+                                        @(workPerformed.BackorderETA?.ToString("MM/dd/yyyy") ?? "TBD")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(workPerformed.TemporaryRepairs))
+                    {
+                        <div class="form-group">
+                            <label><strong>Temporary Repairs Made:</strong></label>
+                            <div style="background-color: #d1ecf1; padding: 10px; border-radius: 5px; border: 1px solid #17a2b8;">
+                                @workPerformed.TemporaryRepairs
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(workPerformed.RecommendedFutureWork))
+                    {
+                        <div class="form-group">
+                            <label><strong>Recommended Future Work:</strong></label>
+                            <div style="background-color: #e2e3e5; padding: 10px; border-radius: 5px; border: 1px solid #6c757d;">
+                                @workPerformed.RecommendedFutureWork
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
     </div>
 
     <div class="col-xl-4">

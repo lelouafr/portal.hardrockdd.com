@@ -1062,5 +1062,119 @@ namespace portal.Controllers.VP
         }
 
         #endregion
+
+
+        // =============================================================================
+        // ADD THIS METHOD TO: Controllers/View/SM/Request/ServiceRequestController.cs
+        // (Replace or add alongside the existing CompleteWorkOrderItem method)
+        // =============================================================================
+
+        /// <summary>
+        /// Complete work order with full documentation
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult CompleteWorkOrderWithDetails(
+            byte emco,
+            string workOrderId,
+            short woItem,
+            char completionStatus,
+            string repairsCompleted,
+            string partsReplaced,
+            string partsBackordered,
+            string backorderETA,
+            string temporaryRepairs,
+            string recommendedFutureWork)
+        {
+            try
+            {
+                using var db = new VPContext();
+
+                var currentEmployee = StaticFunctions.GetCurrentEmployee();
+                int? mechanicId = currentEmployee?.EmployeeId;
+
+                // Save work performed documentation
+                var workPerformed = new WorkPerformedRecord
+                {
+                    EMCo = emco,
+                    WorkOrderId = workOrderId,
+                    WOItem = woItem,
+                    CompletionStatus = completionStatus,
+                    RepairsCompleted = repairsCompleted,
+                    PartsReplaced = partsReplaced,
+                    PartsBackordered = partsBackordered,
+                    BackorderETA = string.IsNullOrEmpty(backorderETA) ? null : (DateTime?)DateTime.Parse(backorderETA),
+                    TemporaryRepairs = temporaryRepairs,
+                    RecommendedFutureWork = recommendedFutureWork,
+                    CompletedBy = mechanicId
+                };
+
+                EMWorkPerformedData.SaveWorkPerformed(workPerformed);
+
+                // Only mark work order as complete if status is "C" (Completed)
+                if (completionStatus == 'C')
+                {
+                    // Update Work Order Item
+                    var woItemRecord = db.EMWorkOrderItems.FirstOrDefault(i =>
+                        i.EMCo == emco && i.WorkOrderId == workOrderId && i.WOItem == woItem);
+
+                    if (woItemRecord != null)
+                    {
+                        woItemRecord.DateCompl = DateTime.Now;
+
+                        // Append notes
+                        var notes = $"[Completed {DateTime.Now:MM/dd/yyyy}]\n{repairsCompleted}";
+                        if (!string.IsNullOrEmpty(partsReplaced))
+                            notes += $"\nParts: {partsReplaced}";
+                        if (!string.IsNullOrEmpty(recommendedFutureWork))
+                            notes += $"\nRecommended: {recommendedFutureWork}";
+
+                        woItemRecord.Notes = string.IsNullOrEmpty(woItemRecord.Notes)
+                            ? notes
+                            : woItemRecord.Notes + "\n\n" + notes;
+                    }
+
+                    // Update linked Service Request Line status
+                    var srLine = db.SMRequestLines.FirstOrDefault(l =>
+                        l.EMCo == emco && l.WorkOrderId == workOrderId && l.WOItemId == woItem);
+
+                    if (srLine != null)
+                    {
+                        srLine.Status = DB.SMRequestLineStatusEnum.Completed;
+                    }
+
+                    db.SaveChanges();
+                }
+                else
+                {
+                    // For partial/follow-up, just save notes but don't complete
+                    var woItemRecord = db.EMWorkOrderItems.FirstOrDefault(i =>
+                        i.EMCo == emco && i.WorkOrderId == workOrderId && i.WOItem == woItem);
+
+                    if (woItemRecord != null)
+                    {
+                        var statusText = completionStatus == 'P' ? "Partially Completed" : "Requires Follow-up";
+                        var notes = $"[{statusText} {DateTime.Now:MM/dd/yyyy}]\n{repairsCompleted}";
+                        if (!string.IsNullOrEmpty(partsBackordered))
+                            notes += $"\nBackordered: {partsBackordered}";
+                        if (!string.IsNullOrEmpty(temporaryRepairs))
+                            notes += $"\nTemp Repair: {temporaryRepairs}";
+
+                        woItemRecord.Notes = string.IsNullOrEmpty(woItemRecord.Notes)
+                            ? notes
+                            : woItemRecord.Notes + "\n\n" + notes;
+                    }
+
+                    db.SaveChanges();
+                }
+
+                return Json(new { success = true, status = completionStatus });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
     }
 }
