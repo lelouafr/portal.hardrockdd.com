@@ -1176,5 +1176,202 @@ namespace portal.Controllers.VP
             }
         }
 
+        #region Cost Entry
+
+        /// <summary>
+        /// Cost Entry page for a work order
+        /// </summary>
+        [HttpGet]
+        [Route("Service/CostEntry/{emco}/{workOrderId}")]
+        public ActionResult CostEntry(byte emco, string workOrderId, short woItem = 1)
+        {
+            try
+            {
+                using var db = new VPContext();
+
+                var wo = db.EMWorkOrders.FirstOrDefault(w => w.EMCo == emco && w.WorkOrderId == workOrderId);
+                if (wo == null)
+                    return HttpNotFound("Work Order not found");
+
+                var woItemRecord = db.EMWorkOrderItems.FirstOrDefault(w => w.EMCo == emco && w.WorkOrderId == workOrderId && w.WOItem == woItem);
+
+                ViewBag.EMCo = emco;
+                ViewBag.WorkOrderId = workOrderId;
+                ViewBag.WOItem = woItem;
+                ViewBag.EquipmentId = woItemRecord?.EquipmentId ?? wo.EquipmentId;
+                ViewBag.EquipmentDescription = woItemRecord?.Equipment?.Description ?? wo.Equipment?.Description;
+                ViewBag.WorkOrderDescription = woItemRecord?.Description ?? wo.Description;
+
+                ViewBag.Labor = EMCostEntryData.GetLabor(emco, workOrderId, woItem);
+                ViewBag.Parts = EMCostEntryData.GetParts(emco, workOrderId, woItem);
+                ViewBag.OtherCosts = EMCostEntryData.GetOtherCosts(emco, workOrderId, woItem);
+                ViewBag.Summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+
+                return View("~/Views/EM/CostEntry/Index.cshtml");
+            }
+            catch (Exception ex)
+            {
+                return Content("Error: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get cost summary as JSON
+        /// </summary>
+        [HttpGet]
+        public JsonResult GetCostSummary(byte emco, string workOrderId, short woItem = 1)
+        {
+            var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+            return Json(summary, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Add labor entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddLabor(byte emco, string workOrderId, short woItem, string employeeName, DateTime workDate, decimal hours, decimal hourlyRate, string description)
+        {
+            try
+            {
+                var entry = new LaborEntry
+                {
+                    EmployeeName = employeeName,
+                    WorkDate = workDate,
+                    Hours = hours,
+                    HourlyRate = hourlyRate,
+                    Description = description
+                };
+
+                var enteredBy = StaticFunctions.GetUserId();
+                var id = EMCostEntryData.AddLabor(emco, workOrderId, woItem, entry, enteredBy);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+
+                return Json(new { success = true, laborId = id, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete labor entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeleteLabor(int laborId, byte emco, string workOrderId, short woItem)
+        {
+            try
+            {
+                EMCostEntryData.DeleteLabor(laborId);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+                return Json(new { success = true, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Add part entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddPart(byte emco, string workOrderId, short woItem, string partNumber, string partDescription, decimal quantity, decimal unitCost, string vendor)
+        {
+            try
+            {
+                var entry = new PartEntry
+                {
+                    PartNumber = partNumber,
+                    PartDescription = partDescription,
+                    Quantity = quantity,
+                    UnitCost = unitCost,
+                    Vendor = vendor
+                };
+
+                var enteredBy = StaticFunctions.GetUserId();
+                var id = EMCostEntryData.AddPart(emco, workOrderId, woItem, entry, enteredBy);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+
+                return Json(new { success = true, partId = id, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete part entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeletePart(int partId, byte emco, string workOrderId, short woItem)
+        {
+            try
+            {
+                EMCostEntryData.DeletePart(partId);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+                return Json(new { success = true, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Add other cost entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddOtherCost(byte emco, string workOrderId, short woItem, char costType, string description, decimal amount, string vendor, string invoiceNumber)
+        {
+            try
+            {
+                var entry = new OtherCostEntry
+                {
+                    CostType = costType,
+                    Description = description,
+                    Amount = amount,
+                    Vendor = vendor,
+                    InvoiceNumber = invoiceNumber
+                };
+
+                var enteredBy = StaticFunctions.GetUserId();
+                var id = EMCostEntryData.AddOtherCost(emco, workOrderId, woItem, entry, enteredBy);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+
+                return Json(new { success = true, otherCostId = id, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete other cost entry
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeleteOtherCost(int otherCostId, byte emco, string workOrderId, short woItem)
+        {
+            try
+            {
+                EMCostEntryData.DeleteOtherCost(otherCostId);
+                var summary = EMCostEntryData.GetCostSummary(emco, workOrderId, woItem);
+                return Json(new { success = true, summary });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }

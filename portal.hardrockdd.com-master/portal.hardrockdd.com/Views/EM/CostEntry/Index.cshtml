@@ -1,0 +1,418 @@
+@* =============================================================================
+    COST ENTRY - NEW DESIGN
+    Place in: Views/EM/CostEntry/Index.cshtml
+    ============================================================================= *@
+
+@{
+    ViewBag.Title = "Cost Entry";
+    var emco = (byte)ViewBag.EMCo;
+    var workOrderId = (string)ViewBag.WorkOrderId;
+    var woItem = (short)ViewBag.WOItem;
+    var labor = ViewBag.Labor as List<global::DB.Infrastructure.ViewPointDB.Data.LaborEntry> ?? new List<global::DB.Infrastructure.ViewPointDB.Data.LaborEntry>();
+    var parts = ViewBag.Parts as List<global::DB.Infrastructure.ViewPointDB.Data.PartEntry> ?? new List<global::DB.Infrastructure.ViewPointDB.Data.PartEntry>();
+    var otherCosts = ViewBag.OtherCosts as List<global::DB.Infrastructure.ViewPointDB.Data.OtherCostEntry> ?? new List<global::DB.Infrastructure.ViewPointDB.Data.OtherCostEntry>();
+    var summary = ViewBag.Summary as global::DB.Infrastructure.ViewPointDB.Data.CostSummary ?? new global::DB.Infrastructure.ViewPointDB.Data.CostSummary();
+}
+
+@section Styles {
+    <link href="~/Content/maintenance-portal.css" rel="stylesheet" />
+}
+
+<div class="maintenance-portal">
+    <!-- Page Header -->
+    <div class="mp-page-header">
+        <h1 class="mp-page-title">Cost Entry - @workOrderId</h1>
+        <p class="mp-page-subtitle">
+            <i class="fas fa-truck" style="color: var(--mp-primary);"></i>
+            @ViewBag.EquipmentId - @ViewBag.EquipmentDescription
+        </p>
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <div class="mp-content">
+        <div class="row">
+            <!-- Left Column - Entry Forms -->
+            <div class="col-lg-8">
+
+                <!-- Labor Entry -->
+                <div class="mp-form-card">
+                    <div class="mp-form-header">
+                        <h3 class="mp-form-title"><i class="fas fa-users" style="color: var(--mp-primary);"></i> Labor</h3>
+                    </div>
+                    <div class="mp-form-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <input type="text" id="laborEmployee" class="mp-form-control" placeholder="Employee Name">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="date" id="laborDate" class="mp-form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="laborHours" class="mp-form-control" placeholder="Hours" step="0.5" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="laborRate" class="mp-form-control" placeholder="$/Hour" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" id="laborDesc" class="mp-form-control" placeholder="Description">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="mp-btn success" style="width: 100%; padding: 10px;" onclick="addLabor()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="mp-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Date</th>
+                                    <th style="text-align: right;">Hours</th>
+                                    <th style="text-align: right;">Rate</th>
+                                    <th style="text-align: right;">Total</th>
+                                    <th>Description</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="laborTableBody">
+                                @foreach (var item in labor)
+                                {
+                                    <tr data-id="@item.LaborId">
+                                        <td>@item.EmployeeName</td>
+                                        <td>@item.WorkDate.ToShortDateString()</td>
+                                        <td style="text-align: right;">@item.Hours.ToString("N2")</td>
+                                        <td style="text-align: right;">@item.HourlyRate.ToString("C")</td>
+                                        <td style="text-align: right; font-weight: 600;">@item.TotalCost.ToString("C")</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <button type="button" class="mp-btn-action" style="background: var(--mp-danger); color: white;" onclick="deleteLabor(@item.LaborId)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: var(--mp-gray-50);">
+                                    <td colspan="4" style="text-align: right; font-weight: 600;">Labor Total:</td>
+                                    <td style="text-align: right; font-weight: 700; color: var(--mp-primary);" id="laborTotal">@summary.LaborCost.ToString("C")</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Parts Entry -->
+                <div class="mp-form-card">
+                    <div class="mp-form-header">
+                        <h3 class="mp-form-title"><i class="fas fa-cogs" style="color: var(--mp-warning);"></i> Parts</h3>
+                    </div>
+                    <div class="mp-form-body">
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <input type="text" id="partNumber" class="mp-form-control" placeholder="Part #">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="partDesc" class="mp-form-control" placeholder="Description *">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="partQty" class="mp-form-control" placeholder="Qty" step="1" min="1" value="1">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="partCost" class="mp-form-control" placeholder="Unit $" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" id="partVendor" class="mp-form-control" placeholder="Vendor">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="mp-btn success" style="width: 100%; padding: 10px;" onclick="addPart()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="mp-table">
+                            <thead>
+                                <tr>
+                                    <th>Part #</th>
+                                    <th>Description</th>
+                                    <th style="text-align: right;">Qty</th>
+                                    <th style="text-align: right;">Unit Cost</th>
+                                    <th style="text-align: right;">Total</th>
+                                    <th>Vendor</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="partsTableBody">
+                                @foreach (var item in parts)
+                                {
+                                    <tr data-id="@item.PartId">
+                                        <td>@item.PartNumber</td>
+                                        <td>@item.PartDescription</td>
+                                        <td style="text-align: right;">@item.Quantity.ToString("N2")</td>
+                                        <td style="text-align: right;">@item.UnitCost.ToString("C")</td>
+                                        <td style="text-align: right; font-weight: 600;">@item.TotalCost.ToString("C")</td>
+                                        <td>@item.Vendor</td>
+                                        <td>
+                                            <button type="button" class="mp-btn-action" style="background: var(--mp-danger); color: white;" onclick="deletePart(@item.PartId)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: var(--mp-gray-50);">
+                                    <td colspan="4" style="text-align: right; font-weight: 600;">Parts Total:</td>
+                                    <td style="text-align: right; font-weight: 700; color: var(--mp-warning);" id="partsTotal">@summary.PartsCost.ToString("C")</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Other Costs Entry -->
+                <div class="mp-form-card">
+                    <div class="mp-form-header">
+                        <h3 class="mp-form-title"><i class="fas fa-file-invoice-dollar" style="color: var(--mp-gray-600);"></i> Other Costs</h3>
+                    </div>
+                    <div class="mp-form-body">
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <select id="otherType" class="mp-form-control">
+                                    <option value="M">Materials</option>
+                                    <option value="S">Shop Supplies</option>
+                                    <option value="V">Vendor Invoice</option>
+                                    <option value="O">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" id="otherDesc" class="mp-form-control" placeholder="Description *">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="otherAmount" class="mp-form-control" placeholder="Amount $" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" id="otherVendor" class="mp-form-control" placeholder="Vendor">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" id="otherInvoice" class="mp-form-control" placeholder="Invoice #">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="mp-btn success" style="width: 100%; padding: 10px;" onclick="addOtherCost()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="mp-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th style="text-align: right;">Amount</th>
+                                    <th>Vendor</th>
+                                    <th>Invoice #</th>
+                                    <th style="width: 50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="otherTableBody">
+                                @foreach (var item in otherCosts)
+                                {
+                                    <tr data-id="@item.OtherCostId">
+                                        <td><span class="mp-badge" style="background: var(--mp-gray-100); color: var(--mp-gray-700);">@item.CostTypeDisplay</span></td>
+                                        <td>@item.Description</td>
+                                        <td style="text-align: right; font-weight: 600;">@item.Amount.ToString("C")</td>
+                                        <td>@item.Vendor</td>
+                                        <td>@item.InvoiceNumber</td>
+                                        <td>
+                                            <button type="button" class="mp-btn-action" style="background: var(--mp-danger); color: white;" onclick="deleteOtherCost(@item.OtherCostId)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: var(--mp-gray-50);">
+                                    <td colspan="2" style="text-align: right; font-weight: 600;">Other Costs Total:</td>
+                                    <td style="text-align: right; font-weight: 700; color: var(--mp-gray-600);" id="otherTotal">@summary.OtherCost.ToString("C")</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Summary -->
+            <div class="col-lg-4">
+                <div class="mp-form-card" style="position: sticky; top: 20px;">
+                    <div class="mp-form-header" style="background: var(--mp-success); color: white;">
+                        <h3 class="mp-form-title" style="color: white;"><i class="fas fa-calculator"></i> Cost Summary</h3>
+                    </div>
+                    <div class="mp-form-body">
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--mp-gray-100);">
+                                <span><i class="fas fa-users" style="color: var(--mp-primary); width: 20px;"></i> Labor:</span>
+                                <span id="summaryLabor" style="font-weight: 600;">@summary.LaborCost.ToString("C")</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--mp-gray-100);">
+                                <span><i class="fas fa-cogs" style="color: var(--mp-warning); width: 20px;"></i> Parts:</span>
+                                <span id="summaryParts" style="font-weight: 600;">@summary.PartsCost.ToString("C")</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--mp-gray-200);">
+                                <span><i class="fas fa-file-invoice-dollar" style="color: var(--mp-gray-500); width: 20px;"></i> Other:</span>
+                                <span id="summaryOther" style="font-weight: 600;">@summary.OtherCost.ToString("C")</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 16px 0;">
+                                <span style="font-size: 1.1em; font-weight: 600;">TOTAL:</span>
+                                <span id="summaryTotal" style="font-size: 1.5em; font-weight: 700; color: var(--mp-success);">@summary.TotalCost.ToString("C")</span>
+                            </div>
+                        </div>
+
+                        <hr style="border-color: var(--mp-gray-200);" />
+
+                        <a href="@Url.Action("Index", "EMWorkOrder", new { emco = emco, workOrderId = workOrderId })" class="mp-btn primary" style="width: 100%; justify-content: center; margin-bottom: 10px;">
+                            <i class="fas fa-arrow-left"></i> Back to Work Order
+                        </a>
+                        <a href="@Url.Action("ForemanDashboard", "ServiceRequest")" class="mp-btn" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-list"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    var emco = @emco;
+    var workOrderId = '@workOrderId';
+    var woItem = @woItem;
+    var token = $('input[name="__RequestVerificationToken"]').val();
+
+    function updateSummary(summary) {
+        $('#laborTotal, #summaryLabor').text('$' + summary.LaborCost.toFixed(2));
+        $('#partsTotal, #summaryParts').text('$' + summary.PartsCost.toFixed(2));
+        $('#otherTotal, #summaryOther').text('$' + summary.OtherCost.toFixed(2));
+        $('#summaryTotal').text('$' + summary.TotalCost.toFixed(2));
+    }
+
+    function addLabor() {
+        var employee = $('#laborEmployee').val();
+        var date = $('#laborDate').val();
+        var hours = parseFloat($('#laborHours').val());
+        var rate = parseFloat($('#laborRate').val());
+        var desc = $('#laborDesc').val();
+
+        if (!employee || !hours || !rate) {
+            alert('Please enter employee, hours, and rate');
+            return;
+        }
+
+        $.post('@Url.Action("AddLabor", "ServiceRequest")', {
+            emco: emco, workOrderId: workOrderId, woItem: woItem,
+            employeeName: employee, workDate: date, hours: hours, hourlyRate: rate, description: desc,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + r.error);
+            }
+        });
+    }
+
+    function deleteLabor(id) {
+        if (!confirm('Delete this labor entry?')) return;
+        $.post('@Url.Action("DeleteLabor", "ServiceRequest")', {
+            laborId: id, emco: emco, workOrderId: workOrderId, woItem: woItem,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                $('tr[data-id="' + id + '"]').remove();
+                updateSummary(r.summary);
+            }
+        });
+    }
+
+    function addPart() {
+        var partNum = $('#partNumber').val();
+        var desc = $('#partDesc').val();
+        var qty = parseFloat($('#partQty').val()) || 1;
+        var cost = parseFloat($('#partCost').val());
+        var vendor = $('#partVendor').val();
+
+        if (!desc || !cost) {
+            alert('Please enter description and unit cost');
+            return;
+        }
+
+        $.post('@Url.Action("AddPart", "ServiceRequest")', {
+            emco: emco, workOrderId: workOrderId, woItem: woItem,
+            partNumber: partNum, partDescription: desc, quantity: qty, unitCost: cost, vendor: vendor,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + r.error);
+            }
+        });
+    }
+
+    function deletePart(id) {
+        if (!confirm('Delete this part entry?')) return;
+        $.post('@Url.Action("DeletePart", "ServiceRequest")', {
+            partId: id, emco: emco, workOrderId: workOrderId, woItem: woItem,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                $('tr[data-id="' + id + '"]').remove();
+                updateSummary(r.summary);
+            }
+        });
+    }
+
+    function addOtherCost() {
+        var type = $('#otherType').val();
+        var desc = $('#otherDesc').val();
+        var amount = parseFloat($('#otherAmount').val());
+        var vendor = $('#otherVendor').val();
+        var invoice = $('#otherInvoice').val();
+
+        if (!desc || !amount) {
+            alert('Please enter description and amount');
+            return;
+        }
+
+        $.post('@Url.Action("AddOtherCost", "ServiceRequest")', {
+            emco: emco, workOrderId: workOrderId, woItem: woItem,
+            costType: type, description: desc, amount: amount, vendor: vendor, invoiceNumber: invoice,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + r.error);
+            }
+        });
+    }
+
+    function deleteOtherCost(id) {
+        if (!confirm('Delete this cost entry?')) return;
+        $.post('@Url.Action("DeleteOtherCost", "ServiceRequest")', {
+            otherCostId: id, emco: emco, workOrderId: workOrderId, woItem: woItem,
+            __RequestVerificationToken: token
+        }, function(r) {
+            if (r.success) {
+                $('tr[data-id="' + id + '"]').remove();
+                updateSummary(r.summary);
+            }
+        });
+    }
+    </script>
+}

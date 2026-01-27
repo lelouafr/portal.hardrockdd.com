@@ -1,185 +1,217 @@
+@* =============================================================================
+    MECHANIC DASHBOARD - NEW DESIGN (FIXED)
+    Place in: Views/SM/Request/Mechanic/Index.cshtml
+    ============================================================================= *@
+
 @model portal.Models.Views.SM.Request.MechanicDashboardViewModel
 @{
     ViewBag.Title = "My Work Orders";
+    var workOrders = Model.WorkOrders ?? new List<portal.Models.Views.SM.Request.MechanicWorkOrderViewModel>();
 }
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" />
-<style>
-    .btn-complete {
-        background-color: #28a745;
-        color: white;
-    }
+@section Styles {
+    <link href="~/Content/maintenance-portal.css" rel="stylesheet" />
+}
 
-        .btn-complete:hover {
-            background-color: #218838;
-            color: white;
-        }
+<div class="maintenance-portal">
+    <!-- Page Header -->
+    <div class="mp-page-header">
+        <h1 class="mp-page-title">My Work Orders</h1>
+        <p class="mp-page-subtitle">Welcome, @Model.MechanicName</p>
+    </div>
 
-    .btn-inspect {
-        background-color: #ffc107;
-        color: black;
-    }
-
-        .btn-inspect:hover {
-            background-color: #e0a800;
-            color: black;
-        }
-
-    .completed-row {
-        background-color: #e8f5e9 !important;
-    }
-
-    .status-badge {
-        font-size: 0.85em;
-    }
-</style>
-
-<ol class="breadcrumb pull-right">
-    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { Area = "" })">Home</a></li>
-    <li class="breadcrumb-item active">@ViewBag.Title</li>
-</ol>
-<h1 class="page-header">@ViewBag.Title</h1>
-<p class="text-muted">Welcome, @Model.MechanicName</p>
-
-<!-- Summary Cards -->
-<div class="row m-b-20">
-    <div class="col-md-4">
-        <div class="card bg-warning text-white">
-            <div class="card-body text-center">
-                <h5>Assigned</h5>
-                <h2>@Model.AssignedCount</h2>
+    <div class="mp-content">
+        <!-- Stats Cards -->
+        <div class="mp-stats-grid">
+            <div class="mp-stat-card">
+                <div class="mp-stat-icon assigned">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="mp-stat-content">
+                    <div class="mp-stat-number">@Model.AssignedCount</div>
+                    <div class="mp-stat-label">Assigned</div>
+                </div>
+            </div>
+            <div class="mp-stat-card">
+                <div class="mp-stat-icon in-progress">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <div class="mp-stat-content">
+                    <div class="mp-stat-number">@Model.InProgressCount</div>
+                    <div class="mp-stat-label">In Progress</div>
+                </div>
+            </div>
+            <div class="mp-stat-card">
+                <div class="mp-stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="mp-stat-content">
+                    <div class="mp-stat-number">@Model.CompletedTodayCount</div>
+                    <div class="mp-stat-label">Completed Today</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-info text-white">
-            <div class="card-body text-center">
-                <h5>In Progress</h5>
-                <h2>@Model.InProgressCount</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white">
-            <div class="card-body text-center">
-                <h5>Completed Today</h5>
-                <h2>@Model.CompletedTodayCount</h2>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Work Orders Table -->
-<div class="panel panel-inverse">
-    <div class="panel-heading">
-        <h4 class="panel-title">My Assigned Work Orders (@Model.WorkOrders.Count)</h4>
-    </div>
-    <div class="panel-body">
-        @Html.AntiForgeryToken()
-        <table class="table table-striped" id="workOrdersTable">
-            <thead>
-                <tr>
-                    <th>Work Order</th>
-                    <th>Equipment</th>
-                    <th>Description</th>
-                    <th>Created</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.WorkOrders)
-                {
-                    var rowClass = item.IsCompleted ? "completed-row" : "";
-                    <tr class="@rowClass">
-                        <td>
-                            <a href="@Url.Action("Index", "EMWorkOrder", new { emco = item.EMCo, workOrderId = item.WorkOrderId })">
-                                @item.WorkOrderId
-                            </a>
-                        </td>
-                        <td>@item.EquipmentId - @item.EquipmentDescription</td>
-                        <td>@item.Description</td>
-                        <td>@item.DateCreated.ToShortDateString()</td>
-                        <td>
-                            @if (item.IsCompleted)
+        <!-- Work Orders Table -->
+        <div class="mp-table-card">
+            <div class="mp-table-header">
+                <h2 class="mp-table-title">
+                    My Assigned Work Orders
+                    <span class="mp-count">@workOrders.Count</span>
+                </h2>
+                <div class="mp-table-actions">
+                    <button class="mp-btn" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            @if (workOrders.Any())
+            {
+                <table class="mp-table">
+                    <thead>
+                        <tr>
+                            <th>Work Order</th>
+                            <th>Equipment</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var wo in workOrders.OrderByDescending(w => w.IsEmergency).ThenBy(w => w.IsCompleted).ThenByDescending(w => w.DateCreated))
+                        {
+                            var rowClass = wo.IsCompleted ? "mp-completed-row" : "";
+                            string statusClass, statusText;
+
+                            if (wo.IsCompleted)
                             {
-                                <span class="badge badge-success status-badge">Completed</span>
+                                statusClass = "completed";
+                                statusText = "Completed";
+                            }
+                            else if (wo.IsEmergency)
+                            {
+                                statusClass = "urgent";
+                                statusText = "Emergency";
                             }
                             else
                             {
-                                <span class="badge badge-warning status-badge">Pending</span>
+                                statusClass = "pending";
+                                statusText = wo.Status ?? "Pending";
                             }
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Index", "EMWorkOrder", new { emco = item.EMCo, workOrderId = item.WorkOrderId })"
-                               class="btn btn-xs btn-primary" title="View">
-                                <i class="fa fa-eye"></i>
-                            </a>
-                            @if (!item.IsCompleted)
-                            {
-                                <button type="button" class="btn btn-xs btn-complete complete-wo"
-                                        data-emco="@item.EMCo"
-                                        data-workorderid="@item.WorkOrderId"
-                                        data-woitem="@item.WOItem"
-                                        data-equipment="@item.EquipmentId"
-                                        data-description="@item.Description"
-                                        title="Complete Work Order">
-                                    <i class="fa fa-check"></i>
-                                </button>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+
+                            <tr class="@rowClass">
+                                <td>
+                                    <a href="@Url.Action("Index", "EMWorkOrder", new { emco = wo.EMCo, workOrderId = wo.WorkOrderId })" class="mp-wo-id">
+                                        @wo.WorkOrderId
+                                    </a>
+                                    <span class="mp-badge @statusClass">@statusText</span>
+                                </td>
+                                <td>
+                                    <div class="mp-equipment-cell">
+                                        <div class="mp-equipment-icon">
+                                            <i class="fas fa-truck"></i>
+                                        </div>
+                                        <div class="mp-equipment-info">
+                                            <div class="mp-equipment-id">@wo.EquipmentId</div>
+                                            <div class="mp-equipment-name">@wo.EquipmentDescription</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="mp-description-cell" title="@wo.Description">@wo.Description</td>
+                                <td class="mp-date-cell">@wo.DateCreated.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <div class="mp-action-buttons">
+                                        <a href="@Url.Action("Index", "EMWorkOrder", new { emco = wo.EMCo, workOrderId = wo.WorkOrderId })"
+                                           class="mp-btn-action view" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (!wo.IsCompleted)
+                                        {
+                                            <button type="button" class="mp-btn-action complete" title="Mark Complete"
+                                                    data-emco="@wo.EMCo"
+                                                    data-workorderid="@wo.WorkOrderId"
+                                                    data-woitem="@wo.WOItem"
+                                                    data-equipment="@wo.EquipmentId"
+                                                    data-description="@wo.Description"
+                                                    onclick="openCompleteModal(this)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div style="padding: 60px 24px; text-align: center;">
+                    <i class="fas fa-clipboard-check" style="font-size: 3em; color: var(--mp-gray-300); margin-bottom: 16px;"></i>
+                    <h3 style="color: var(--mp-gray-600); margin-bottom: 8px;">No Work Orders Assigned</h3>
+                    <p style="color: var(--mp-gray-500);">You don't have any work orders assigned to you at this time.</p>
+                </div>
+            }
+        </div>
     </div>
 </div>
 
-<!-- Enhanced Complete Work Order Modal -->
+<!-- Complete Work Order Modal -->
 <div class="modal fade" id="completeModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fa fa-clipboard-check"></i> Complete Work Order</h5>
-                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-header" style="background: var(--mp-gray-50); border-bottom: 1px solid var(--mp-gray-200);">
+                <h5 class="modal-title" style="font-weight: 600;">
+                    <i class="fas fa-clipboard-check text-success"></i> Complete Work Order
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 24px;">
                 <input type="hidden" id="complete_emco" />
                 <input type="hidden" id="complete_workorderid" />
                 <input type="hidden" id="complete_woitem" />
 
-                <div class="alert alert-info">
-                    <strong>Equipment:</strong> <span id="complete_equipment"></span><br>
-                    <strong>Issue:</strong> <span id="complete_description"></span>
-                </div>
-
-                <!-- Completion Status -->
-                <div class="form-group">
-                    <label><strong>Completion Status *</strong></label>
-                    <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
-                        <label class="btn btn-outline-success flex-fill active">
-                            <input type="radio" name="completionStatus" value="C" checked> Completed
-                        </label>
-                        <label class="btn btn-outline-warning flex-fill">
-                            <input type="radio" name="completionStatus" value="P"> Partially Completed
-                        </label>
-                        <label class="btn btn-outline-danger flex-fill">
-                            <input type="radio" name="completionStatus" value="F"> Requires Follow-up
-                        </label>
+                <!-- Equipment Info -->
+                <div class="mp-info-panel" style="margin-bottom: 24px;">
+                    <div class="mp-info-row">
+                        <span class="mp-info-label">Work Order:</span>
+                        <span class="mp-info-value" id="modalWorkOrderId" style="font-weight: 600;"></span>
+                    </div>
+                    <div class="mp-info-row">
+                        <span class="mp-info-label">Equipment:</span>
+                        <span class="mp-info-value" id="modalEquipment"></span>
                     </div>
                 </div>
 
+                <!-- Completion Status -->
+                <div class="mp-form-group">
+                    <label class="mp-form-label required">Completion Status</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" class="mp-btn success status-btn active" data-status="C" style="flex: 1;">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </button>
+                        <button type="button" class="mp-btn status-btn" data-status="P" style="flex: 1; background: var(--mp-warning); border-color: var(--mp-warning); color: white;">
+                            <i class="fas fa-clock"></i> Partially Complete
+                        </button>
+                        <button type="button" class="mp-btn status-btn" data-status="F" style="flex: 1; background: var(--mp-danger); border-color: var(--mp-danger); color: white;">
+                            <i class="fas fa-redo"></i> Requires Follow-up
+                        </button>
+                    </div>
+                    <input type="hidden" id="completionStatus" value="C" />
+                </div>
+
                 <!-- Repairs Completed -->
-                <div class="form-group">
-                    <label for="repairsCompleted"><strong>Repairs Completed *</strong></label>
-                    <textarea id="repairsCompleted" class="form-control" rows="3"
-                              placeholder="Describe the repairs performed..." required></textarea>
+                <div class="mp-form-group">
+                    <label class="mp-form-label required">Repairs Completed</label>
+                    <textarea id="repairsCompleted" class="mp-form-control" rows="3"
+                              placeholder="Describe the repairs performed..."></textarea>
                 </div>
 
                 <!-- Parts Replaced -->
-                <div class="form-group">
-                    <label for="partsReplaced">Parts Replaced</label>
-                    <textarea id="partsReplaced" class="form-control" rows="2"
+                <div class="mp-form-group">
+                    <label class="mp-form-label">Parts Replaced</label>
+                    <textarea id="partsReplaced" class="mp-form-control" rows="2"
                               placeholder="List any parts that were replaced..."></textarea>
                 </div>
 
@@ -187,120 +219,111 @@
                 <div id="backorderSection" style="display: none;">
                     <div class="row">
                         <div class="col-md-8">
-                            <div class="form-group">
-                                <label for="partsBackordered">Parts on Backorder</label>
-                                <input type="text" id="partsBackordered" class="form-control"
-                                       placeholder="Parts waiting to arrive...">
+                            <div class="mp-form-group">
+                                <label class="mp-form-label">Parts on Backorder</label>
+                                <input type="text" id="partsBackordered" class="mp-form-control"
+                                       placeholder="Parts waiting to arrive..." />
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="backorderETA">Expected Arrival</label>
-                                <input type="date" id="backorderETA" class="form-control">
+                            <div class="mp-form-group">
+                                <label class="mp-form-label">Expected Arrival</label>
+                                <input type="date" id="backorderETA" class="mp-form-control" />
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="temporaryRepairs">Temporary Repairs Made</label>
-                        <input type="text" id="temporaryRepairs" class="form-control"
-                               placeholder="Any temporary fixes applied...">
+                    <div class="mp-form-group">
+                        <label class="mp-form-label">Temporary Repairs</label>
+                        <textarea id="temporaryRepairs" class="mp-form-control" rows="2"
+                                  placeholder="Any temporary fixes applied..."></textarea>
                     </div>
                 </div>
 
                 <!-- Recommended Future Work -->
-                <div class="form-group">
-                    <label for="recommendedFutureWork">Recommended Future Work</label>
-                    <textarea id="recommendedFutureWork" class="form-control" rows="2"
-                              placeholder="Any additional work recommended for future..."></textarea>
+                <div class="mp-form-group">
+                    <label class="mp-form-label">Recommended Future Work</label>
+                    <textarea id="recommendedWork" class="mp-form-control" rows="2"
+                              placeholder="Any additional work recommended..."></textarea>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="confirmComplete">
-                    <i class="fa fa-check"></i> Submit & Complete
+            <div class="modal-footer" style="background: var(--mp-gray-50); border-top: 1px solid var(--mp-gray-200);">
+                <button type="button" class="mp-btn" data-dismiss="modal">Cancel</button>
+                <button type="button" class="mp-btn success" onclick="submitCompletion()">
+                    <i class="fas fa-check"></i> Submit
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#workOrdersTable').DataTable({
-            order: [[3, 'desc']],
-            pageLength: 25
-        });
+@Html.AntiForgeryToken()
 
-        // Show/hide backorder section based on status
-        $('input[name="completionStatus"]').change(function() {
-            var status = $(this).val();
-            if (status === 'P' || status === 'F') {
-                $('#backorderSection').slideDown();
-            } else {
-                $('#backorderSection').slideUp();
-            }
-        });
+@section Scripts {
+    <script>
+    function openCompleteModal(btn) {
+        var $btn = $(btn);
+        $('#complete_emco').val($btn.data('emco'));
+        $('#complete_workorderid').val($btn.data('workorderid'));
+        $('#complete_woitem').val($btn.data('woitem'));
+        $('#modalWorkOrderId').text($btn.data('workorderid'));
+        $('#modalEquipment').text($btn.data('equipment') + ' - ' + $btn.data('description'));
 
-        // Open complete modal
-        $(document).on('click', '.complete-wo', function () {
-            var btn = $(this);
-            $('#complete_emco').val(btn.data('emco'));
-            $('#complete_workorderid').val(btn.data('workorderid'));
-            $('#complete_woitem').val(btn.data('woitem'));
-            $('#complete_equipment').text(btn.data('equipment'));
-            $('#complete_description').text(btn.data('description'));
+        // Reset form
+        $('#completionStatus').val('C');
+        $('.status-btn').removeClass('active').css('opacity', '0.6');
+        $('.status-btn[data-status="C"]').addClass('active').css('opacity', '1');
+        $('#backorderSection').hide();
+        $('#repairsCompleted, #partsReplaced, #partsBackordered, #temporaryRepairs, #recommendedWork').val('');
+        $('#backorderETA').val('');
 
-            // Reset form
-            $('#repairsCompleted').val('');
-            $('#partsReplaced').val('');
-            $('#partsBackordered').val('');
-            $('#backorderETA').val('');
-            $('#temporaryRepairs').val('');
-            $('#recommendedFutureWork').val('');
-            $('input[name="completionStatus"][value="C"]').prop('checked', true).parent().addClass('active');
-            $('input[name="completionStatus"]').not('[value="C"]').parent().removeClass('active');
-            $('#backorderSection').hide();
+        $('#completeModal').modal('show');
+    }
 
-            $('#completeModal').modal('show');
-        });
+    // Status button clicks
+    $(document).on('click', '.status-btn', function() {
+        $('.status-btn').removeClass('active').css('opacity', '0.6');
+        $(this).addClass('active').css('opacity', '1');
+        var status = $(this).data('status');
+        $('#completionStatus').val(status);
 
-        // Confirm completion
-        $('#confirmComplete').click(function () {
-            var repairs = $('#repairsCompleted').val().trim();
-            if (!repairs) {
-                alert('Please describe the repairs completed');
-                $('#repairsCompleted').focus();
-                return;
-            }
-
-            $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Submitting...');
-
-            $.post('@Url.Action("CompleteWorkOrderWithDetails", "ServiceRequest")', {
-                emco: $('#complete_emco').val(),
-                workOrderId: $('#complete_workorderid').val(),
-                woItem: $('#complete_woitem').val(),
-                completionStatus: $('input[name="completionStatus"]:checked').val(),
-                repairsCompleted: repairs,
-                partsReplaced: $('#partsReplaced').val(),
-                partsBackordered: $('#partsBackordered').val(),
-                backorderETA: $('#backorderETA').val(),
-                temporaryRepairs: $('#temporaryRepairs').val(),
-                recommendedFutureWork: $('#recommendedFutureWork').val(),
-                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-            }, function (result) {
-                if (result.success) {
-                    $('#completeModal').modal('hide');
-                    location.reload();
-                } else {
-                    alert('Error: ' + (result.error || 'Unknown error'));
-                    $('#confirmComplete').prop('disabled', false).html('<i class="fa fa-check"></i> Submit & Complete');
-                }
-            }).fail(function() {
-                alert('Error completing work order');
-                $('#confirmComplete').prop('disabled', false).html('<i class="fa fa-check"></i> Submit & Complete');
-            });
-        });
+        if (status === 'P' || status === 'F') {
+            $('#backorderSection').slideDown();
+        } else {
+            $('#backorderSection').slideUp();
+        }
     });
-</script>
+
+    function submitCompletion() {
+        var repairs = $('#repairsCompleted').val().trim();
+        if (!repairs) {
+            alert('Please enter repairs completed');
+            return;
+        }
+
+        var data = {
+            emco: $('#complete_emco').val(),
+            workOrderId: $('#complete_workorderid').val(),
+            woItem: $('#complete_woitem').val(),
+            completionStatus: $('#completionStatus').val(),
+            repairsCompleted: repairs,
+            partsReplaced: $('#partsReplaced').val(),
+            partsBackordered: $('#partsBackordered').val(),
+            backorderETA: $('#backorderETA').val(),
+            temporaryRepairs: $('#temporaryRepairs').val(),
+            recommendedFutureWork: $('#recommendedWork').val(),
+            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+        };
+
+        $.post('@Url.Action("CompleteWorkOrderWithDetails", "ServiceRequest")', data, function(response) {
+            if (response.success) {
+                $('#completeModal').modal('hide');
+                location.reload();
+            } else {
+                alert('Error: ' + (response.error || 'Unknown error'));
+            }
+        }).fail(function() {
+            alert('Error submitting completion');
+        });
+    }
+    </script>
+}

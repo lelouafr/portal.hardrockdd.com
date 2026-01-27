@@ -594,6 +594,7 @@
     <Compile Include="Infrastructure\ViewPointDB\Data\EMCostCodeType.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ViewPointDB\Data\EMCostEntryData.cs" />
     <Compile Include="Infrastructure\ViewPointDB\Data\EMCostType.cs">
       <DependentUpon>VPdb.tt</DependentUpon>
     </Compile>

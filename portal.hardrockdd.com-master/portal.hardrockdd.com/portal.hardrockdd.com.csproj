@@ -4930,6 +4930,7 @@
     <Content Include="Content\lib\jsext.js" />
     <Content Include="Content\lib\table.js" />
     <Content Include="Content\lib\tree.js" />
+    <Content Include="Content\maintenance-portal.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -7071,6 +7072,7 @@
     <Content Include="Views\EM\WorkOrder\Add\Index.cshtml" />
     <Content Include="Views\SM\Request\Foreman\Index.cshtml" />
     <Content Include="Views\SM\Request\Mechanic\Index.cshtml" />
+    <Content Include="Views\EM\CostEntry\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.2.9.6\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
